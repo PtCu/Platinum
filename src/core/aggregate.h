@@ -1,16 +1,17 @@
 #ifndef CORE_AGGREGATE_H_
 #define CORE_AGGREGATE_H_
 
-#include "core/platinum.h"
+#include "platinum.h"
 #include "primitive.h"
 
-namespace platinum
+PLATINUM_BEGIN
+
+class Aggregate : public Primitive
 {
-    class Aggregate : public Primitive
-    {
-    public:
-        void ComputeScatteringFunctions() const {}
-    };
-}
+public:
+    void ComputeScatteringFunctions() const {}
+};
+
+PLATINUM_END
 
 #endif

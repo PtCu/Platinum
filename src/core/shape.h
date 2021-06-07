@@ -4,33 +4,47 @@
 #include "core/platinum.h"
 #include "core/primitive.h"
 
-namespace platinum
+PLATINUM_BEGIN
+
+class Shape : public Object
 {
-    enum ShapeType
-    {
-        EMesh,
-        ESphere,
-        EDisk,
-        ECone,
-        ECylinder
-    };
+public:
+    typedef std::shared_ptr<Shape> ptr;
 
-    class Shape : public Primitive
-    {
-    public:
-        Shape(const Transform *ObjectToWorld, const Transform *WorldToObject, bool reverseOrientation);
+    Shape(const PropertyList &props);
+    Shape(Transform *objectToWorld, Transform *worldToObject);
+    virtual ~Shape() = default;
 
-        virtual ~Shape();
-        virtual Bounds3f ObjectBound() const = 0;
-        virtual Bounds3f WorldBound() const = 0;
-        virtual bool Intersect(const Ray &ray, float *tHit, SurfaceInteraction *isect, bool testAlphaTexture = true) const = 0;
-        virtual bool IntersectP(const Ray &ray, bool testAlphaTexure = true) const
-        {
-            return Intersect(ray, nullptr, nullptr, testAlphaTexure);
-        }
-        virtual float Area() const = 0;
-        const Transform *ObjectToWorld, *WorldToObject;
-        const bool reverseOrientation;
-    };
+    void setTransform(Transform *objectToWorld, Transform *worldToObject);
 
-#endif
+    virtual Bounds3f objectBound() const = 0;
+    virtual Bounds3f worldBound() const;
+
+    virtual bool hit(const ARay &ray) const;
+    virtual bool hit(const ARay &ray, Float &tHit, SurfaceInteraction &isect) const = 0;
+
+    virtual Float area() const = 0;
+
+    // Sample a point on the surface of the shape and return the PDF with
+    // respect to area on the surface.
+    virtual Interaction sample(const AVector2f &u, Float &pdf) const = 0;
+    virtual Float pdf(const Interaction &) const { return 1 / area(); }
+
+    // Sample a point on the shape given a reference point |ref| and
+    // return the PDF with respect to solid angle from |ref|.
+    virtual Interaction sample(const Interaction &ref, const AVector2f &u, Float &pdf) const;
+    virtual Float pdf(const Interaction &ref, const Vector3f &wi) const;
+
+    // Returns the solid angle subtended by the shape w.r.t. the reference
+    // point p, given in world space. Some shapes compute this value in
+    // closed-form, while the default implementation uses Monte Carlo
+    // integration; the nSamples parameter determines how many samples are
+    // used in this case.
+    virtual Float solidAngle(const Vector3f &p, int nSamples = 512) const;
+
+    virtual Vector3f getClassType() const override { return Vector3f::Shape; }
+
+    Transform *m_objectToWorld = nullptr, *m_worldToObject = nullptr;
+};
+
+PLATINUM_END

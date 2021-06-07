@@ -9,9 +9,9 @@ namespace Platinum
     class Object
     {
     public:
-        virtual nlmJson toJson() const
+        virtual nloJson toJson() const
         {
-            return nlmJson();
+            return nloJson();
         }
         virtual virtual ~Object() {}
     };
@@ -37,7 +37,6 @@ namespace Platinum
         std::shared_ptr<Shape> shape;
     };
 
-   
 
 } // namespace Platinum
 

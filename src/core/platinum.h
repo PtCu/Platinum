@@ -15,15 +15,25 @@
 #include <glog/logging.h>
 #include "nlohmann/json.hpp"
 
-typedef nlohmann::json nlmJson;
+#if defined(_MSC_VER)
+#define NOMINMAX
+#endif
 
-#ifdef FLOAT_AS_DOUBLE
-typedef double Float;
-#else
-typedef float Float;
+#define PLATINUM_BEGIN \
+    namespace platinum \
+    {
+#define PLATINUM_END }
+
+typedef nlohmann::json nloJson;
 
 namespace platinum
 {
+#ifdef FLOAT_AS_DOUBLE
+    typedef double Float;
+#else
+    typedef float Float;
+#endif
+
     static constexpr Float MaxFloat = std::numeric_limits<Float>::max();
     static constexpr Float Infinity = std::numeric_limits<Float>::infinity();
     static constexpr Float MachineEpsilon = std::numeric_limits<Float>::epsilon() * 0.5;

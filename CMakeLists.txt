@@ -21,11 +21,20 @@ ADD_DEFINITIONS( -D HAVE_SNPRINTF)
 ADD_SUBDIRECTORY(src/ext/glog)
 SET_PROPERTY(TARGET glog logging_unittest demangle_unittest utilities_unittest stl_logging_unittest signalhandler_unittest stacktrace_unittest symbolize_unittest PROPERTY FOLDER "ext")
 
+include_directories(src/accelerators/)
+include_directories(src/cameras/)
+include_directories(src/core/)
+include_directories(src/filters/)
+include_directories(src/integrators/)
+include_directories(src/materials/)
+include_directories(src/samplers/)
+include_directories(src/shapes/)
+include_directories(src/textures/)
 
 INCLUDE_DIRECTORIES ("${PROJECT_SOURCE_DIR}/src")
 INCLUDE_DIRECTORIES ("${PROJECT_SOURCE_DIR}/src/ext/glog/src")
 INCLUDE_DIRECTORIES ("${PROJECT_SOURCE_DIR}/src/ext/header_only")
-INCLUDE_DIRECTORIES ("${CMAKE_BINARY_DIR}/src/ext/glog")
+
 
 
 file(GLOB ACCELECTORS ./src/accelerators/*.h ./src/accelerators/*.cpp)
@@ -74,7 +83,15 @@ set(EXTRA_LIBS ${EXTRA_LIBS}  glog )
 
 target_link_libraries( ${PROJECT_NAME} PRIVATE ${EXTRA_LIBS})
 
+
 if (CMAKE_SYSTEM_NAME MATCHES "Windows")
     #set_target_properties(${APP_NAME} PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY $<TARGET_FILE_DIR:${APP_NAME}>)
     set_target_properties(${APP_NAME} PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY "${PROJECT_SOURCE_DIR}")
 endif ()
+
+# Installation
+INSTALL ( TARGETS
+  ${PROJECT_NAME}
+  DESTINATION
+  bin
+  )
