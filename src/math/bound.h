@@ -1,34 +1,35 @@
 #ifndef MATH_BOUND_H_
 #define MATH_BOUND_H_
 
-#include "math/bound.h"
+#include "core/platinum.h"
+#include "math/point.h"
 
 namespace platinum
 {
 
-    // AABB Declarations
+    // Bound Declarations
     template <typename T>
-    class AABB2
+    class Bound2
     {
     public:
-        // AABB2 Public Methods
-        AABB2()
+        // Bound2 Public Methods
+        Bound2()
         {
             T minNum = std::numeric_limits<T>::lowest();
             T maxNum = std::numeric_limits<T>::max();
             pMin = Point2<T>(maxNum, maxNum);
             pMax = Point2<T>(minNum, minNum);
         }
-        explicit AABB2(const Point2<T> &p) : pMin(p), pMax(p) {}
-        AABB2(const Point2<T> &p1, const Point2<T> &p2)
+        explicit Bound2(const Point2<T> &p) : pMin(p), pMax(p) {}
+        Bound2(const Point2<T> &p1, const Point2<T> &p2)
         {
             pMin = Point2<T>(std::min(p1.x, p2.x), std::min(p1.y, p2.y));
             pMax = Point2<T>(std::max(p1.x, p2.x), std::max(p1.y, p2.y));
         }
         template <typename U>
-        explicit operator AABB2<U>() const
+        explicit operator Bound2<U>() const
         {
-            return AABB2<U>((Point2<U>)pMin, (Point2<U>)pMax);
+            return Bound2<U>((Point2<U>)pMin, (Point2<U>)pMax);
         }
 
         Vector2<T> diagonal() const { return pMax - pMin; }
@@ -55,11 +56,11 @@ namespace platinum
             DCHECK(i == 0 || i == 1);
             return (i == 0) ? pMin : pMax;
         }
-        bool operator==(const AABB2<T> &b) const
+        bool operator==(const Bound2<T> &b) const
         {
             return b.pMin == pMin && b.pMax == pMax;
         }
-        bool operator!=(const AABB2<T> &b) const
+        bool operator!=(const Bound2<T> &b) const
         {
             return b.pMin != pMin || b.pMax != pMax;
         }
@@ -82,32 +83,32 @@ namespace platinum
             *c = (pMin + pMax) / 2;
             *rad = inside(*c, *this) ? distance(*c, pMax) : 0;
         }
-        friend std::ostream &operator<<(std::ostream &os, const AABB2<T> &b)
+        friend std::ostream &operator<<(std::ostream &os, const Bound2<T> &b)
         {
             os << "[ " << b.pMin << " - " << b.pMax << " ]";
             return os;
         }
 
-        // AABB2 Public Data
+        // Bound2 Public Data
         Point2<T> pMin, pMax;
     };
 
     template <typename T>
-    class AABB3
+    class Bound2
     {
     public:
-        // AABB3 Public Methods
-        AABB3()
+        // Bound2 Public Methods
+        Bound2()
         {
             T minNum = std::numeric_limits<T>::lowest();
             T maxNum = std::numeric_limits<T>::max();
             pMin = Point3<T>(maxNum, maxNum, maxNum);
             pMax = Point3<T>(minNum, minNum, minNum);
         }
-        explicit AABB3(const Point3<T> &p) : pMin(p), pMax(p)
+        explicit Bound2(const Point3<T> &p) : pMin(p), pMax(p)
         {
         }
-        AABB3(const Point3<T> &p1, const Point3<T> &p2)
+        Bound2(const Point3<T> &p1, const Point3<T> &p2)
             : pMin(std::min(p1.x, p2.x), std::min(p1.y, p2.y),
                    std::min(p1.z, p2.z)),
               pMax(std::max(p1.x, p2.x), std::max(p1.y, p2.y),
@@ -119,12 +120,12 @@ namespace platinum
 
         Point3<T> &operator[](int i);
 
-        bool operator==(const AABB3<T> &b) const
+        bool operator==(const Bound2<T> &b) const
         {
             return b.pMin == pMin && b.pMax == pMax;
         }
 
-        bool operator!=(const AABB3<T> &b) const
+        bool operator!=(const Bound2<T> &b) const
         {
             return b.pMin != pMin || b.pMax != pMax;
         }
@@ -191,9 +192,9 @@ namespace platinum
         }
 
         template <typename U>
-        explicit operator AABB3<U>() const
+        explicit operator Bound2<U>() const
         {
-            return AABB3<U>((Point3<U>)pMin, (Point3<U>)pMax);
+            return Bound2<U>((Point3<U>)pMin, (Point3<U>)pMax);
         }
 
         bool intersectP(const Ray &ray, Float *hitt0 = nullptr,
@@ -208,25 +209,25 @@ namespace platinum
         inline bool rayOccluded(const Ray &ray, const Vector3f &invDir,
                                 const int dirIsNeg[3]) const;
 
-        friend std::ostream &operator<<(std::ostream &os, const AABB3<T> &b)
+        friend std::ostream &operator<<(std::ostream &os, const Bound2<T> &b)
         {
             os << "[ " << b.pMin << " - " << b.pMax << " ]";
             return os;
         }
 
-        // AABB3 Public Data
+        // Bound2 Public Data
         Point3<T> pMin, pMax;
     };
 
     template <typename T>
-    inline const Point3<T> &AABB3<T>::operator[](int i) const
+    inline const Point3<T> &Bound2<T>::operator[](int i) const
     {
         DCHECK(i == 0 || i == 1);
         return (i == 0) ? pMin : pMax;
     }
 
     template <typename T>
-    inline Point3<T> &AABB3<T>::operator[](int i)
+    inline Point3<T> &Bound2<T>::operator[](int i)
     {
         DCHECK(i == 0 || i == 1);
         return (i == 0) ? pMin : pMax;
@@ -258,8 +259,8 @@ ________________________________________________________
 则可以写成：t0 * (1 + 2 * γ3)，t1保持不变，如下代码所示
  */
     template <typename T>
-    inline bool AABB3<T>::intersectP(const Ray &ray, Float *hitt0,
-                                     Float *hitt1) const
+    inline bool Bound2<T>::intersectP(const Ray &ray, Float *hitt0,
+                                      Float *hitt1) const
     {
         Float t0 = 0, t1 = ray.tMax;
         // bound可以理解三对互相垂直的平行面组成的范围
@@ -317,8 +318,8 @@ ________________________________________________________
 则可以写成：t0 * (1 + 2 * γ3)，t1保持不变，如下代码所示
  */
     template <typename T>
-    inline bool AABB3<T>::rayOccluded(const Ray &ray, Float *hitt0,
-                                      Float *hitt1) const
+    inline bool Bound2<T>::rayOccluded(const Ray &ray, Float *hitt0,
+                                       Float *hitt1) const
     {
         Float t0 = 0, t1 = ray.tMax;
         // bound可以理解三对互相垂直的平行面组成的范围
@@ -350,14 +351,14 @@ ________________________________________________________
         return true;
     }
 
-    typedef AABB2<Float> AABB2f;
-    typedef AABB2<int> AABB2i;
-    typedef AABB3<Float> AABB3f;
-    typedef AABB3<int> AABB3i;
+    typedef Bound2<Float> AABB2f;
+    typedef Bound2<int> AABB2i;
+    typedef Bound2<Float> AABB3f;
+    typedef Bound2<int> AABB3i;
 
     template <typename T>
-    inline bool AABB3<T>::intersectP(const Ray &ray, const Vector3f &invDir,
-                                     const int dirIsNeg[3]) const
+    inline bool Bound2<T>::intersectP(const Ray &ray, const Vector3f &invDir,
+                                      const int dirIsNeg[3]) const
     {
         // 总体思路，先用x方向求出两个交点t值，再加入y方向更新t值，最后加入z方向更新t值
         //dirIsNeg为数组，表示ray方向的三个分量是否为负，dirIsNeg[0]=1表示，x方向为负，以此类推
@@ -399,8 +400,8 @@ ________________________________________________________
     }
 
     template <typename T>
-    inline bool AABB3<T>::rayOccluded(const Ray &ray, const Vector3f &invDir,
-                                      const int dirIsNeg[3]) const
+    inline bool Bound2<T>::rayOccluded(const Ray &ray, const Vector3f &invDir,
+                                       const int dirIsNeg[3]) const
     {
         // 总体思路，先用x方向求出两个交点t值，再加入y方向更新t值，最后加入z方向更新t值
         //dirIsNeg为数组，表示ray方向的三个分量是否为负，dirIsNeg[0]=1表示，x方向为负，以此类推

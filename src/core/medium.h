@@ -7,6 +7,7 @@
 namespace platinum
 {
     class PhaseFunction{
+
     };
 
     class Medium : public Object
