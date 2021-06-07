@@ -57,6 +57,13 @@ namespace platinum
     template <typename T>
     class Point3;
 
+    class Primitive;
+    class Transform;
+    class Ray;
+    struct Interaction;
+    class Shape;
+    class Aggregate;
+    class Bounds3f;
 }
 
 #endif

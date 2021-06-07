@@ -6,11 +6,10 @@
 
 namespace platinum
 {
-    class Aggregate : public Object
+    class Aggregate : public Primitive
     {
     public:
-        Aggregate();
-        ~Aggregate();
+        void ComputeScatteringFunctions() const {}
     };
 }
 
