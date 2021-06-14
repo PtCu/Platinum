@@ -1,21 +1,38 @@
 #ifndef CORE_RENDERER_H_
 #define CORE_RENDERER_H_
 
-#include "core/platinum.h"
-#include "core/primitive.h"
+#include "platinum.h"
+#include "integrator.h"
+#include "parser.h"
+#include "scene.h"
 
-namespace platinum
+PLATINUM_BEGIN
+
+//TO-DO: 完善析构
+class Renderer
 {
-    class Renderer
+public:
+    static Renderer *getInstance()
     {
-    public:
-        static Renderer *getInstance();
-        void renderer(const std::string &f);
+        if (m_renderer == NULL)
+            m_renderer = new Renderer();
+        return m_renderer;
+    }  
+    void render(const std::vector<std::string> &filenames);
 
-    private:
-        static Renderer *m_renderer;
+private:
+    Renderer();
+    ~Renderer();
+    Renderer(const Renderer &);
+    Renderer &operator=(const Renderer &);
+    void render(const std::string &filename);
+    static Renderer *m_renderer;
 
-    };
-}
+    Scene::ptr scene;
+    Integrator::ptr integrator;
+
+};
+
+PLATINUM_END
 
 #endif

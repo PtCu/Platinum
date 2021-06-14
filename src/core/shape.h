@@ -1,9 +1,12 @@
 #ifndef CORE_SHAPE_H_
 #define CORE_SHAPE_H_
 
-#include "core/platinum.h"
-#include "core/primitive.h"
+#include "platinum.h"
+#include "math/utils.h"
+#include "transform.h"
+#include "rtti.h"
 
+#include <vector>
 PLATINUM_BEGIN
 
 class Shape : public Object
@@ -20,19 +23,19 @@ public:
     virtual Bounds3f objectBound() const = 0;
     virtual Bounds3f worldBound() const;
 
-    virtual bool hit(const ARay &ray) const;
-    virtual bool hit(const ARay &ray, Float &tHit, SurfaceInteraction &isect) const = 0;
+    virtual bool hit(const Ray &ray) const;
+    virtual bool hit(const Ray &ray, Float &tHit, SurfaceInteraction &isect) const = 0;
 
     virtual Float area() const = 0;
 
     // Sample a point on the surface of the shape and return the PDF with
     // respect to area on the surface.
-    virtual Interaction sample(const AVector2f &u, Float &pdf) const = 0;
+    virtual Interaction sample(const Vector2f &u, Float &pdf) const = 0;
     virtual Float pdf(const Interaction &) const { return 1 / area(); }
 
     // Sample a point on the shape given a reference point |ref| and
     // return the PDF with respect to solid angle from |ref|.
-    virtual Interaction sample(const Interaction &ref, const AVector2f &u, Float &pdf) const;
+    virtual Interaction sample(const Interaction &ref, const Vector2f &u, Float &pdf) const;
     virtual Float pdf(const Interaction &ref, const Vector3f &wi) const;
 
     // Returns the solid angle subtended by the shape w.r.t. the reference

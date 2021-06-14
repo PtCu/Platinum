@@ -40,7 +40,6 @@ namespace platinum
     static constexpr Float RayEpsilon = MachineEpsilon * 1500;
     static constexpr Float ShadowEpsilon = RayEpsilon * 10;
     static constexpr Float Epsilon = std::numeric_limits<Float>::epsilon();
-    //static constexpr Float ShadowEpsilon = 0.0001f;
     static constexpr Float Pi = 3.14159265358979323846;
     static constexpr Float _2Pi = 3.14159265358979323846 * 2;
     static constexpr Float InvPi = 0.31830988618379067154;
@@ -50,30 +49,32 @@ namespace platinum
     static constexpr Float PiOver4 = 0.78539816339744830961;
     static constexpr Float Sqrt2 = 1.41421356237309504880;
 
-    template <typename T>
-    using Vector2 = glm::vec<2, T>;
-
-    template <typename T>
-    using Vector3 = glm::vec<3, T>;
-
-    typedef Vector2<Float> Vector2f;
-    typedef Vector2<int> Vector2i;
-    typedef Vector3<Float> Vector3f;
-    typedef Vector3<int> Vector3i;
-
-    template <typename T>
-    class Point2;
-
-    template <typename T>
-    class Point3;
-
-    class Primitive;
-    class Transform;
     class Ray;
-    struct Interaction;
+    class Film;
+    class BSDF;
+    class BxDF;
+    class Light;
     class Shape;
-    class Aggregate;
-    class Bounds3f;
+    class Scene;
+    class Camera;
+    class Hitable;
+    class HitableObject;
+    class FilmTile;
+    class Sampler;
+    class Material;
+    class AreaLight;
+    class Transform;
+    class Integrator;
+    class CameraSample;
+    class RGBSpectrum;
+    class Interaction;
+    class Distribution1D;
+    class VisibilityTester;
+    class SurfaceInteraction;
+
+    class MemoryArena;
+
+    using Spectrum = RGBSpectrum;
 }
 
 #endif

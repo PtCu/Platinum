@@ -4,12 +4,13 @@
 #include "core/platinum.h"
 
 PLAITNUM_BEGIN
+
 class Ray
 {
 public:
-    Ray() : m_tMax(aInfinity) {}
+    Ray() : m_tMax(Infinity) {}
 
-    Ray(const Vector3f &o, const Vector3f &d, Float tMax = aInfinity)
+    Ray(const Vector3f &o, const Vector3f &d, Float tMax = Infinity)
         : m_origin(o), m_dir(normalize(d)), m_tMax(tMax) {}
 
     const Vector3f &origin() const { return m_origin; }

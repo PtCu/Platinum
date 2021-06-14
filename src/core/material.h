@@ -1,15 +1,24 @@
 #ifndef CORE_MATERIAL_H_
 #define CORE_MATERIAL_H_
 
-#include "core/platinum.h"
-#include "core/primitive.h"
+#include "platinum.h"
 
-namespace platinum
+PLATINUM_BEGIN
+
+class Material : public Object
 {
+public:
+    typedef std::shared_ptr<Material> ptr;
 
-    class Material : public Object
-    {
-    };
-}
+    Material() = default;
+    virtual ~Material() = default;
+
+    virtual void computeScatteringFunctions(SurfaceInteraction &si, MemoryArena &arena,
+                                            TransportMode mode, bool allowMultipleLobes) const = 0;
+
+    virtual ClassType getClassType() const override { return ClassType::AEMaterial; }
+};
+
+PLATINUM_END
 
 #endif
