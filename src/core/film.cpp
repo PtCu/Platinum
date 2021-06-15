@@ -1,6 +1,6 @@
 #include "film.h"
 #include "stb/stb_image_write.h"
-PLATINUM_BEGIN
+namespace platinum{
 
 AURORA_REGISTER_CLASS(Film, "Film")
 
@@ -235,4 +235,4 @@ void Film::clear()
     }
 }
 
-PLATINUM_END
+}

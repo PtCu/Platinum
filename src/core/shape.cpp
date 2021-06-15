@@ -1,6 +1,12 @@
 #include "shape.h"
 
-PLATINUM_BEGIN
+#include "math_utils.h"
+#include "transform.h"
+#include "rtti.h"
+
+#include <vector>
+
+namespace platinum{
 Shape::Shape(const PropertyList &props) {}
 
 Shape::Shape(Transform *objectToWorld, Transform *worldToObject)
@@ -80,4 +86,4 @@ Float Shape::solidAngle(const Vector3f &p, int nSamples) const
     return 1.0f;
 }
 
-PLATINUM_END
+}

@@ -11,23 +11,23 @@
 #include <algorithm>
 #include <iomanip>
 #include <map>
+
 #include "glm/glm.hpp"
-#include <glog/logging.h>
+#include "glog/logging.h"
 #include "nlohmann/json.hpp"
 
 #if defined(_MSC_VER)
 #define NOMINMAX
 #endif
 
-#define PLATINUM_BEGIN \
-    namespace platinum \
-    {
-#define PLATINUM_END }
-
-typedef nlohmann::json nloJson;
-
+#define ALLOCA(TYPE, COUNT) (TYPE *)alloca((COUNT) * sizeof(TYPE))
+// Platform-specific definitions
+#if defined(_WIN32) || defined(_WIN64)
+#define PLATFORM_WINDOWS_OS
+#endif
 namespace platinum
 {
+
 #ifdef FLOAT_AS_DOUBLE
     typedef double Float;
 #else
@@ -75,6 +75,14 @@ namespace platinum
     class MemoryArena;
 
     using Spectrum = RGBSpectrum;
+    // TransportMode Declarations
+    enum class TransportMode
+    {
+        Radiance,
+        Importance
+    };
+    typedef nlohmann::json nloJson;
+
 }
 
 #endif

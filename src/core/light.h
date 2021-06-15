@@ -2,10 +2,15 @@
 #define CORE_LIGHT_H_
 
 #include "platinum.h"
-#include "math/utils.h"
+#include "math_utils.h"
+#include "interaction.h"
 #include "rtti.h"
+#include "shape.h"
+#include "spectrum.h"
+#include "transform.h"
 
-PLATINUM_BEGIN
+
+namespace platinum{
 enum class LightFlags
 {
     // 点光源
@@ -21,7 +26,7 @@ enum class LightFlags
 
 inline bool isDeltaLight(int flags)
 {
-    return flags & (int)ALightFlags::ALightDeltaPosition || flags & (int)ALightFlags::ALightDeltaDirection;
+    return flags & (int)LightFlags::DeltaPosition || flags & (int)LightFlags::DeltaDirection;
 }
 
 class Light : public Object
@@ -88,5 +93,5 @@ public:
     virtual Spectrum L(const Interaction &intr, const Vector3f &w) const = 0;
 };
 
-PLATINUM_END
+}
 #endif

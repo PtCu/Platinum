@@ -1,6 +1,6 @@
 #include "entity.h"
 
-PLATINUM_BEGIN
+namespace platinum{
 
 //-------------------------------------------AEntity-------------------------------------
 

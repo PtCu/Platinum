@@ -1,6 +1,6 @@
 #include "rtti.h"
 
-PLATINUM_BEGIN
+namespace platinum{
 
 //----------------------------------------------------PropertyList-----------------------------------------------------
 
@@ -220,4 +220,4 @@ Object *ObjectFactory::createInstance(const std::string &type, const PropertyTre
     return constrMap[type](node);
 }
 
-PLATINUM_END
+}

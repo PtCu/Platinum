@@ -6,7 +6,7 @@
 #include "parser.h"
 #include "scene.h"
 
-PLATINUM_BEGIN
+namespace platinum{
 
 //TO-DO: 完善析构
 class Renderer
@@ -33,6 +33,6 @@ private:
 
 };
 
-PLATINUM_END
+}
 
 #endif

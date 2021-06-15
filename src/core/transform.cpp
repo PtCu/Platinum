@@ -1,9 +1,9 @@
 #include "transform.h"
-
-#include "glm/gtc/matrix_transform.hpp"
 #include "interaction.h"
+#include "glm/gtc/matrix_transform.hpp"
 
-PLATINUM_BEGIN
+
+namespace platinum{
 
 //-------------------------------------------Utility functions-------------------------------------
 
@@ -113,4 +113,4 @@ SurfaceInteraction Transform::operator()(const SurfaceInteraction &si) const
     return ret;
 }
 
-PLATINUM_END
+}

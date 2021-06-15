@@ -1,50 +1,54 @@
-#ifndef CORE_PRIMITIVE_H_
-#define CORE_PRIMITIVE_H_
+#ifndef CORE_ENTITY_H_
+#define CORE_ENTITY_H_
 
-#include "core/platinum.h"
-#include "math/bound.h"
+#include "platinum.h"
+#include "math_utils.h"
+#include "rtti.h"
+#include "hitable.h"
+#include "triangle.h"
 
-PLATINUM_BEGIN
+namespace platinum
+{
 
-//! @brief Basic unit of objects in world.
-/**
+    //! @brief Basic unit of objects in world.
+    /**
 	 * An entity is the very basic concept in a world. Everything, including camera, mesh, light or anything else is an
 	 * entity. An entity could parse itself and decouple itself into one or multiple primitives depending its complexity.
 	 * An entity itself doesn't touch rendering directly. It serves as a place where the logic operations should be performed.
 	 */
-class Entity : public Object
-{
-public:
-    typedef std::shared_ptr<Entity> ptr;
+    class Entity : public Object
+    {
+    public:
+        typedef std::shared_ptr<Entity> ptr;
 
-    Entity() = default;
-    Entity(const PropertyTreeNode &node);
+        Entity() = default;
+        Entity(const PropertyTreeNode &node);
 
-    Material *getMaterial() const { return m_material.get(); }
-    const std::vector<Hitable::ptr> &getHitables() const { return m_hitables; }
+        Material *getMaterial() const { return m_material.get(); }
+        const std::vector<Hitable::ptr> &getHitables() const { return m_hitables; }
 
-    virtual std::string toString() const override { return "Entity[]"; }
-    virtual ClassType getClassType() const override { return ClassType::Hitable; }
+        virtual std::string toString() const override { return "Entity[]"; }
+        virtual ClassType getClassType() const override { return ClassType::Hitable; }
 
-protected:
-    Material::ptr m_material;
-    std::vector<Hitable::ptr> m_hitables;
-    Transform m_objectToWorld, m_worldToObject;
-};
+    protected:
+        Material::ptr m_material;
+        std::vector<Hitable::ptr> m_hitables;
+        Transform m_objectToWorld, m_worldToObject;
+    };
 
-class MeshEntity : public Entity
-{
-public:
-    typedef std::shared_ptr<MeshEntity> ptr;
+    class MeshEntity : public Entity
+    {
+    public:
+        typedef std::shared_ptr<MeshEntity> ptr;
 
-    MeshEntity(const PropertyTreeNode &node);
+        MeshEntity(const PropertyTreeNode &node);
 
-    virtual std::string toString() const override { return "MeshEntity[]"; }
+        virtual std::string toString() const override { return "MeshEntity[]"; }
 
-private:
-    TriangleMesh::unique_ptr m_mesh;
-};
+    private:
+        TriangleMesh::unique_ptr m_mesh;
+    };
 
-PLATINUM_END
+}
 
 #endif

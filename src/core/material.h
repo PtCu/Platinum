@@ -2,23 +2,29 @@
 #define CORE_MATERIAL_H_
 
 #include "platinum.h"
+#include "spectrum.h"
+#include "math_utils.h"
+#include "rtti.h"
+#include "memory.h"
+#include "interaction.h"
 
-PLATINUM_BEGIN
-
-class Material : public Object
+namespace platinum
 {
-public:
-    typedef std::shared_ptr<Material> ptr;
 
-    Material() = default;
-    virtual ~Material() = default;
+    class Material : public Object
+    {
+    public:
+        typedef std::shared_ptr<Material> ptr;
 
-    virtual void computeScatteringFunctions(SurfaceInteraction &si, MemoryArena &arena,
-                                            TransportMode mode, bool allowMultipleLobes) const = 0;
+        Material() = default;
+        virtual ~Material() = default;
 
-    virtual ClassType getClassType() const override { return ClassType::AEMaterial; }
-};
+        virtual void computeScatteringFunctions(SurfaceInteraction &si, MemoryArena &arena,
+                                                TransportMode mode, bool allowMultipleLobes) const = 0;
 
-PLATINUM_END
+        virtual ClassType getClassType() const override { return ClassType::Material; }
+    };
+
+}
 
 #endif

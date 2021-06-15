@@ -3,69 +3,75 @@
 
 #include "platinum.h"
 #include "rtti.h"
+#include "shape.h"
+#include "material.h"
+#include "light.h"
 
-PLATINUM_BEGIN
+#include <memory>
 
-class Hitable : public Object
+namespace platinum
 {
-public:
-    typedef std::shared_ptr<Hitable> ptr;
 
-    virtual ~Hitable() = default;
+    class Hitable : public Object
+    {
+    public:
+        typedef std::shared_ptr<Hitable> ptr;
 
-    virtual bool hit(const Ray &ray) const = 0;
-    virtual bool hit(const Ray &ray, SurfaceInteraction &iset) const = 0;
+        virtual ~Hitable() = default;
 
-    virtual Bounds3f worldBound() const = 0;
+        virtual bool hit(const Ray &ray) const = 0;
+        virtual bool hit(const Ray &ray, SurfaceInteraction &iset) const = 0;
 
-    virtual const AreaLight *getAreaLight() const = 0;
-    virtual const Material *getMaterial() const = 0;
+        virtual Bounds3f worldBound() const = 0;
 
-    virtual void computeScatteringFunctions(SurfaceInteraction &isect, MemoryArena &arena,
-                                            TransportMode mode, bool allowMultipleLobes) const = 0;
+        virtual const AreaLight *getAreaLight() const = 0;
+        virtual const Material *getMaterial() const = 0;
 
-    virtual ClassType getClassType() const override { return ClassType::Hitable; }
-};
+        virtual void computeScatteringFunctions(SurfaceInteraction &isect, MemoryArena &arena,
+                                                TransportMode mode, bool allowMultipleLobes) const = 0;
 
-class HitableObject final : public Hitable
-{
-public:
-    typedef std::shared_ptr<HitableObject> ptr;
+        virtual ClassType getClassType() const override { return ClassType::Hitable; }
+    };
 
-    HitableObject(const Shape::ptr &shape, const Material *material,
-                  const AreaLight::ptr &areaLight);
+    class HitableObject final : public Hitable
+    {
+    public:
+        typedef std::shared_ptr<HitableObject> ptr;
 
-    virtual bool hit(const Ray &ray) const override;
-    virtual bool hit(const Ray &ray, SurfaceInteraction &iset) const override;
+        HitableObject(const Shape::ptr &shape, const Material *material,
+                      const AreaLight::ptr &areaLight);
 
-    virtual Bounds3f worldBound() const override;
+        virtual bool hit(const Ray &ray) const override;
+        virtual bool hit(const Ray &ray, SurfaceInteraction &iset) const override;
 
-    Shape *getShape() const;
-    AreaLight::ptr getAreaLightPtr() const { return m_areaLight; }
-    virtual const AreaLight *getAreaLight() const override;
-    virtual const Material *getMaterial() const override;
+        virtual Bounds3f worldBound() const override;
 
-    virtual void computeScatteringFunctions(SurfaceInteraction &isect, MemoryArena &arena,
-                                            TransportMode mode, bool allowMultipleLobes) const override;
+        Shape *getShape() const;
+        AreaLight::ptr getAreaLightPtr() const { return m_areaLight; }
+        virtual const AreaLight *getAreaLight() const override;
+        virtual const Material *getMaterial() const override;
 
-    virtual std::string toString() const override { return "HitableObject[]"; }
+        virtual void computeScatteringFunctions(SurfaceInteraction &isect, MemoryArena &arena,
+                                                TransportMode mode, bool allowMultipleLobes) const override;
 
-private:
-    Shape::ptr m_shape;
-    AreaLight::ptr m_areaLight;
+        virtual std::string toString() const override { return "HitableObject[]"; }
 
-    const Material *m_material;
-};
+    private:
+        Shape::ptr m_shape;
+        AreaLight::ptr m_areaLight;
 
-class HitableAggregate : public Hitable
-{
-public:
-    virtual const AreaLight *getAreaLight() const override;
-    virtual const Material *getMaterial() const override;
+        const Material *m_material;
+    };
 
-    virtual void computeScatteringFunctions(SurfaceInteraction &isect, MemoryArena &arena,
-                                            TransportMode mode, bool allowMultipleLobes) const override;
-};
-PLATINUM_END
+    class HitableAggregate : public Hitable
+    {
+    public:
+        virtual const AreaLight *getAreaLight() const override;
+        virtual const Material *getMaterial() const override;
+
+        virtual void computeScatteringFunctions(SurfaceInteraction &isect, MemoryArena &arena,
+                                                TransportMode mode, bool allowMultipleLobes) const override;
+    };
+}
 
 #endif

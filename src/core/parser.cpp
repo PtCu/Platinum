@@ -1,6 +1,16 @@
 #include "parser.h"
 
-PLATINUM_BEGIN
+#include "film.h"
+#include "sampler.h"
+#include "filter.h"
+#include "shape.h"
+#include "camera.h"
+#include "material.h"
+#include "light.h"
+#include "kd_tree.h"
+#include "linear_aggregate.h"
+
+namespace platinum{
 void Parser::parser(
     const std::string &path,
     Scene::ptr &_scene,
@@ -150,4 +160,4 @@ void Parser::parser(
     _scene = std::make_shared<Scene>(_entities, _aggregate, _lights);
 }
 
-PLATINUM_END
+}

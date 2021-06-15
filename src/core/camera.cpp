@@ -1,6 +1,6 @@
 #include "camera.h"
 
-PLATINUM_BEGIN
+namespace platinum{
 
 //-------------------------------------------Camera-------------------------------------
 
@@ -40,4 +40,4 @@ void ProjectiveCamera::initialize()
     m_rasterToCamera = inverse(m_cameraToScreen) * m_rasterToScreen;
 }
 
-PLATINUM_END
+}

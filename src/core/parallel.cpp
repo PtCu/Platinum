@@ -1,6 +1,6 @@
 #include "parallel.h"
 
-PLATINUM_BEGIN
+namespace platinum{
 void ABarrier::wait()
 {
     std::unique_lock<std::mutex> lock(m_mutex);
@@ -17,4 +17,4 @@ void ABarrier::wait()
         m_cv.wait(lock, [this] { return m_count == 0; });
     }
 }
-PLATINUM_END
+}

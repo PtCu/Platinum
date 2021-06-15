@@ -5,21 +5,12 @@ cmake_minimum_required(VERSION 3.15)
 set(PROJECT_NAME Platinum)
 project(${PROJECT_NAME})
 
-# 使用C++17特性
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17")
+set(CMAKE_CXX_STANDARD 11)
 
 # 开启工程虚拟目录
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
-# glog
-SET(WITH_GFLAGS OFF CACHE BOOL "Use gflags")
-SET(BUILD_SHARED_LIBS OFF CACHE BOOL " " FORCE)
-IF(WIN32)
-  ADD_DEFINITIONS( -D GOOGLE_GLOG_DLL_DECL= )
-ENDIF()
-ADD_DEFINITIONS( -D HAVE_SNPRINTF)
-ADD_SUBDIRECTORY(src/ext/glog)
-SET_PROPERTY(TARGET glog logging_unittest demangle_unittest utilities_unittest stl_logging_unittest signalhandler_unittest stacktrace_unittest symbolize_unittest PROPERTY FOLDER "ext")
+
 
 include_directories(src/accelerators/)
 include_directories(src/cameras/)
@@ -30,11 +21,24 @@ include_directories(src/materials/)
 include_directories(src/samplers/)
 include_directories(src/shapes/)
 include_directories(src/textures/)
+include_directories(src/math/)
+include_directories(src)
 
-INCLUDE_DIRECTORIES ("${PROJECT_SOURCE_DIR}/src")
-INCLUDE_DIRECTORIES ("${PROJECT_SOURCE_DIR}/src/ext/glog/src")
-INCLUDE_DIRECTORIES ("${PROJECT_SOURCE_DIR}/src/ext/header_only")
+include_directories(src/ext/header_only)
 
+# glog
+SET(WITH_GFLAGS OFF CACHE BOOL "Use gflags")
+SET(BUILD_SHARED_LIBS OFF CACHE BOOL " " FORCE)
+IF(WIN32)
+  ADD_DEFINITIONS( -D GOOGLE_GLOG_DLL_DECL= )
+ENDIF()
+ADD_DEFINITIONS( -D HAVE_SNPRINTF)
+ADD_SUBDIRECTORY(src/ext/glog)
+SET_PROPERTY(TARGET glog logging_unittest demangle_unittest utilities_unittest stl_logging_unittest signalhandler_unittest stacktrace_unittest symbolize_unittest PROPERTY FOLDER "ext")
+INCLUDE_DIRECTORIES (
+  src/ext/glog/src
+  ${CMAKE_BINARY_DIR}/src/ext/glog
+)
 
 
 file(GLOB ACCELECTORS ./src/accelerators/*.h ./src/accelerators/*.cpp)

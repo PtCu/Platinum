@@ -1,6 +1,6 @@
 #include "light.h"
 
-PLATINUM_BEGIN
+namespace platinum{
 
 //-------------------------------------------Light-------------------------------------
 
@@ -55,4 +55,4 @@ AreaLight::AreaLight(const PropertyList &props) : Light(props) { m_flags = (int)
 AreaLight::AreaLight(const Transform &lightToWorld, int nSamples)
     : Light((int)ALightFlags::ALightArea, lightToWorld, nSamples) {}
 
-PLATINUM_END
+}

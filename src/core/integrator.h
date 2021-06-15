@@ -2,8 +2,13 @@
 #define CORE_INTEGRATOR_H_
 
 #include "platinum.h"
+#include "math_utils.h"
+#include "sampler.h"
+#include "camera.h"
+#include "hitable.h"
+#include "rtti.h"
 
-PLATINUM_BEGIN
+namespace platinum{
 
 class Integrator : public Object
 {
@@ -54,6 +59,6 @@ Spectrum uniformSampleOneLight(const Interaction &it, const Scene &scene,
 Spectrum estimateDirect(const Interaction &it, const Vector2f &uShading, const Light &light,
                         const Vector2f &uLight, const Scene &scene, Sampler &sampler, MemoryArena &arena, bool specular = false);
 
-PLATINUM_END
+}
 
 #endif

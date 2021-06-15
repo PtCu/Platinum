@@ -1,6 +1,6 @@
 #include "scene.h"
 
-PLATINUM_BEGIN
+namespace platinum{
 bool Scene::hit(const Ray &ray, SurfaceInteraction &isect) const
 {
     //DCHECK_NE(ray.direction(), Vector3f(0, 0, 0));
@@ -28,4 +28,4 @@ bool Scene::hitTr(Ray ray, Sampler &sampler, SurfaceInteraction &isect, Spectrum
     //}
     return false;
 }
-PLATINUM_END
+}

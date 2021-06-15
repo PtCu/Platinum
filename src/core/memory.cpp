@@ -1,6 +1,6 @@
 #include "memory.h"
 
-PLATINUM_BEGIN
+namespace platinum{
 
 #define PBRT_L1_CACHE_LINE_SIZE 64
 #define PBRT_HAVE__ALIGNED_MALLOC
@@ -31,4 +31,4 @@ void FreeAligned(void *ptr)
 #endif
 }
 
-PLATINUM_END
+}

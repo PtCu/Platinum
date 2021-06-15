@@ -1,6 +1,13 @@
 #include "integrator.h"
 
-PLATINUM_BEGIN
+#include "bxdf.h"
+#include "scene.h"
+#include "memory.h"
+#include "reporter.h"
+#include "pdf.h"
+#include "parallel.h"
+
+namespace platinum{
 
 //-------------------------------------------SamplerIntegrator-------------------------------------
 
@@ -317,4 +324,4 @@ Spectrum estimateDirect(const Interaction &it, const Vector2f &uScattering, cons
     return Ld;
 }
 
-PLATINUM_END
+}

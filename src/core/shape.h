@@ -2,52 +2,56 @@
 #define CORE_SHAPE_H_
 
 #include "platinum.h"
-#include "math/utils.h"
+#include "math_utils.h"
 #include "transform.h"
 #include "rtti.h"
 
 #include <vector>
-PLATINUM_BEGIN
 
-class Shape : public Object
+namespace platinum
 {
-public:
-    typedef std::shared_ptr<Shape> ptr;
 
-    Shape(const PropertyList &props);
-    Shape(Transform *objectToWorld, Transform *worldToObject);
-    virtual ~Shape() = default;
+    class Shape : public Object
+    {
+    public:
+        typedef std::shared_ptr<Shape> ptr;
 
-    void setTransform(Transform *objectToWorld, Transform *worldToObject);
+        Shape(const PropertyList &props);
+        Shape(Transform *objectToWorld, Transform *worldToObject);
+        virtual ~Shape() = default;
 
-    virtual Bounds3f objectBound() const = 0;
-    virtual Bounds3f worldBound() const;
+        void setTransform(Transform *objectToWorld, Transform *worldToObject);
 
-    virtual bool hit(const Ray &ray) const;
-    virtual bool hit(const Ray &ray, Float &tHit, SurfaceInteraction &isect) const = 0;
+        virtual Bounds3f objectBound() const = 0;
+        virtual Bounds3f worldBound() const;
 
-    virtual Float area() const = 0;
+        virtual bool hit(const Ray &ray) const;
+        virtual bool hit(const Ray &ray, Float &tHit, SurfaceInteraction &isect) const = 0;
 
-    // Sample a point on the surface of the shape and return the PDF with
-    // respect to area on the surface.
-    virtual Interaction sample(const Vector2f &u, Float &pdf) const = 0;
-    virtual Float pdf(const Interaction &) const { return 1 / area(); }
+        virtual Float area() const = 0;
 
-    // Sample a point on the shape given a reference point |ref| and
-    // return the PDF with respect to solid angle from |ref|.
-    virtual Interaction sample(const Interaction &ref, const Vector2f &u, Float &pdf) const;
-    virtual Float pdf(const Interaction &ref, const Vector3f &wi) const;
+        // Sample a point on the surface of the shape and return the PDF with
+        // respect to area on the surface.
+        virtual Interaction sample(const Vector2f &u, Float &pdf) const = 0;
+        virtual Float pdf(const Interaction &) const { return 1 / area(); }
 
-    // Returns the solid angle subtended by the shape w.r.t. the reference
-    // point p, given in world space. Some shapes compute this value in
-    // closed-form, while the default implementation uses Monte Carlo
-    // integration; the nSamples parameter determines how many samples are
-    // used in this case.
-    virtual Float solidAngle(const Vector3f &p, int nSamples = 512) const;
+        // Sample a point on the shape given a reference point |ref| and
+        // return the PDF with respect to solid angle from |ref|.
+        virtual Interaction sample(const Interaction &ref, const Vector2f &u, Float &pdf) const;
+        virtual Float pdf(const Interaction &ref, const Vector3f &wi) const;
 
-    virtual Vector3f getClassType() const override { return Vector3f::Shape; }
+        // Returns the solid angle subtended by the shape w.r.t. the reference
+        // point p, given in world space. Some shapes compute this value in
+        // closed-form, while the default implementation uses Monte Carlo
+        // integration; the nSamples parameter determines how many samples are
+        // used in this case.
+        virtual Float solidAngle(const Vector3f &p, int nSamples = 512) const;
 
-    Transform *m_objectToWorld = nullptr, *m_worldToObject = nullptr;
-};
+        virtual ClassType getClassType() const override { return ClassType::Shape; }
 
-PLATINUM_END
+        Transform *m_objectToWorld = nullptr, *m_worldToObject = nullptr;
+    };
+
+}
+
+#endif

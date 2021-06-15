@@ -1,6 +1,6 @@
 #include "interaction.h"
 
-PLATINUM_BEGIN
+namespace platinum{
 
 SurfaceInteraction::SurfaceInteraction(const Vector3f &p, const Vector2f &uv, const Vector3f &wo,
                                        const Vector3f &dpdu, const Vector3f &dpdv, const Shape *sh)
@@ -17,4 +17,4 @@ void SurfaceInteraction::computeScatteringFunctions(const Ray &ray, MemoryArena 
 {
     hitable->computeScatteringFunctions(*this, arena, mode, allowMultipleLobes);
 }
-PLATINUM_END
+}

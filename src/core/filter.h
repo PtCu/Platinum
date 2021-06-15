@@ -2,25 +2,28 @@
 #define CORE_FILTER_H_
 
 #include "platinum.h"
+#include "rtti.h"
+#include "math_utils.h"
 
-PLATINUM_BEGIN
-
-class Filter : public Object
+namespace platinum
 {
-public:
-    virtual ~Filter() = default;
 
-    Filter(const PropertyList &props);
-    Filter(const Vector2f &radius)
-        : m_radius(radius), m_invRadius(Vector2f(1 / radius.x, 1 / radius.y)) {}
+    class Filter : public Object
+    {
+    public:
+        virtual ~Filter() = default;
 
-    virtual Float evaluate(const Vector2f &p) const = 0;
+        Filter(const PropertyList &props);
+        Filter(const Vector2f &radius)
+            : m_radius(radius), m_invRadius(Vector2f(1 / radius.x, 1 / radius.y)) {}
 
-    virtual ClassType getClassType() const override { return ClassType::Filter; }
+        virtual Float evaluate(const Vector2f &p) const = 0;
 
-    const Vector2f m_radius, m_invRadius;
-};
+        virtual ClassType getClassType() const override { return ClassType::Filter; }
 
-PLATINUM_END
+        const Vector2f m_radius, m_invRadius;
+    };
+
+}
 
 #endif

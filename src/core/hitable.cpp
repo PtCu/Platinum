@@ -1,6 +1,6 @@
 #include "hitable.h"
 
-PLATINUM_BEGIN
+namespace platinum{
 
 //-------------------------------------------HitableObject-------------------------------------
 
@@ -58,4 +58,4 @@ void HitableAggregate::computeScatteringFunctions(SurfaceInteraction &isect, Mem
                   "called";
 }
 
-PLATINUM_END
+}

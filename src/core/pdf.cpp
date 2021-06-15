@@ -1,6 +1,6 @@
 #include "pdf.h"
 
-PLATINUM_BEGIN
+namespace platinum{
 
 std::unique_ptr<ALightDistribution> createLightSampleDistribution(
     const std::string &name, const Scene &scene)
@@ -40,4 +40,4 @@ const Distribution1D *AUniformLightDistribution::lookup(const Vector3f &p) const
     return distrib.get();
 }
 
-PLATINUM_END
+}

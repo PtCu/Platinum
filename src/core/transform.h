@@ -2,9 +2,9 @@
 #define CORE_TRANSFORM_H_
 
 #include "platinum.h"
-#include "math/utils.h"
+#include "math_utils.h"
 
-PLATINUM_BEGIN
+namespace platinum{
 
 class Transform
 {
@@ -95,6 +95,6 @@ inline Ray Transform::operator()(const Ray &r) const
     return Ray(o, d, tMax);
 }
 
-PLATINUM_END
+}
 
 #endif

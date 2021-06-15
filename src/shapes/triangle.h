@@ -1,7 +1,8 @@
 #ifndef SHAPES_TRIANGLE_H_
 #define SHAPES_TRIANGLE_H_
 
-#include "core/platinum.h"
+#include "core/shape.h"
+
 namespace platinum
 {
 	class TiangleMesh final
@@ -33,16 +34,16 @@ namespace platinum
 		int m_nVertices;
 	};
 
-	class Triangle final : public Shape
+	class TriangleShape final : public Shape
 	{
 	public:
-		typedef std::shared_ptr<ATriangleShape> ptr;
+		typedef std::shared_ptr<TriangleShape> ptr;
 
 		TriangleShape(const PropertyTreeNode &node);
 		TriangleShape(Transform *objectToWorld, Transform *worldToObject,
 					  std::array<int, 3> indices, TriangleMesh *mesh);
 
-		virtual ~ATriangleShape() = default;
+		virtual ~TriangleShape() = default;
 
 		virtual Float area() const override;
 

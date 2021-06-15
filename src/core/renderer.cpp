@@ -1,6 +1,6 @@
 #include "renderer.h"
 
-PLATINUM_BEGIN
+namespace platinum{
 
 void Renderer::render(const std::vector<std::string> &filenames)
 {
@@ -19,4 +19,4 @@ void Renderer::render(const std::string &filename)
     integrator->render(*scene);
 }
 
-PLATINUM_END
+}

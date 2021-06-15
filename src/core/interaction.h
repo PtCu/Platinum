@@ -2,10 +2,9 @@
 #define CORE_INTERACTION_H_
 
 #include "platinum.h"
-#include "primitive.h"
-#include "hitable.h"
+#include "math_utils.h"
 
-PLATINUM_BEGIN
+namespace platinum{
 class Interaction
 {
 public:
@@ -62,5 +61,5 @@ public:
     const Shape *shape = nullptr;
     const Hitable *hitable = nullptr;
 };
-PLATINUM_END
+}
 #endif

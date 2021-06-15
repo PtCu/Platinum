@@ -2,22 +2,23 @@
 #define CORE_PARSER_H_
 
 #include "platinum.h"
-#include "math/utils.h"
+#include "math_utils.h"
 #include "integrator.h"
 #include "scene.h"
 
 #include "nlohmann/json.hpp"
 
-PLATINUM_BEGIN
-
-class Parser final
+namespace platinum
 {
-public:
-    static void parser(const std::string &path, Scene::ptr &_scene, Integrator::ptr &integrator);
 
-private:
-    using json_value_type = nlohmann::basic_json<>::value_type;
-};
-PLATINUM_END
+    class Parser final
+    {
+    public:
+        static void parser(const std::string &path, Scene::ptr &_scene, Integrator::ptr &integrator);
+
+    private:
+        using json_value_type = nlohmann::basic_json<>::value_type;
+    };
+}
 
 #endif
