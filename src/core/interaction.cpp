@@ -1,5 +1,9 @@
 #include "interaction.h"
 
+#include "spectrum.h"
+#include "hitable.h"
+#include "bxdf.h"
+
 namespace platinum{
 
 SurfaceInteraction::SurfaceInteraction(const Vector3f &p, const Vector2f &uv, const Vector3f &wo,

@@ -5,7 +5,7 @@
 #include "math_utils.h"
 #include "rtti.h"
 #include "hitable.h"
-#include "triangle.h"
+#include "shapes/triangle.h"
 
 namespace platinum
 {
@@ -24,7 +24,7 @@ namespace platinum
         Entity() = default;
         Entity(const PropertyTreeNode &node);
 
-        Material *getMaterial() const { return m_material.get(); }
+        Material* getMaterial() const { return m_material.get(); }
         const std::vector<Hitable::ptr> &getHitables() const { return m_hitables; }
 
         virtual std::string toString() const override { return "Entity[]"; }

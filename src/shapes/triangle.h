@@ -2,16 +2,20 @@
 #define SHAPES_TRIANGLE_H_
 
 #include "core/shape.h"
+#include "core/sampler.h"
+#include "core/interaction.h"
+
+#include <array>
 
 namespace platinum
 {
-	class TiangleMesh final
+	class TriangleMesh final
 	{
 	public:
 		typedef std::shared_ptr<TriangleMesh> ptr;
 		typedef std::unique_ptr<TriangleMesh> unique_ptr;
 
-		TiangleMesh(Transform *objectToWorld, const std::string &filename);
+		TriangleMesh(Transform *objectToWorld, const std::string &filename);
 
 		size_t numTriangles() const { return m_indices.size() / 3; }
 		size_t numVertices() const { return m_nVertices; }
@@ -60,7 +64,7 @@ namespace platinum
 		virtual std::string toString() const override { return "TriangleShape[]"; }
 
 	private:
-		TiangleMesh *m_mesh;
+		TriangleMesh *m_mesh;
 		std::array<int, 3> m_indices;
 	};
 }

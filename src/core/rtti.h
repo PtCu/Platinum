@@ -63,6 +63,7 @@ namespace platinum
             std::vector<std::string> values;
         };
 
+        //每个Property实际上有许多string类型的values
         std::map<std::string, Property> m_properties;
 
         template <typename Type>
@@ -80,6 +81,7 @@ namespace platinum
             return value;
         }
 
+        //特化
         template <>
         bool get<bool>(const std::string &name, const size_t &index) const
         {
@@ -134,6 +136,7 @@ namespace platinum
         }
     };
 
+    //For parser
     class PropertyTreeNode final
     {
     public:
@@ -251,10 +254,10 @@ namespace platinum
     };
 
     /**
-	 * \brief Factory for AObjects
+	 * \brief Factory for Objects
 	 *
 	 * This utility class is part of a mini-RTTI framework and can
-	 * instantiate arbitrary AObjects by their name.
+	 * instantiate arbitrary Objects by their name.
 	 */
     class ObjectFactory
     {
@@ -264,7 +267,7 @@ namespace platinum
         /**
 		 * \brief Register an object constructor with the object factory
 		 *
-		 * This function is called by the macro \ref AURORA_REGISTER_CLASS
+		 * This function is called by the macro \ref PLT_REGISTER_CLASS
 		 *
 		 * \param name
 		 *     An internal name that is associated with this class. This is the
@@ -290,6 +293,7 @@ namespace platinum
         static Object *createInstance(const std::string &type, const PropertyTreeNode &node);
 
     private:
+        //静态变量，记录string类型的type和对于的构造函数
         static std::map<std::string, Constructor> &getConstrMap();
     };
 

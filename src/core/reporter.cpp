@@ -1,6 +1,6 @@
 #include "reporter.h"
 
-#ifdef AURORA_WINDOWS_OS
+#ifdef PLATFORM_WINDOWS_OS
 #include <windows.h>
 #else
 #include <sys/ioctl.h>
@@ -9,7 +9,7 @@
 #endif
 
 #include <algorithm>
-#include "ArParallel.h"
+#include "parallel.h"
 
 namespace platinum
 {
@@ -122,7 +122,7 @@ namespace platinum
 
     static int terminalWidth()
     {
-#ifdef AURORA_WINDOWS_OS
+#ifdef PLT_WINDOWS_OS
         HANDLE h = GetStdHandle(STD_OUTPUT_HANDLE);
         if (h == INVALID_HANDLE_VALUE || !h)
         {

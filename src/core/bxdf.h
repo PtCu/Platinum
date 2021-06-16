@@ -5,7 +5,6 @@
 #include "interaction.h"
 #include "random.h"
 #include "spectrum.h"
-#include "sampler.h"
 #include "math_utils.h"
 
 namespace platinum

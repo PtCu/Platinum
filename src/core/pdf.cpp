@@ -1,4 +1,5 @@
 #include "pdf.h"
+#include "scene.h"
 
 namespace platinum{
 

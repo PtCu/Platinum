@@ -2,6 +2,7 @@
 #define CORE_PARALLEL_H_
 
 #include "platinum.h"
+#include "math_utils.h"
 
 #include <mutex>
 #include <atomic>
@@ -27,7 +28,7 @@ namespace platinum
 
         void add(Float v)
         {
-#ifdef AURORA_DOUBLE_AS_FLOAT
+#ifdef FLOAT_AS_DOUBLE
             uint64_t oldBits = bits, newBits;
 #else
             uint32_t oldBits = bits, newBits;
@@ -39,7 +40,7 @@ namespace platinum
         }
 
     private:
-#ifdef AURORA_DOUBLE_AS_FLOAT
+#ifdef FLOAT_AS_DOUBLE
         std::atomic<uint64_t> bits;
 #else
         std::atomic<uint32_t> bits;

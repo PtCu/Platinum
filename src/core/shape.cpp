@@ -1,8 +1,7 @@
 #include "shape.h"
 
-#include "math_utils.h"
-#include "transform.h"
-#include "rtti.h"
+#include "sampler.h"
+#include "interaction.h"
 
 #include <vector>
 

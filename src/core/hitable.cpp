@@ -1,5 +1,5 @@
 #include "hitable.h"
-
+#include "interaction.h"
 namespace platinum{
 
 //-------------------------------------------HitableObject-------------------------------------

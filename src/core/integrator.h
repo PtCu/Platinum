@@ -20,7 +20,7 @@ public:
     virtual void preprocess(const Scene &scene) = 0;
     virtual void render(const Scene &scene) = 0;
 
-    virtual ClassType getClassType() const override { return ClassType::AEIntegrator; }
+    virtual ClassType getClassType() const override { return ClassType::Integrator; }
 };
 
 class SamplerIntegrator : public Integrator

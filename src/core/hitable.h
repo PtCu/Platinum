@@ -2,10 +2,11 @@
 #define CORE_HITABLE_H_
 
 #include "platinum.h"
+#include "light.h"
 #include "rtti.h"
 #include "shape.h"
+#include "math_utils.h"
 #include "material.h"
-#include "light.h"
 
 #include <memory>
 
@@ -46,10 +47,10 @@ namespace platinum
 
         virtual Bounds3f worldBound() const override;
 
-        Shape *getShape() const;
+        Shape* getShape() const;
         AreaLight::ptr getAreaLightPtr() const { return m_areaLight; }
-        virtual const AreaLight *getAreaLight() const override;
-        virtual const Material *getMaterial() const override;
+        virtual const AreaLight*getAreaLight() const override;
+        virtual const Material* getMaterial() const override;
 
         virtual void computeScatteringFunctions(SurfaceInteraction &isect, MemoryArena &arena,
                                                 TransportMode mode, bool allowMultipleLobes) const override;

@@ -1,5 +1,9 @@
 #include "light.h"
 
+#include "random.h"
+#include "scene.h"
+#include "sampler.h"
+
 namespace platinum{
 
 //-------------------------------------------Light-------------------------------------

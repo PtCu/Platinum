@@ -1,4 +1,5 @@
 #include "bxdf.h"
+#include "sampler.h"
 
 namespace platinum
 {
