@@ -1,7 +1,7 @@
 #include "parallel.h"
 
 namespace platinum{
-void ABarrier::wait()
+void Barrier::wait()
 {
     std::unique_lock<std::mutex> lock(m_mutex);
     if (--m_count == 0)

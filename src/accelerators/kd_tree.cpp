@@ -173,7 +173,7 @@ namespace platinum
 
 		// Choose split axis position for interior node
 		int bestAxis = -1, bestOffset = -1;
-		Float bestCost = aInfinity;
+		Float bestCost = Infinity;
 		Float oldCost = m_isectCost * Float(nHitables);
 
 		// Current node surface area

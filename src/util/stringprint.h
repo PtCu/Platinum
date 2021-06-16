@@ -2,6 +2,8 @@
 #ifndef UTIL_STRINGPRINT_H_
 #define UTIL_STRINGPRINT_H_
 
+#include "core/platinum.h"
+
 namespace platinum
 {
 
@@ -80,8 +82,7 @@ namespace platinum
     // output for a single StringPrintf() argument to the final result string
     // in *s.
     template <typename T, typename... Args>
-    inline void stringPrintfRecursive(std::string *s, const char *fmt, T v,
-                                      Args... args)
+    inline void stringPrintfRecursive(std::string *s, const char *fmt, T v, Args... args)
     {
         std::string nextFmt = copyToFormatString(&fmt, s);
         *s += formatOne(nextFmt.c_str(), v);
@@ -90,8 +91,7 @@ namespace platinum
 
     // Special case of StringPrintRecursive for float-valued arguments.
     template <typename... Args>
-    inline void stringPrintfRecursive(std::string *s, const char *fmt, float v,
-                                      Args... args)
+    inline void stringPrintfRecursive(std::string *s, const char *fmt, float v, Args... args)
     {
         std::string nextFmt = copyToFormatString(&fmt, s);
         if (nextFmt == "%f")
@@ -113,8 +113,7 @@ namespace platinum
     // that this is the version that is actually called for floats.  I thought
     // that float->double promotion wasn't supposed to happen in this case?)
     template <typename... Args>
-    inline void stringPrintfRecursive(std::string *s, const char *fmt, double v,
-                                      Args... args)
+    inline void stringPrintfRecursive(std::string *s, const char *fmt, double v, Args... args)
     {
         std::string nextFmt = copyToFormatString(&fmt, s);
         if (nextFmt == "%f")
@@ -132,13 +131,12 @@ namespace platinum
     // specially so that enough digits are always printed so that the original
     // float/double can be reconstituted exactly from the printed digits.
     template <typename... Args>
-    inline std::string StringPrintf(const char *fmt, Args... args)
+    inline std::string stringPrintf(const char *fmt, Args... args)
     {
         std::string ret;
         stringPrintfRecursive(&ret, fmt, args...);
         return ret;
     }
-
 }
 
 #endif

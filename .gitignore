@@ -441,3 +441,5 @@ FodyWeavers.xsd
 .idea/
 *.sln.iml
 
+*.drawio
+doc/architecture.drawio

@@ -55,11 +55,11 @@ namespace platinum
     // all threads that use it are passed the shared_ptr. This ensures that
     // memory for the Barrier won't be freed until all threads have
     // successfully cleared it.
-    class ABarrier
+    class Barrier
     {
     public:
-        ABarrier(int count) : m_count(count) { CHECK_GT(count, 0); }
-        ~ABarrier() { CHECK_EQ(m_count, 0); }
+        Barrier(int count) : m_count(count) { CHECK_GT(count, 0); }
+        ~Barrier() { CHECK_EQ(m_count, 0); }
         void wait();
 
     private:
@@ -69,26 +69,26 @@ namespace platinum
     };
 
     //Execution policy tag.
-    enum class AExecutionPolicy
+    enum class ExecutionPolicy
     {
-        ASERIAL,
-        APARALLEL
+        SERIAL,
+        PARALLEL
     };
 
     inline int numSystemCores() { return glm::max(1u, std::thread::hardware_concurrency()); }
 
-    class AParallelUtils
+    class ParallelUtils
     {
     public:
         //Parallel loop for parallel tiling rendering
         template <typename Function>
-        static void parallelFor(size_t start, size_t end, const Function &func, AExecutionPolicy policy)
+        static void parallelFor(size_t start, size_t end, const Function &func, ExecutionPolicy policy)
         {
             if (start > end)
                 return;
-            if (policy == AExecutionPolicy::APARALLEL)
+            if (policy == ExecutionPolicy::PARALLEL)
             {
-                AParallelUtils::parallel_for_seize(start, end, func);
+                ParallelUtils::parallel_for_seize(start, end, func);
             }
             else
             {

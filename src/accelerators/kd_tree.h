@@ -1,7 +1,7 @@
 #ifndef ACCELERATORS_KD_TREE_H_
 #define ACCELERATORS_KD_TREE_H_
 
-#include "core/hitable.h"
+#include "hitable.h"
 
 namespace platinum
 {

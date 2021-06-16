@@ -25,7 +25,7 @@ namespace platinum
             for (const auto &light : lights)
             {
                 light->preprocess(*this);
-                if (light->m_flags & (int)LightFlags::LightInfinite)
+                if (light->m_flags & (int)LightFlags::Infinite)
                     m_infiniteLights.push_back(light);
             }
         }

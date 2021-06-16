@@ -2,9 +2,9 @@
 #define CORE_SAMPLER_H_
 
 #include "platinum.h"
-#include "rtti.h"
 #include "math_utils.h"
-#include "random.h"
+#include "core/random.h"
+#include "rtti.h"
 
 #include <vector>
 namespace platinum

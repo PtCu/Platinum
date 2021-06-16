@@ -5,8 +5,6 @@
 #include "spectrum.h"
 #include "math_utils.h"
 #include "rtti.h"
-#include "memory.h"
-#include "interaction.h"
 
 namespace platinum
 {

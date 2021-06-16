@@ -6,322 +6,323 @@
 #include "reporter.h"
 #include "pdf.h"
 #include "parallel.h"
-
-namespace platinum{
-
-//-------------------------------------------SamplerIntegrator-------------------------------------
-
-void SamplerIntegrator::render(const Scene &scene)
+#include "util/stringprint.h"
+namespace platinum
 {
-    Vector2i resolution = m_camera->m_film->getResolution();
 
-    auto &sampler = m_sampler;
+    //-------------------------------------------SamplerIntegrator-------------------------------------
 
-    // Compute number of tiles, _nTiles_, to use for parallel rendering
-    Bounds2i sampleBounds = m_camera->m_film->getSampleBounds();
-    Vector2i sampleExtent = sampleBounds.diagonal();
-    constexpr int tileSize = 16;
-    Vector2i nTiles((sampleExtent.x + tileSize - 1) / tileSize, (sampleExtent.y + tileSize - 1) / tileSize);
+    void SamplerIntegrator::render(const Scene &scene)
+    {
+        Vector2i resolution = m_camera->m_film->getResolution();
 
-    Reporter reporter(nTiles.x * nTiles.y, "Rendering");
-    AParallelUtils::parallelFor((size_t)0, (size_t)(nTiles.x * nTiles.y), [&](const size_t &t) {
-        Vector2i tile(t % nTiles.x, t / nTiles.x);
-        MemoryArena arena;
+        auto &sampler = m_sampler;
 
-        // Get sampler instance for tile
-        int seed = t;
-        std::unique_ptr<Sampler> tileSampler = sampler->clone(seed);
+        // Compute number of tiles, _nTiles_, to use for parallel rendering
+        Bounds2i sampleBounds = m_camera->m_film->getSampleBounds();
+        Vector2i sampleExtent = sampleBounds.diagonal();
+        constexpr int tileSize = 16;
+        Vector2i nTiles((sampleExtent.x + tileSize - 1) / tileSize, (sampleExtent.y + tileSize - 1) / tileSize);
 
-        // Compute sample bounds for tile
-        int x0 = sampleBounds.m_pMin.x + tile.x * tileSize;
-        int x1 = glm::min(x0 + tileSize, sampleBounds.m_pMax.x);
-        int y0 = sampleBounds.m_pMin.y + tile.y * tileSize;
-        int y1 = glm::min(y0 + tileSize, sampleBounds.m_pMax.y);
-        Bounds2i tileBounds(Vector2i(x0, y0), Vector2i(x1, y1));
-        LOG(INFO) << "Starting image tile " << tileBounds;
+        Reporter reporter(nTiles.x * nTiles.y, "Rendering");
+        ParallelUtils::parallelFor((size_t)0, (size_t)(nTiles.x * nTiles.y), [&](const size_t &t) {
+            Vector2i tile(t % nTiles.x, t / nTiles.x);
+            MemoryArena arena;
 
-        // Get _FilmTile_ for tile
-        std::unique_ptr<FilmTile> filmTile = m_camera->m_film->getFilmTile(tileBounds);
+            // Get sampler instance for tile
+            int seed = t;
+            std::unique_ptr<Sampler> tileSampler = sampler->clone(seed);
 
-        // Loop over pixels in tile to render them
-        for (Vector2i pixel : tileBounds)
-        {
-            tileSampler->startPixel(pixel);
+            // Compute sample bounds for tile
+            int x0 = sampleBounds.m_pMin.x + tile.x * tileSize;
+            int x1 = glm::min(x0 + tileSize, sampleBounds.m_pMax.x);
+            int y0 = sampleBounds.m_pMin.y + tile.y * tileSize;
+            int y1 = glm::min(y0 + tileSize, sampleBounds.m_pMax.y);
+            Bounds2i tileBounds(Vector2i(x0, y0), Vector2i(x1, y1));
+            LOG(INFO) << "Starting image tile " << tileBounds;
 
-            do
+            // Get _FilmTile_ for tile
+            std::unique_ptr<FilmTile> filmTile = m_camera->m_film->getFilmTile(tileBounds);
+
+            // Loop over pixels in tile to render them
+            for (Vector2i pixel : tileBounds)
             {
-                // Initialize _CameraSample_ for current sample
-                CameraSample cameraSample = tileSampler->getCameraSample(pixel);
+                tileSampler->startPixel(pixel);
 
-                // Generate camera ray for current sample
-                Ray ray;
-                Float rayWeight = m_camera->castingRay(cameraSample, ray);
-
-                // Evaluate radiance along camera ray
-                Spectrum L(0.f);
-                if (rayWeight > 0)
+                do
                 {
-                    L = Li(ray, scene, *tileSampler, arena);
-                }
+                    // Initialize _CameraSample_ for current sample
+                    CameraSample cameraSample = tileSampler->getCameraSample(pixel);
 
-                // Issue warning if unexpected radiance value returned
-                if (L.hasNaNs())
-                {
-                    LOG(ERROR) << stringPrintf(
-                        "Not-a-number radiance value returned "
-                        "for pixel (%d, %d), sample %d. Setting to black.",
-                        pixel.x, pixel.y,
-                        (int)tileSampler->currentSampleNumber());
-                    L = Spectrum(0.f);
-                }
-                else if (L.y() < -1e-5)
-                {
-                    LOG(ERROR) << stringPrintf(
-                        "Negative luminance value, %f, returned "
-                        "for pixel (%d, %d), sample %d. Setting to black.",
-                        L.y(), pixel.x, pixel.y,
-                        (int)tileSampler->currentSampleNumber());
-                    L = Spectrum(0.f);
-                }
-                else if (std::isinf(L.y()))
-                {
-                    LOG(ERROR) << stringPrintf(
-                        "Infinite luminance value returned "
-                        "for pixel (%d, %d), sample %d. Setting to black.",
-                        pixel.x, pixel.y,
-                        (int)tileSampler->currentSampleNumber());
-                    L = Spectrum(0.f);
-                }
-                VLOG(1) << "Camera sample: " << cameraSample << " -> ray: " << ray << " -> L = " << L;
+                    // Generate camera ray for current sample
+                    Ray ray;
+                    Float rayWeight = m_camera->castingRay(cameraSample, ray);
 
-                // Add camera ray's contribution to image
-                filmTile->addSample(cameraSample.pFilm, L, rayWeight);
+                    // Evaluate radiance along camera ray
+                    Spectrum L(0.f);
+                    if (rayWeight > 0)
+                    {
+                        L = Li(ray, scene, *tileSampler, arena);
+                    }
 
-                // Free _MemoryArena_ memory from computing image sample value
-                arena.Reset();
+                    // Issue warning if unexpected radiance value returned
+                    if (L.hasNaNs())
+                    {
+                        LOG(ERROR) << stringPrintf(
+                            "Not-a-number radiance value returned "
+                            "for pixel (%d, %d), sample %d. Setting to black.",
+                            pixel.x, pixel.y,
+                            (int)tileSampler->currentSampleNumber());
+                        L = Spectrum(0.f);
+                    }
+                    else if (L.y() < -1e-5)
+                    {
+                        LOG(ERROR) << stringPrintf(
+                            "Negative luminance value, %f, returned "
+                            "for pixel (%d, %d), sample %d. Setting to black.",
+                            L.y(), pixel.x, pixel.y,
+                            (int)tileSampler->currentSampleNumber());
+                        L = Spectrum(0.f);
+                    }
+                    else if (std::isinf(L.y()))
+                    {
+                        LOG(ERROR) << stringPrintf(
+                            "Infinite luminance value returned "
+                            "for pixel (%d, %d), sample %d. Setting to black.",
+                            pixel.x, pixel.y,
+                            (int)tileSampler->currentSampleNumber());
+                        L = Spectrum(0.f);
+                    }
+                    VLOG(1) << "Camera sample: " << cameraSample << " -> ray: " << ray << " -> L = " << L;
 
-            } while (tileSampler->startNextSample());
-        }
-        LOG(INFO) << "Finished image tile " << tileBounds;
+                    // Add camera ray's contribution to image
+                    filmTile->addSample(cameraSample.pFilm, L, rayWeight);
 
-        m_camera->m_film->mergeFilmTile(std::move(filmTile));
-        reporter.update();
-    },
-                                AExecutionPolicy::APARALLEL);
+                    // Free _MemoryArena_ memory from computing image sample value
+                    arena.Reset();
 
-    reporter.done();
+                } while (tileSampler->startNextSample());
+            }
+            LOG(INFO) << "Finished image tile " << tileBounds;
 
-    LOG(INFO) << "Rendering finished";
+            m_camera->m_film->mergeFilmTile(std::move(filmTile));
+            reporter.update();
+        },
+                                   ExecutionPolicy::PARALLEL);
 
-    m_camera->m_film->writeImageToFile();
-}
+        reporter.done();
 
-Spectrum SamplerIntegrator::specularReflect(const Ray &ray, const SurfaceInteraction &isect,
-                                            const Scene &scene, Sampler &sampler, MemoryArena &arena, int depth) const
-{
-    // Compute specular reflection direction _wi_ and BSDF value
-    Vector3f wo = isect.wo, wi;
-    Float pdf;
-    BxDFType sampledType;
-    BxDFType type = BxDFType(BSDF_REFLECTION | BSDF_SPECULAR);
+        LOG(INFO) << "Rendering finished";
 
-    Spectrum f = isect.bsdf->sample_f(wo, wi, sampler.get2D(), pdf, sampledType, type);
-
-    // Return contribution of specular reflection
-    const Vector3f &ns = isect.n;
-
-    if (pdf > 0.f && !f.isBlack() && absDot(wi, ns) != 0.f)
-    {
-        // Compute ray differential _rd_ for specular reflection
-        Ray rd = isect.spawnRay(wi);
-        return f * Li(rd, scene, sampler, arena, depth + 1) * absDot(wi, ns) / pdf;
+        m_camera->m_film->writeImageToFile();
     }
-    else
+
+    Spectrum SamplerIntegrator::specularReflect(const Ray &ray, const SurfaceInteraction &isect,
+                                                const Scene &scene, Sampler &sampler, MemoryArena &arena, int depth) const
     {
-        return Spectrum(0.f);
-    }
-}
+        // Compute specular reflection direction _wi_ and BSDF value
+        Vector3f wo = isect.wo, wi;
+        Float pdf;
+        BxDFType sampledType;
+        BxDFType type = BxDFType(BSDF_REFLECTION | BSDF_SPECULAR);
 
-Spectrum SamplerIntegrator::specularTransmit(const Ray &ray, const SurfaceInteraction &isect,
-                                             const Scene &scene, Sampler &sampler, MemoryArena &arena, int depth) const
-{
-    Vector3f wo = isect.wo, wi;
-    Float pdf;
-    const Vector3f &p = isect.p;
-    const BSDF &bsdf = *(isect.bsdf);
-    BxDFType type = BxDFType(BSDF_TRANSMISSION | BSDF_SPECULAR);
-    BxDFType sampledType;
-    Spectrum f = bsdf.sample_f(wo, wi, sampler.get2D(), pdf, sampledType, type);
-    Spectrum L = Spectrum(0.f);
-    Vector3f ns = isect.n;
+        Spectrum f = isect.bsdf->sample_f(wo, wi, sampler.get2D(), pdf, sampledType, type);
 
-    if (pdf > 0.f && !f.isBlack() && absDot(wi, ns) != 0.f)
-    {
-        // Compute ray differential _rd_ for specular transmission
-        Ray rd = isect.spawnRay(wi);
-        L = f * Li(rd, scene, sampler, arena, depth + 1) * absDot(wi, ns) / pdf;
-    }
-    return L;
-}
+        // Return contribution of specular reflection
+        const Vector3f &ns = isect.n;
 
-//------------------------------------------Utility functions-------------------------------------
-
-Spectrum uiformSampleAllLights(const Interaction &it, const Scene &scene,
-                               MemoryArena &arena, Sampler &sampler, const std::vector<int> &nLightSamples)
-{
-    Spectrum L(0.f);
-    for (size_t j = 0; j < scene.m_lights.size(); ++j)
-    {
-        // Accumulate contribution of _j_th light to _L_
-        const Light::ptr &light = scene.m_lights[j];
-        int nSamples = nLightSamples[j];
-        const Vector2f *uLightArray = sampler.get2DArray(nSamples);
-        const Vector2f *uScatteringArray = sampler.get2DArray(nSamples);
-
-        if (!uLightArray || !uScatteringArray)
+        if (pdf > 0.f && !f.isBlack() && absDot(wi, ns) != 0.f)
         {
-            // Use a single sample for illumination from _light_
-            Vector2f uLight = sampler.get2D();
-            Vector2f uScattering = sampler.get2D();
-            L += estimateDirect(it, uScattering, *light, uLight, scene, sampler, arena);
+            // Compute ray differential _rd_ for specular reflection
+            Ray rd = isect.spawnRay(wi);
+            return f * Li(rd, scene, sampler, arena, depth + 1) * absDot(wi, ns) / pdf;
         }
         else
         {
-            // Estimate direct lighting using sample arrays
-            Spectrum Ld(0.f);
-            for (int k = 0; k < nSamples; ++k)
-            {
-                Ld += estimateDirect(it, uScatteringArray[k], *light, uLightArray[k], scene, sampler, arena);
-            }
-            L += Ld / nSamples;
-        }
-    }
-    return L;
-}
-
-Spectrum uniformSampleOneLight(const Interaction &it, const Scene &scene,
-                               MemoryArena &arena, Sampler &sampler, const Distribution1D *lightDistrib)
-{
-    // Randomly choose a single light to sample, _light_
-    int nLights = int(scene.m_lights.size());
-
-    if (nLights == 0)
-        return Spectrum(0.f);
-
-    int lightSampledIndex;
-    Float lightPdf;
-
-    if (lightDistrib != nullptr)
-    {
-        lightSampledIndex = lightDistrib->sampleDiscrete(sampler.get1D(), &lightPdf);
-        if (lightPdf == 0)
             return Spectrum(0.f);
-    }
-    else
-    {
-        lightSampledIndex = glm::min((int)(sampler.get1D() * nLights), nLights - 1);
-        lightPdf = Float(1) / nLights;
-    }
-
-    const Light::ptr &light = scene.m_lights[lightSampledIndex];
-    Vector2f uLight = sampler.get2D();
-    Vector2f uScattering = sampler.get2D();
-
-    return estimateDirect(it, uScattering, *light, uLight, scene, sampler, arena) / lightPdf;
-}
-
-Spectrum estimateDirect(const Interaction &it, const Vector2f &uScattering, const Light &light,
-                        const Vector2f &uLight, const Scene &scene, Sampler &sampler, MemoryArena &arena, bool specular)
-{
-    BxDFType bsdfFlags = specular ? BSDF_ALL : BxDFType(BSDF_ALL & ~BSDF_SPECULAR);
-
-    Spectrum Ld(0.f);
-    // Sample light source with multiple importance sampling
-    Vector3f wi;
-    Float lightPdf = 0, scatteringPdf = 0;
-    VisibilityTester visibility;
-    Spectrum Li = light.sample_Li(it, uLight, wi, lightPdf, visibility);
-
-    if (lightPdf > 0 && !Li.isBlack())
-    {
-        // Compute BSDF or phase function's value for light sample
-        Spectrum f;
-        // Evaluate BSDF for light sampling strategy
-        const SurfaceInteraction &isect = (const SurfaceInteraction &)it;
-        f = isect.bsdf->f(isect.wo, wi, bsdfFlags) * absDot(wi, isect.n);
-
-        scatteringPdf = isect.bsdf->pdf(isect.wo, wi, bsdfFlags);
-
-        if (!f.isBlack())
-        {
-            // Compute effect of visibility for light source sample
-            if (!visibility.unoccluded(scene))
-            {
-                Li = Spectrum(0.f);
-            }
-
-            // Add light's contribution to reflected radiance
-            if (!Li.isBlack())
-            {
-                if (isDeltaLight(light.m_flags))
-                {
-                    Ld += f * Li / lightPdf;
-                }
-                else
-                {
-                    Float weight = powerHeuristic(1, lightPdf, 1, scatteringPdf);
-                    Ld += f * Li * weight / lightPdf;
-                }
-            }
         }
     }
 
-    // Sample BSDF with multiple importance sampling
-    if (!isDeltaLight(light.m_flags))
+    Spectrum SamplerIntegrator::specularTransmit(const Ray &ray, const SurfaceInteraction &isect,
+                                                 const Scene &scene, Sampler &sampler, MemoryArena &arena, int depth) const
     {
-        Spectrum f;
-        bool sampledSpecular = false;
-        // Sample scattered direction for surface interactions
+        Vector3f wo = isect.wo, wi;
+        Float pdf;
+        const Vector3f &p = isect.p;
+        const BSDF &bsdf = *(isect.bsdf);
+        BxDFType type = BxDFType(BSDF_TRANSMISSION | BSDF_SPECULAR);
         BxDFType sampledType;
-        const SurfaceInteraction &isect = (const SurfaceInteraction &)it;
-        f = isect.bsdf->sample_f(isect.wo, wi, uScattering, scatteringPdf, sampledType, bsdfFlags);
-        f *= absDot(wi, isect.n);
-        sampledSpecular = (sampledType & BSDF_SPECULAR) != 0;
+        Spectrum f = bsdf.sample_f(wo, wi, sampler.get2D(), pdf, sampledType, type);
+        Spectrum L = Spectrum(0.f);
+        Vector3f ns = isect.n;
 
-        if (!f.isBlack() && scatteringPdf > 0)
+        if (pdf > 0.f && !f.isBlack() && absDot(wi, ns) != 0.f)
         {
-            // Account for light contributions along sampled direction _wi_
-            Float weight = 1;
-            if (!sampledSpecular)
-            {
-                lightPdf = light.pdf_Li(it, wi);
-                if (lightPdf == 0)
-                    return Ld;
-                weight = powerHeuristic(1, scatteringPdf, 1, lightPdf);
-            }
+            // Compute ray differential _rd_ for specular transmission
+            Ray rd = isect.spawnRay(wi);
+            L = f * Li(rd, scene, sampler, arena, depth + 1) * absDot(wi, ns) / pdf;
+        }
+        return L;
+    }
 
-            // Find intersection and compute transmittance
-            SurfaceInteraction lightIsect;
-            Ray ray = it.spawnRay(wi);
-            Spectrum Tr(1.f);
-            bool foundSurfaceInteraction = scene.hit(ray, lightIsect);
+    //------------------------------------------Utility functions-------------------------------------
 
-            // Add light contribution from material sampling
-            Spectrum Li(0.f);
-            if (foundSurfaceInteraction)
+    Spectrum uiformSampleAllLights(const Interaction &it, const Scene &scene,
+                                   MemoryArena &arena, Sampler &sampler, const std::vector<int> &nLightSamples)
+    {
+        Spectrum L(0.f);
+        for (size_t j = 0; j < scene.m_lights.size(); ++j)
+        {
+            // Accumulate contribution of _j_th light to _L_
+            const Light::ptr &light = scene.m_lights[j];
+            int nSamples = nLightSamples[j];
+            const Vector2f *uLightArray = sampler.get2DArray(nSamples);
+            const Vector2f *uScatteringArray = sampler.get2DArray(nSamples);
+
+            if (!uLightArray || !uScatteringArray)
             {
-                if (lightIsect.hitable->getAreaLight() == &light)
-                    Li = lightIsect.Le(-wi);
+                // Use a single sample for illumination from _light_
+                Vector2f uLight = sampler.get2D();
+                Vector2f uScattering = sampler.get2D();
+                L += estimateDirect(it, uScattering, *light, uLight, scene, sampler, arena);
             }
             else
             {
-                Li = light.Le(ray);
+                // Estimate direct lighting using sample arrays
+                Spectrum Ld(0.f);
+                for (int k = 0; k < nSamples; ++k)
+                {
+                    Ld += estimateDirect(it, uScatteringArray[k], *light, uLightArray[k], scene, sampler, arena);
+                }
+                L += Ld / nSamples;
             }
-            if (!Li.isBlack())
-                Ld += f * Li * Tr * weight / scatteringPdf;
         }
+        return L;
     }
-    return Ld;
-}
+
+    Spectrum uniformSampleOneLight(const Interaction &it, const Scene &scene,
+                                   MemoryArena &arena, Sampler &sampler, const Distribution1D *lightDistrib)
+    {
+        // Randomly choose a single light to sample, _light_
+        int nLights = int(scene.m_lights.size());
+
+        if (nLights == 0)
+            return Spectrum(0.f);
+
+        int lightSampledIndex;
+        Float lightPdf;
+
+        if (lightDistrib != nullptr)
+        {
+            lightSampledIndex = lightDistrib->sampleDiscrete(sampler.get1D(), &lightPdf);
+            if (lightPdf == 0)
+                return Spectrum(0.f);
+        }
+        else
+        {
+            lightSampledIndex = glm::min((int)(sampler.get1D() * nLights), nLights - 1);
+            lightPdf = Float(1) / nLights;
+        }
+
+        const Light::ptr &light = scene.m_lights[lightSampledIndex];
+        Vector2f uLight = sampler.get2D();
+        Vector2f uScattering = sampler.get2D();
+
+        return estimateDirect(it, uScattering, *light, uLight, scene, sampler, arena) / lightPdf;
+    }
+
+    Spectrum estimateDirect(const Interaction &it, const Vector2f &uScattering, const Light &light,
+                            const Vector2f &uLight, const Scene &scene, Sampler &sampler, MemoryArena &arena, bool specular)
+    {
+        BxDFType bsdfFlags = specular ? BSDF_ALL : BxDFType(BSDF_ALL & ~BSDF_SPECULAR);
+
+        Spectrum Ld(0.f);
+        // Sample light source with multiple importance sampling
+        Vector3f wi;
+        Float lightPdf = 0, scatteringPdf = 0;
+        VisibilityTester visibility;
+        Spectrum Li = light.sample_Li(it, uLight, wi, lightPdf, visibility);
+
+        if (lightPdf > 0 && !Li.isBlack())
+        {
+            // Compute BSDF or phase function's value for light sample
+            Spectrum f;
+            // Evaluate BSDF for light sampling strategy
+            const SurfaceInteraction &isect = (const SurfaceInteraction &)it;
+            f = isect.bsdf->f(isect.wo, wi, bsdfFlags) * absDot(wi, isect.n);
+
+            scatteringPdf = isect.bsdf->pdf(isect.wo, wi, bsdfFlags);
+
+            if (!f.isBlack())
+            {
+                // Compute effect of visibility for light source sample
+                if (!visibility.unoccluded(scene))
+                {
+                    Li = Spectrum(0.f);
+                }
+
+                // Add light's contribution to reflected radiance
+                if (!Li.isBlack())
+                {
+                    if (isDeltaLight(light.m_flags))
+                    {
+                        Ld += f * Li / lightPdf;
+                    }
+                    else
+                    {
+                        Float weight = powerHeuristic(1, lightPdf, 1, scatteringPdf);
+                        Ld += f * Li * weight / lightPdf;
+                    }
+                }
+            }
+        }
+
+        // Sample BSDF with multiple importance sampling
+        if (!isDeltaLight(light.m_flags))
+        {
+            Spectrum f;
+            bool sampledSpecular = false;
+            // Sample scattered direction for surface interactions
+            BxDFType sampledType;
+            const SurfaceInteraction &isect = (const SurfaceInteraction &)it;
+            f = isect.bsdf->sample_f(isect.wo, wi, uScattering, scatteringPdf, sampledType, bsdfFlags);
+            f *= absDot(wi, isect.n);
+            sampledSpecular = (sampledType & BSDF_SPECULAR) != 0;
+
+            if (!f.isBlack() && scatteringPdf > 0)
+            {
+                // Account for light contributions along sampled direction _wi_
+                Float weight = 1;
+                if (!sampledSpecular)
+                {
+                    lightPdf = light.pdf_Li(it, wi);
+                    if (lightPdf == 0)
+                        return Ld;
+                    weight = powerHeuristic(1, scatteringPdf, 1, lightPdf);
+                }
+
+                // Find intersection and compute transmittance
+                SurfaceInteraction lightIsect;
+                Ray ray = it.spawnRay(wi);
+                Spectrum Tr(1.f);
+                bool foundSurfaceInteraction = scene.hit(ray, lightIsect);
+
+                // Add light contribution from material sampling
+                Spectrum Li(0.f);
+                if (foundSurfaceInteraction)
+                {
+                    if (lightIsect.hitable->getAreaLight() == &light)
+                        Li = lightIsect.Le(-wi);
+                }
+                else
+                {
+                    Li = light.Le(ray);
+                }
+                if (!Li.isBlack())
+                    Ld += f * Li * Tr * weight / scatteringPdf;
+            }
+        }
+        return Ld;
+    }
 
 }

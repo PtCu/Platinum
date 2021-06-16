@@ -33,7 +33,7 @@ namespace platinum
         // time. (Which in turn calls malloc, which isn't allowed in a
         // signal handler.)
         //SuspendProfiler();
-        //std::shared_ptr<ABarrier> barrier = std::make_shared<ABarrier>(0);
+        //std::shared_ptr<Barrier> barrier = std::make_shared<Barrier>(0);
         m_updateThread = std::thread([this /*, barrier*/]() {
             //ProfilerWorkerThreadInit();
             //ProfilerState = 0;

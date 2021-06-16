@@ -1,7 +1,7 @@
 #ifndef ACCELERATORS_LINEAR_AGGREGATE_H_
 #define ACCELERATORS_LINEAR_AGGREGATE_H_
 
-#include "core/hitable.h"
+#include "hitable.h"
 
 namespace platinum
 {

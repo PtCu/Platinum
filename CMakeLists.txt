@@ -74,7 +74,6 @@ source_group("lights" FILES ${LIGHTS})
 file(GLOB TEXTURES ./src/textures/*.h ./src/textures/*.cpp)
 source_group("textures" FILES ${TEXTURES})
 
-
 file(GLOB SHAPES ./src/util/*.h ./src/util/*.cpp)
 source_group("util" FILES ${UTIL})
 
