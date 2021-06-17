@@ -36,6 +36,7 @@ public:
 
     virtual void render(const Scene &scene) override;
 
+    //返回当前ray采样到的辐射度  
     virtual Spectrum Li(const Ray &ray, const Scene &scene,
                         Sampler &sampler, MemoryArena &arena, int depth = 0) const = 0;
 

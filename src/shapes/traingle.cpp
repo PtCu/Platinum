@@ -52,14 +52,14 @@ namespace platinum
         return 0.5 * length(cross(p1 - p0, p2 - p0));
     }
 
-    AInteraction TriangleShape::sample(const Vector2f &u, Float &pdf) const
+    Interaction TriangleShape::sample(const Vector2f &u, Float &pdf) const
     {
         Vector2f b = uniformSampleTriangle(u);
         // Get triangle vertices in _p0_, _p1_, and _p2_
         const auto &p0 = m_mesh->getPosition(m_indices[0]);
         const auto &p1 = m_mesh->getPosition(m_indices[1]);
         const auto &p2 = m_mesh->getPosition(m_indices[2]);
-        AInteraction it;
+        Interaction it;
         it.p = b[0] * p0 + b[1] * p1 + (1 - b[0] - b[1]) * p2;
         // Compute surface normal for sampled point on triangle
         it.n = normalize(Vector3f(cross(p1 - p0, p2 - p0)));
@@ -68,7 +68,7 @@ namespace platinum
         return it;
     }
 
-    bool TriangleShape::hit(const ARay &ray) const
+    bool TriangleShape::hit(const Ray &ray) const
     {
         // Get triangle vertices in _p0_, _p1_, and _p2_
         const auto &p0 = m_mesh->getPosition(m_indices[0]);
@@ -176,7 +176,7 @@ namespace platinum
         return true;
     }
 
-    bool TriangleShape::hit(const ARay &ray, Float &tHit, SurfaceInteraction &isect) const
+    bool TriangleShape::hit(const Ray &ray, Float &tHit, SurfaceInteraction &isect) const
     {
         // Get triangle vertices in _p0_, _p1_, and _p2_
         const auto &p0 = m_mesh->getPosition(m_indices[0]);
