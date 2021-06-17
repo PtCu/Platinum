@@ -19,7 +19,7 @@ namespace platinum
 
         virtual Float evaluate(const Vector2f &p) const = 0;
 
-        virtual ClassType getClassType() const override { return ClassType::Filter; }
+        virtual ClassType getClassType() const override { return ClassType::FilterType; }
 
         const Vector2f m_radius, m_invRadius;
     };

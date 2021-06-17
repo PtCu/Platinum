@@ -122,7 +122,7 @@ namespace platinum
 
     static int terminalWidth()
     {
-#ifdef PLT_WINDOWS_OS
+#ifdef PLATFORM_WINDOWS_OS
         HANDLE h = GetStdHandle(STD_OUTPUT_HANDLE);
         if (h == INVALID_HANDLE_VALUE || !h)
         {

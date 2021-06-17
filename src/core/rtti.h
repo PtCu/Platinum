@@ -1,4 +1,4 @@
-#ifndef CORE_RTTI_H_
+﻿#ifndef CORE_RTTI_H_
 #define CORE_RTTI_H_
 
 #include "platinum.h"
@@ -172,16 +172,16 @@ namespace platinum
     public:
         enum ClassType
         {
-            Hitable = 0,
-            Shape,
-            Material,
-            Light,
-            Camera,
-            Integrator,
-            Sampler,
-            Filter,
-            Film,
-            Entity,
+            HitableType = 0,
+            ShapeType,
+            MaterialType,
+            LightType,
+            CameraType,
+            IntegratorType,
+            SamplerType,
+            FilterType,
+            FilmType,
+            EntityType,
             ClassTypeCount
         };
 
@@ -227,25 +227,25 @@ namespace platinum
         {
             switch (type)
             {
-            case Material:
+            case MaterialType:
                 return "Material";
-            case Hitable:
+            case HitableType:
                 return "Hitable";
-            case Shape:
+            case ShapeType:
                 return "Shape";
-            case Light:
+            case LightType:
                 return "Light";
-            case Camera:
+            case CameraType:
                 return "Camera";
-            case Integrator:
+            case IntegratorType:
                 return "Integrator";
-            case Sampler:
+            case SamplerType:
                 return "Sampler";
-            case Filter:
+            case FilterType:
                 return "Filter";
-            case Film:
+            case FilmType:
                 return "Film";
-            case Entity:
+            case EntityType:
                 return "Entity";
             default:
                 return "Unknown";
@@ -296,6 +296,22 @@ namespace platinum
         //静态变量，记录string类型的type和对于的构造函数
         static std::map<std::string, Constructor> &getConstrMap();
     };
+
+    // Macro for registering an object constructor with the \ref ObjectFactory
+#define PLT_REGISTER_CLASS(cls, name)                         \
+    inline cls *cls##_create(const PropertyTreeNode &node)    \
+    {                                                         \
+        return new cls(node);                                 \
+    }                                                         \
+    class cls##_                                              \
+    {                                                         \
+    public:                                                   \
+        cls##_()                                              \
+        {                                                     \
+            ObjectFactory::registerClass(name, cls##_create); \
+        }                                                     \
+    };                                                        \
+    static cls##_ cls##__PLT_;
 
 }
 

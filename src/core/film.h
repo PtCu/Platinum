@@ -6,6 +6,7 @@
 #include "filter.h"
 #include "parallel.h"
 #include "spectrum.h"
+#include "util/stringprint.h"
 
 #include <memory>
 #include <vector>
@@ -38,7 +39,7 @@ namespace platinum
 
         virtual void activate() override { initialize(); }
 
-        virtual ClassType getClassType() const override { return ClassType::Film; }
+        virtual ClassType getClassType() const override { return ClassType::FilmType; }
         virtual std::string toString() const override { return "Film[]"; }
 
     private:

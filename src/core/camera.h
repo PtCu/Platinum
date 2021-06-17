@@ -38,7 +38,7 @@ namespace platinum
         //virtual Spectrum Sample_Wi(const Interaction &ref, const APoint2f &u,
         //	Vector3f *wi, Float *pdf, APoint2f *pRaster, VisibilityTester *vis) const;
 
-        virtual ClassType getClassType() const override { return ClassType::Camera; }
+        virtual ClassType getClassType() const override { return ClassType::CameraType; }
 
         // Camera Public Data
         Transform m_cameraToWorld;

@@ -1,4 +1,4 @@
-#ifndef CORE_LIGHT_H_
+﻿#ifndef CORE_LIGHT_H_
 #define CORE_LIGHT_H_
 
 #include "platinum.h"
@@ -56,7 +56,7 @@ public:
 
     virtual void pdf_Le(const Ray &, const Vector3f &, Float &pdfPos, Float &pdfDir) const = 0;
 
-    virtual ClassType getClassType() const override { return ClassType::Light; }
+    virtual ClassType getClassType() const override { return ClassType::LightType; }
 
     int m_flags;
     int m_nSamples;

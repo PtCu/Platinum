@@ -1,4 +1,4 @@
-#ifndef CORE_SHAPE_H_
+﻿#ifndef CORE_SHAPE_H_
 #define CORE_SHAPE_H_
 
 #include "platinum.h"
@@ -47,7 +47,7 @@ namespace platinum
         // used in this case.
         virtual Float solidAngle(const Vector3f &p, int nSamples = 512) const;
 
-        virtual ClassType getClassType() const override { return ClassType::Shape; }
+        virtual ClassType getClassType() const override { return ClassType::ShapeType; }
 
         Transform *m_objectToWorld = nullptr, *m_worldToObject = nullptr;
     };

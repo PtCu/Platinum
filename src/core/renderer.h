@@ -22,9 +22,9 @@ public:
 
 private:
     Renderer();
-    ~Renderer();
+    ~Renderer() = default;
     Renderer(const Renderer &);
-    Renderer &operator=(const Renderer &);
+    Renderer &operator=(const Renderer &)=default;
     void render(const std::string &filename);
     static Renderer *m_renderer;
 

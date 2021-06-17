@@ -31,6 +31,7 @@ namespace platinum
 
             // Get sampler instance for tile
             int seed = t;
+           
             std::unique_ptr<Sampler> tileSampler = sampler->clone(seed);
 
             // Compute sample bounds for tile

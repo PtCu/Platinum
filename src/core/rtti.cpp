@@ -221,20 +221,6 @@ namespace platinum
         return constrMap[type](node);
     }
 
-// Macro for registering an object constructor with the \ref ObjectFactory
-#define PLT_REGISTER_CLASS(cls, name)                         \
-    inline cls *cls##_create(const PropertyTreeNode &node)    \
-    {                                                         \
-        return new cls(node);                                 \
-    }                                                         \
-    class cls##_                                              \
-    {                                                         \
-    public:                                                   \
-        cls##_()                                              \
-        {                                                     \
-            ObjectFactory::registerClass(name, cls##_create); \
-        }                                                     \
-    };                                                        \
-    static cls##_ cls##__PLT_;
+
 
 }

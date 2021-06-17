@@ -40,7 +40,7 @@ namespace platinum
 
         int64_t getSamplingNumber() const { return samplesPerPixel; }
 
-        virtual ClassType getClassType() const override { return ClassType::Sampler; }
+        virtual ClassType getClassType() const override { return ClassType::SamplerType; }
 
         const int64_t samplesPerPixel; //Number of sampling per pixel
 

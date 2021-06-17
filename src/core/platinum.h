@@ -33,7 +33,7 @@ namespace platinum
 #else
     typedef float Float;
 #endif
-
+    using Byte = unsigned char;
     static constexpr Float MaxFloat = std::numeric_limits<Float>::max();
     static constexpr Float Infinity = std::numeric_limits<Float>::infinity();
     static constexpr Float MachineEpsilon = std::numeric_limits<Float>::epsilon() * 0.5;

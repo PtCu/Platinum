@@ -17,21 +17,20 @@ namespace platinum
     {
     public:
         typedef std::shared_ptr<Hitable> ptr;
-
         virtual ~Hitable() = default;
 
         virtual bool hit(const Ray &ray) const = 0;
         virtual bool hit(const Ray &ray, SurfaceInteraction &iset) const = 0;
 
         virtual Bounds3f worldBound() const = 0;
-
+         
         virtual const AreaLight *getAreaLight() const = 0;
         virtual const Material *getMaterial() const = 0;
 
         virtual void computeScatteringFunctions(SurfaceInteraction &isect, MemoryArena &arena,
                                                 TransportMode mode, bool allowMultipleLobes) const = 0;
 
-        virtual ClassType getClassType() const override { return ClassType::Hitable; }
+        virtual ClassType getClassType() const override { return ClassType::HitableType; }
     };
 
     class HitableObject final : public Hitable

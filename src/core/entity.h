@@ -28,7 +28,7 @@ namespace platinum
         const std::vector<Hitable::ptr> &getHitables() const { return m_hitables; }
 
         virtual std::string toString() const override { return "Entity[]"; }
-        virtual ClassType getClassType() const override { return ClassType::Hitable; }
+        virtual ClassType getClassType() const override { return ClassType::HitableType; }
 
     protected:
         Material::ptr m_material;
