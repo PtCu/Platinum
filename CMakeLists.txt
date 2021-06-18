@@ -22,6 +22,7 @@ include_directories(src/samplers/)
 include_directories(src/shapes/)
 include_directories(src/textures/)
 include_directories(src/math/)
+include_directories(src/utils/)
 include_directories(src)
 
 include_directories(src/ext/header_only)
@@ -74,12 +75,12 @@ source_group("lights" FILES ${LIGHTS})
 file(GLOB TEXTURES ./src/textures/*.h ./src/textures/*.cpp)
 source_group("textures" FILES ${TEXTURES})
 
-file(GLOB SHAPES ./src/util/*.h ./src/util/*.cpp)
-source_group("util" FILES ${UTIL})
+file(GLOB SHAPES ./src/utils/*.h ./src/utils/*.cpp)
+source_group("utils" FILES ${UTILS})
 
 file(GLOB SRCS ./src/*.cpp)
 
-add_executable(${PROJECT_NAME} ${ACCELECTORS} ${CAMERAS} ${CORE} ${FILTERS} ${MATH} ${UTIL}
+add_executable(${PROJECT_NAME} ${ACCELECTORS} ${CAMERAS} ${CORE} ${FILTERS} ${MATH} ${UTILS}
 		 ${INTEGRATORS} ${MATERIALS} ${SAMPLERS} ${SHAPES} ${LIGHTS} ${TEXTURES} ${SRCS})
 
 set(EXTRA_LIBS ${EXTRA_LIBS}  glog )

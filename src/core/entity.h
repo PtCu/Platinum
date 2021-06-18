@@ -5,7 +5,6 @@
 #include "math_utils.h"
 #include "rtti.h"
 #include "hitable.h"
-#include "shapes/triangle.h"
 
 namespace platinum
 {
@@ -36,18 +35,7 @@ namespace platinum
         Transform m_objectToWorld, m_worldToObject;
     };
 
-    class MeshEntity : public Entity
-    {
-    public:
-        typedef std::shared_ptr<MeshEntity> ptr;
-
-        MeshEntity(const PropertyTreeNode &node);
-
-        virtual std::string toString() const override { return "MeshEntity[]"; }
-
-    private:
-        TriangleMesh::unique_ptr m_mesh;
-    };
+   
 
 }
 

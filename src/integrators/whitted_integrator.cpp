@@ -12,12 +12,12 @@ namespace platinum
 	{
 		//Sampler
 		const auto &samplerNode = node.getPropertyChild("Sampler");
-		m_sampler = Sampler::ptr(static_cast<Sampler *>(AObjectFactory::createInstance(
+		m_sampler = Sampler::ptr(static_cast<Sampler *>(ObjectFactory::createInstance(
 			samplerNode.getTypeName(), samplerNode)));
 
 		//Camera
 		const auto &cameraNode = node.getPropertyChild("Camera");
-		m_camera = Camera::ptr(static_cast<Camera *>(AObjectFactory::createInstance(
+		m_camera = Camera::ptr(static_cast<Camera *>(ObjectFactory::createInstance(
 			cameraNode.getTypeName(), cameraNode)));
 
 		activate();
@@ -61,7 +61,7 @@ namespace platinum
 		{
 			Vector3f wi;
 			Float pdf;
-			AVisibilityTester visibility;
+			VisibilityTester visibility;
 			Spectrum Li = light->sample_Li(isect, sampler.get2D(), wi, pdf, visibility);
 
 			if (Li.isBlack() || pdf == 0)

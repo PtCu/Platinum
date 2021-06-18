@@ -1,22 +1,18 @@
-#include "entity.h"
-#include "shape.h"
+#include "meshentity.h"
 
 namespace platinum
 {
+    //-------------------------------------------MeshEntity-------------------------------------
 
-    //-------------------------------------------Entity-------------------------------------
+    PLT_REGISTER_CLASS(MeshEntity, "MeshEntity")
 
-    PLT_REGISTER_CLASS(Entity, "Entity")
-
-    Entity::Entity(const PropertyTreeNode &node)
+    MeshEntity::MeshEntity(const PropertyTreeNode &node)
     {
         const PropertyList &props = node.getPropertyList();
+        const std::string filename = props.getString("Filename");
 
         // Shape
         const auto &shapeNode = node.getPropertyChild("Shape");
-        Shape::ptr shape = Shape::ptr(static_cast<Shape *>(ObjectFactory::createInstance(
-            shapeNode.getTypeName(), shapeNode)));
-        shape->setTransform(&m_objectToWorld, &m_worldToObject);
 
         // Transform
         Transform objectToWrold;
@@ -69,22 +65,32 @@ namespace platinum
         m_objectToWorld = objectToWrold;
         m_worldToObject = inverse(m_objectToWorld);
 
-        // Material
+        //Material
         const auto &materialNode = node.getPropertyChild("Material");
         m_material = Material::ptr(static_cast<Material *>(ObjectFactory::createInstance(
             materialNode.getTypeName(), materialNode)));
 
-        //Area light
-        AreaLight::ptr areaLight = nullptr;
-        if (node.hasPropertyChild("Light"))
+        //Load each triangle of the mesh as a HitableEntity
+        m_mesh = TriangleMesh::unique_ptr(new TriangleMesh(&m_objectToWorld, PropertyTreeNode::m_directory + filename));
+        const auto &meshIndices = m_mesh->getIndices();
+        for (size_t i = 0; i < meshIndices.size(); i += 3)
         {
-            const auto &lightNode = node.getPropertyChild("Light");
-            areaLight = AreaLight::ptr(static_cast<AreaLight *>(ObjectFactory::createInstance(
-                lightNode.getTypeName(), lightNode)));
-        }
+            std::array<int, 3> indices;
+            indices[0] = meshIndices[i + 0];
+            indices[1] = meshIndices[i + 1];
+            indices[2] = meshIndices[i + 2];
+            TriangleShape::ptr triangle = std::make_shared<TriangleShape>(&m_objectToWorld, &m_worldToObject, indices, m_mesh.get());
 
-        m_hitables.push_back(std::make_shared<HitableObject>(shape, m_material.get(), areaLight));
+            //Area light
+            AreaLight::ptr areaLight = nullptr;
+            if (node.hasPropertyChild("Light"))
+            {
+                const auto &lightNode = node.getPropertyChild("Light");
+                areaLight = AreaLight::ptr(static_cast<AreaLight *>(ObjectFactory::createInstance(
+                    lightNode.getTypeName(), lightNode)));
+            }
+            m_hitables.push_back(std::make_shared<HitableObject>(triangle, m_material.get(), areaLight));
+        }
     }
 
-  
 }

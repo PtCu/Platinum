@@ -6,7 +6,7 @@
 #include "reporter.h"
 #include "pdf.h"
 #include "parallel.h"
-#include "util/stringprint.h"
+#include "utils/stringprint.h"
 namespace platinum
 {
 
@@ -31,7 +31,7 @@ namespace platinum
 
             // Get sampler instance for tile
             int seed = t;
-           
+
             std::unique_ptr<Sampler> tileSampler = sampler->clone(seed);
 
             // Compute sample bounds for tile

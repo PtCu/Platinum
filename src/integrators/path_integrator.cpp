@@ -1,7 +1,7 @@
-#include "ArPathIntegrator.h"
+#include "path_integrator.h"
 
-#include "ArScene.h"
-#include "ArBSDF.h"
+#include "scene.h"
+#include "bxdf.h"
 
 namespace platinum
 {
@@ -12,12 +12,12 @@ namespace platinum
 	{
 		//Sampler
 		const auto &samplerNode = node.getPropertyChild("Sampler");
-		m_sampler = Sampler::ptr(static_cast<Sampler *>(AObjectFactory::createInstance(
+		m_sampler = Sampler::ptr(static_cast<Sampler *>(ObjectFactory::createInstance(
 			samplerNode.getTypeName(), samplerNode)));
 
 		//Camera
 		const auto &cameraNode = node.getPropertyChild("Camera");
-		m_camera = Camera::ptr(static_cast<Camera *>(AObjectFactory::createInstance(
+		m_camera = Camera::ptr(static_cast<Camera *>(ObjectFactory::createInstance(
 			cameraNode.getTypeName(), cameraNode)));
 
 		activate();
@@ -90,11 +90,11 @@ namespace platinum
 				continue;
 			}
 
-			const ADistribution1D *distrib = m_lightDistribution->lookup(isect.p);
+			const Distribution1D *distrib = m_lightDistribution->lookup(isect.p);
 
 			// Sample illumination from lights to find path contribution.
 			// (But skip this for perfectly specular BSDFs.)
-			if (isect.bsdf->numComponents(ABxDFType(BSDF_ALL & ~BSDF_SPECULAR)) > 0)
+			if (isect.bsdf->numComponents(BxDFType(BSDF_ALL & ~BSDF_SPECULAR)) > 0)
 			{
 				//++totalPaths;
 				Spectrum Ld = beta * uniformSampleOneLight(isect, scene, arena, sampler, distrib);
@@ -107,7 +107,7 @@ namespace platinum
 			// Sample BSDF to get new path direction
 			Vector3f wo = -ray.direction(), wi;
 			Float pdf;
-			ABxDFType flags;
+			BxDFType flags;
 			Spectrum f = isect.bsdf->sample_f(wo, wi, sampler.get2D(), pdf, flags, BSDF_ALL);
 
 			if (f.isBlack() || pdf == 0.f)
