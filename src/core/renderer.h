@@ -1,38 +1,48 @@
-#ifndef CORE_RENDERER_H_
-#define CORE_RENDERER_H_
+// The MIT License (MIT)
 
-#include "platinum.h"
-#include "integrator.h"
-#include "parser.h"
-#include "scene.h"
+// Copyright (c) 2021 PtCu
 
-namespace platinum{
+//  Permission is hereby granted, free of charge, to any person obtaining a
+//  copy of this software and associated documentation files (the "Software"),
+//  to deal in the Software without restriction, including without limitation
+//  the rights to use, copy, modify, merge, publish, distribute, sublicense,
+//  and/or sell copies of the Software, and to permit persons to whom the
+//  Software is furnished to do so, subject to the following conditions:
+//
+//  The above copyright notice and this permission notice shall be included in
+//  all copies or substantial portions of the Software.
+//
+//  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+//  OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+//  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+//  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+//  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+//  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+//  DEALINGS IN THE SOFTWARE.
 
-//TO-DO: 完善析构
-class Renderer
+#ifndef CORE_RENDER_H_
+#define CORE_RENDER_H_
+
+#include <core/scene.h>
+#include <core/camera.h>
+#include <core/image.h>
+
+namespace platinum
 {
-public:
-    static Renderer *getInstance()
+    class Renderer
     {
-        if (m_renderer == NULL)
-            m_renderer = new Renderer();
-        return m_renderer;
-    }  
-    void render(const std::vector<std::string> &filenames);
+    public:
+        Renderer(int img_w, int img_h, int channel, const std::string& fname, int spp);
+        ~Renderer() = default;
+        void Render(Scene& scene, const std::shared_ptr<Camera>& cam);
 
-private:
-    Renderer();
-    ~Renderer() = default;
-    Renderer(const Renderer &);
-    Renderer &operator=(const Renderer &)=default;
-    void render(const std::string &filename);
-    static Renderer *m_renderer;
-
-    Scene::ptr scene;
-    Integrator::ptr integrator;
-
-};
-
+    private:
+        void UpdateProgress(float progress);
+        Image img_;
+        std::string filename_;
+        int _spp;
+        std::mutex _mutex_ins;
+    };
 }
 
 #endif

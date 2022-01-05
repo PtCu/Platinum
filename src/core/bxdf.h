@@ -1,17 +1,27 @@
+// Copyright 2022 ptcup
+// 
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+// 
+//     http://www.apache.org/licenses/LICENSE-2.0
+// 
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 #ifndef CORE_BXDF_H_
 #define CORE_BXDF_H_
 
-#include "platinum.h"
-#include "interaction.h"
-#include "random.h"
-#include "spectrum.h"
-#include "math_utils.h"
+#include <core/defines.h>
+#include <core/intersection.h>
+#include <core/fresnel.h>
 
-namespace platinum
-{
+namespace platinum {
+    enum class BxDFType {
 
-    enum BxDFType
-    {
         BSDF_REFLECTION = 1 << 0,
         BSDF_TRANSMISSION = 1 << 1,
         BSDF_DIFFUSE = 1 << 2,
@@ -19,165 +29,127 @@ namespace platinum
         BSDF_SPECULAR = 1 << 4,
         BSDF_ALL = BSDF_DIFFUSE | BSDF_GLOSSY | BSDF_SPECULAR | BSDF_REFLECTION | BSDF_TRANSMISSION,
     };
-
-    Float frDielectric(Float cosThetaI, Float etaI, Float etaT);
-
-    inline bool sameHemisphere(const Vector3f &w, const Vector3f &wp) { return w.z * wp.z > 0; }
-
-    class BSDF
-    {
+    class BxDF {
     public:
-        typedef std::shared_ptr<BSDF> ptr;
-
-        // BSDF Public Methods
-        BSDF(const SurfaceInteraction &si, Float eta = 1)
-            : m_eta(eta), m_ns(si.n), m_ss(normalize(si.dpdu)), m_ts(cross(m_ns, m_ss)) {}
-
-        ~BSDF() = default;
-
-        void add(BxDF *b)
-        {
-            CHECK_LT(m_nBxDFs, NumMaxBxDFs);
-            m_bxdfs[m_nBxDFs++] = b;
-        }
-
-        int numComponents(BxDFType flags = BSDF_ALL) const;
-
-        Vector3f worldToLocal(const Vector3f &v) const
-        {
-            return Vector3f(dot(v, m_ss), dot(v, m_ts), dot(v, m_ns));
-        }
-
-        Vector3f localToWorld(const Vector3f &v) const
-        {
-            return Vector3f(
-                m_ss.x * v.x + m_ts.x * v.y + m_ns.x * v.z,
-                m_ss.y * v.x + m_ts.y * v.y + m_ns.y * v.z,
-                m_ss.z * v.x + m_ts.z * v.y + m_ns.z * v.z);
-        }
-
-        Spectrum f(const Vector3f &woW, const Vector3f &wiW, BxDFType flags = BSDF_ALL) const;
-
-        Spectrum sample_f(const Vector3f &wo, Vector3f &wi, const Vector2f &u, Float &pdf,
-                          BxDFType &sampledType, BxDFType type = BSDF_ALL) const;
-
-        Float pdf(const Vector3f &wo, const Vector3f &wi, BxDFType flags = BSDF_ALL) const;
-
-        //Refractive index
-        const Float m_eta;
-
-    private:
-        int m_nBxDFs = 0;
-        const Vector3f m_ns, m_ss, m_ts;
-
-        static constexpr int NumMaxBxDFs = 8;
-        BxDF *m_bxdfs[NumMaxBxDFs];
-    };
-
-    class BxDF
-    {
-    public:
-        BxDF(BxDFType type) : m_type(type) {}
-
+        BxDF(BxDFType type);
         virtual ~BxDF() = default;
 
-        bool matchesFlags(BxDFType t) const { return (m_type & t) == m_type; }
+        /**
+         * @brief  type的组合可能多于_type，所以要看_type是否被包含在type中
+         * @param  type            测试的type
+         * @return true         _type包含在type中
+         * @return false        _type没有包含在type中
+         */
+        bool MatchTypes(BxDFType type) const { return (static_cast<int>(_type) & static_cast<int>(type)) == static_cast<int>(_type); }
 
-        virtual Spectrum f(const Vector3f &wo, const Vector3f &wi) const = 0;
-        virtual Spectrum sample_f(const Vector3f &wo, Vector3f &wi, const Vector2f &sample,
-                                  Float &pdf, BxDFType &sampledType) const;
+        //
+        //
+        /**
+         * @brief    指定光的入射方向wi，求从wi散射到wo方向的光分布量
+         *           wi方向一般是通过光采样得到的方向
+         * @param  wo               出射方向
+         * @param  wi               入射方向
+         * @return glm::vec3        radiance
+         */
+        virtual glm::vec3 F(const glm::vec3& wo, const glm::vec3& wi)const = 0;
 
-        virtual Float pdf(const Vector3f &wo, const Vector3f &wi) const;
 
-        // BxDF Public Data
-        const BxDFType m_type;
+        /**
+         * @brief   返回入射方向为wi，出射方向为wo的概率密度(立体角空间)
+         *          wi方向一般是通过光采样得到的方向
+         * @param  wo               出射方向
+         * @param  wi               入射方向
+         * @return float    概率密度值
+         */
+        virtual float Pdf(const glm::vec3& wo, const glm::vec3& wi) const;
+        /**
+         * @brief   是F函数的简化，有时我们想仅仅输入出射方向，
+         *          然后根据出射方向计算入射方向并返回相应的BxDF函数值。
+         *          这在完美镜面反射和粗糙镜面反射中非常有用，因为此时它们的反射波瓣很窄，
+         *          只占整个半球方向很小一部分，我们不想盲目暴力地遍历所有的入射方向，
+         *          而是直接根据向量的反射特性获取入射方向（对于完美镜面反射，除了此方向其他方向上的贡献均为
+         *          0，这时的BRDF是一个狄拉克函数），
+         *          省去了很大部分的计算。
+        * @param  wo          出射方向
+        * @param  wi          需要返回的入射方向
+        * @param  sample      用于计算出射方向的样本点
+        * @param  pdf         返回的对应方向上的概率密度函数
+        * @param  sampledType BxDF的类型
+         * @return glm::vec3  radiance
+         */
+        virtual glm::vec3 SampleF(const glm::vec3& wo, glm::vec3& wi, const glm::vec2& sample, float& pdf, BxDFType& sampleType)const;
+
+
+        const BxDFType _type;
     };
 
-    class Fresnel
-    {
+
+
+
+
+    //   菲涅尔效应分2类材料讨论
+    //   1.绝缘体，例如，水，空气，矿物油，玻璃等材质，通常这些材质折射率为1到3之间
+    //   2.导体，电子可以在它们的原子晶格内自由移动，允许电流从一侧流向另一侧。
+    //       当导体受到电磁辐射(如可见光)时，这种基本的原子特性会转化为一种截然不同的行为:
+    //       导体会反射绝大部分的光，只有极小一部分会被物体吸收，并且仅仅在距离表面0.1微米处被吸收
+    //       因此，只有非常非常薄的金属片，光才能穿透. 我们忽略这种现象，只计算反射分量
+    //       与绝缘体不同的是，导体的折射率由复数表示 η' = η + i*k(k表示吸收系数)
+
+    class Fresnel {
     public:
         virtual ~Fresnel() = default;
-        virtual Spectrum evaluate(Float cosI) const = 0;
+        /**
+         * @brief
+         * @param  cosI             入射角余弦值
+         * @return glm::vec3        返回对应入射角的菲涅尔函数值
+         */
+        virtual glm::vec3 Evaluate(float cosI)const = 0;
     };
 
-    class FresnelDielectric : public Fresnel
-    {
+    //菲涅尔项的Schlick近似
+    class FresnelSchlick :public Fresnel {
     public:
-        FresnelDielectric(Float etaI, Float etaT) : m_etaI(etaI), m_etaT(etaT) {}
-
-        virtual Spectrum evaluate(Float cosThetaI) const override
-        {
-            return frDielectric(cosThetaI, m_etaI, m_etaT);
+        FresnelSchlick(const glm::vec3 F0) :_F0(F0) {}
+        FresnelSchlick(float etaI, float etaT) {
+            float F0_1 = (etaI - etaT) / (etaI + etaT);
+            float F0 = F0_1 * F0_1;
+            _F0 = glm::vec3{ F0 };
         }
-
+        virtual glm::vec3 Evaluate(float cosTheta)const override {
+            auto pow5 = [](float i) {return (i * i) * (i * i) * i;};
+            return _F0 + (glm::vec3(1.f) - _F0) * pow5(1 - cosTheta);
+        }
     private:
-        Float m_etaI, m_etaT;
+        //基础反射率
+        glm::vec3 _F0;
+
     };
 
-    class FresnelNoOp : public Fresnel
-    {
+    //绝缘体的菲涅尔项
+    class FresnelDielectric :public Fresnel {
     public:
-        virtual Spectrum evaluate(Float) const override { return Spectrum(1.); }
-    };
-
-    class LambertianReflection : public BxDF
-    {
-    public:
-        // LambertianReflection Public Methods
-        LambertianReflection(const Spectrum &R)
-            : BxDF(BxDFType(BSDF_REFLECTION | BSDF_DIFFUSE)), m_R(R) {}
-
-        virtual Spectrum f(const Vector3f &wo, const Vector3f &wi) const override;
-
+        FresnelDielectric(float etaI, float etaT) :_etaI(etaI), _etaT(etaT) {}
+        virtual glm::vec3 Evaluate(float cosThetaI)const override {
+            return glm::vec3(FrDielectric(cosThetaI, _etaI, _etaT));
+        }
     private:
-        // LambertianReflection Private Data
-        const Spectrum m_R;
+        float _etaI, _etaT;
+        float FrDielectric(float cosThetaI, float etaI, float etaT)const;
+
     };
 
-    class SpecularReflection : public BxDF
-    {
+    class FresnelConductor :public Fresnel {
     public:
-        // SpecularReflection Public Methods
-        SpecularReflection(const Spectrum &R, Fresnel *fresnel)
-            : BxDF(BxDFType(BSDF_REFLECTION | BSDF_SPECULAR)),
-              m_R(R),
-              m_fresnel(fresnel) {}
-
-        virtual Spectrum f(const Vector3f &wo, const Vector3f &wi) const override { return Spectrum(0.f); }
-
-        virtual Spectrum sample_f(const Vector3f &wo, Vector3f &wi, const Vector2f &sample,
-                                  Float &pdf, BxDFType &sampledType) const override;
-
-        virtual Float pdf(const Vector3f &wo, const Vector3f &wi) const override { return 0.f; }
-
+        FresnelConductor(const glm::vec3& etaI, const glm::vec3& etaT, const glm::vec3& kt)
+            :_etaI(etaI), _etaT(etaT), _kt(kt) {}
+        virtual glm::vec3 Evaluate(float cosThetaI)const override {
+            return FrConductor(cosThetaI, _etaI, _etaT, _kt);
+        }
     private:
-        // SpecularReflection Private Data
-        const Spectrum m_R;
-        const Fresnel *m_fresnel;
+        glm::vec3 FrConductor(float cosThetaI, const glm::vec3& etaI, const glm::vec3& etaT, const glm::vec3& kt)const;
+        glm::vec3 _etaI, _etaT, _kt;
+
     };
-
-    class SpecularTransmission : public BxDF
-    {
-    public:
-        // SpecularTransmission Public Methods
-        SpecularTransmission(const Spectrum &T, Float etaA, Float etaB, TransportMode mode)
-            : BxDF(BxDFType(BSDF_TRANSMISSION | BSDF_SPECULAR)), m_T(T), m_etaA(etaA),
-              m_etaB(etaB), m_fresnel(etaA, etaB), m_mode(mode) {}
-
-        virtual Spectrum f(const Vector3f &wo, const Vector3f &wi) const override { return Spectrum(0.f); }
-
-        virtual Spectrum sample_f(const Vector3f &wo, Vector3f &wi, const Vector2f &sample,
-                                  Float &pdf, BxDFType &sampledType) const override;
-
-        virtual Float pdf(const Vector3f &wo, const Vector3f &wi) const override { return 0.f; }
-
-    private:
-        const Spectrum m_T;
-        const Float m_etaA, m_etaB;
-        const FresnelDielectric m_fresnel;
-        const TransportMode m_mode;
-    };
-
 }
 
 #endif

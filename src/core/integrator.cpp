@@ -1,329 +1,130 @@
+// Copyright 2021 ptcup
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
 #include "integrator.h"
 
-#include "bxdf.h"
-#include "scene.h"
-#include "memory.h"
-#include "reporter.h"
-#include "pdf.h"
-#include "parallel.h"
-#include "utils/stringprint.h"
 namespace platinum
 {
+    glm::vec3 Integrator::SpecularReflect(const Ray& ray, const Interaction& inter, const Scene& scene, int depth)const {
+        return glm::vec3(0);
 
-    //-------------------------------------------SamplerIntegrator-------------------------------------
+    }
+    glm::vec3 Integrator::SpecularTransmit(const Ray& ray, const Interaction& inter, const Scene& scene, int depth)const {
+        return glm::vec3(0);
 
-    void SamplerIntegrator::render(const Scene &scene)
-    {
-        Vector2i resolution = m_camera->m_film->getResolution();
-
-        auto &sampler = m_sampler;
-
-        // Compute number of tiles, _nTiles_, to use for parallel rendering
-        Bounds2i sampleBounds = m_camera->m_film->getSampleBounds();
-        Vector2i sampleExtent = sampleBounds.diagonal();
-        constexpr int tileSize = 16;
-        Vector2i nTiles((sampleExtent.x + tileSize - 1) / tileSize, (sampleExtent.y + tileSize - 1) / tileSize);
-
-        Reporter reporter(nTiles.x * nTiles.y, "Rendering");
-        ParallelUtils::parallelFor((size_t)0, (size_t)(nTiles.x * nTiles.y), [&](const size_t &t) {
-            Vector2i tile(t % nTiles.x, t / nTiles.x);
-            MemoryArena arena;
-
-            // Get sampler instance for tile
-            int seed = t;
-
-            std::unique_ptr<Sampler> tileSampler = sampler->clone(seed);
-
-            // Compute sample bounds for tile
-            int x0 = sampleBounds.m_pMin.x + tile.x * tileSize;
-            int x1 = glm::min(x0 + tileSize, sampleBounds.m_pMax.x);
-            int y0 = sampleBounds.m_pMin.y + tile.y * tileSize;
-            int y1 = glm::min(y0 + tileSize, sampleBounds.m_pMax.y);
-            Bounds2i tileBounds(Vector2i(x0, y0), Vector2i(x1, y1));
-            LOG(INFO) << "Starting image tile " << tileBounds;
-
-            // Get _FilmTile_ for tile
-            std::unique_ptr<FilmTile> filmTile = m_camera->m_film->getFilmTile(tileBounds);
-
-            // Loop over pixels in tile to render them
-            for (Vector2i pixel : tileBounds)
-            {
-                tileSampler->startPixel(pixel);
-
-                do
-                {
-                    // Initialize _CameraSample_ for current sample
-                    CameraSample cameraSample = tileSampler->getCameraSample(pixel);
-
-                    // Generate camera ray for current sample
-                    Ray ray;
-                    Float rayWeight = m_camera->castingRay(cameraSample, ray);
-
-                    // Evaluate radiance along camera ray
-                    Spectrum L(0.f);
-                    if (rayWeight > 0)
-                    {
-                        L = Li(ray, scene, *tileSampler, arena);
-                    }
-
-                    // Issue warning if unexpected radiance value returned
-                    if (L.hasNaNs())
-                    {
-                        LOG(ERROR) << stringPrintf(
-                            "Not-a-number radiance value returned "
-                            "for pixel (%d, %d), sample %d. Setting to black.",
-                            pixel.x, pixel.y,
-                            (int)tileSampler->currentSampleNumber());
-                        L = Spectrum(0.f);
-                    }
-                    else if (L.y() < -1e-5)
-                    {
-                        LOG(ERROR) << stringPrintf(
-                            "Negative luminance value, %f, returned "
-                            "for pixel (%d, %d), sample %d. Setting to black.",
-                            L.y(), pixel.x, pixel.y,
-                            (int)tileSampler->currentSampleNumber());
-                        L = Spectrum(0.f);
-                    }
-                    else if (std::isinf(L.y()))
-                    {
-                        LOG(ERROR) << stringPrintf(
-                            "Infinite luminance value returned "
-                            "for pixel (%d, %d), sample %d. Setting to black.",
-                            pixel.x, pixel.y,
-                            (int)tileSampler->currentSampleNumber());
-                        L = Spectrum(0.f);
-                    }
-                    VLOG(1) << "Camera sample: " << cameraSample << " -> ray: " << ray << " -> L = " << L;
-
-                    // Add camera ray's contribution to image
-                    filmTile->addSample(cameraSample.pFilm, L, rayWeight);
-
-                    // Free _MemoryArena_ memory from computing image sample value
-                    arena.Reset();
-
-                } while (tileSampler->startNextSample());
-            }
-            LOG(INFO) << "Finished image tile " << tileBounds;
-
-            m_camera->m_film->mergeFilmTile(std::move(filmTile));
-            reporter.update();
-        },
-                                   ExecutionPolicy::PARALLEL);
-
-        reporter.done();
-
-        LOG(INFO) << "Rendering finished";
-
-        m_camera->m_film->writeImageToFile();
     }
 
-    Spectrum SamplerIntegrator::specularReflect(const Ray &ray, const SurfaceInteraction &isect,
-                                                const Scene &scene, Sampler &sampler, MemoryArena &arena, int depth) const
+    void TiledIntegrator::UpdateProgress(float progress)
     {
-        // Compute specular reflection direction _wi_ and BSDF value
-        Vector3f wo = isect.wo, wi;
-        Float pdf;
-        BxDFType sampledType;
-        BxDFType type = BxDFType(BSDF_REFLECTION | BSDF_SPECULAR);
+        int barWidth = 70;
 
-        Spectrum f = isect.bsdf->sample_f(wo, wi, sampler.get2D(), pdf, sampledType, type);
-
-        // Return contribution of specular reflection
-        const Vector3f &ns = isect.n;
-
-        if (pdf > 0.f && !f.isBlack() && absDot(wi, ns) != 0.f)
+        std::cout << "[";
+        int pos = static_cast<int>(barWidth * progress);
+        for (int i = 0; i < barWidth; ++i)
         {
-            // Compute ray differential _rd_ for specular reflection
-            Ray rd = isect.spawnRay(wi);
-            return f * Li(rd, scene, sampler, arena, depth + 1) * absDot(wi, ns) / pdf;
-        }
-        else
-        {
-            return Spectrum(0.f);
-        }
-    }
-
-    Spectrum SamplerIntegrator::specularTransmit(const Ray &ray, const SurfaceInteraction &isect,
-                                                 const Scene &scene, Sampler &sampler, MemoryArena &arena, int depth) const
-    {
-        Vector3f wo = isect.wo, wi;
-        Float pdf;
-        const Vector3f &p = isect.p;
-        const BSDF &bsdf = *(isect.bsdf);
-        BxDFType type = BxDFType(BSDF_TRANSMISSION | BSDF_SPECULAR);
-        BxDFType sampledType;
-        Spectrum f = bsdf.sample_f(wo, wi, sampler.get2D(), pdf, sampledType, type);
-        Spectrum L = Spectrum(0.f);
-        Vector3f ns = isect.n;
-
-        if (pdf > 0.f && !f.isBlack() && absDot(wi, ns) != 0.f)
-        {
-            // Compute ray differential _rd_ for specular transmission
-            Ray rd = isect.spawnRay(wi);
-            L = f * Li(rd, scene, sampler, arena, depth + 1) * absDot(wi, ns) / pdf;
-        }
-        return L;
-    }
-
-    //------------------------------------------Utility functions-------------------------------------
-
-    Spectrum uiformSampleAllLights(const Interaction &it, const Scene &scene,
-                                   MemoryArena &arena, Sampler &sampler, const std::vector<int> &nLightSamples)
-    {
-        Spectrum L(0.f);
-        for (size_t j = 0; j < scene.m_lights.size(); ++j)
-        {
-            // Accumulate contribution of _j_th light to _L_
-            const Light::ptr &light = scene.m_lights[j];
-            int nSamples = nLightSamples[j];
-            const Vector2f *uLightArray = sampler.get2DArray(nSamples);
-            const Vector2f *uScatteringArray = sampler.get2DArray(nSamples);
-
-            if (!uLightArray || !uScatteringArray)
-            {
-                // Use a single sample for illumination from _light_
-                Vector2f uLight = sampler.get2D();
-                Vector2f uScattering = sampler.get2D();
-                L += estimateDirect(it, uScattering, *light, uLight, scene, sampler, arena);
-            }
+            if (i < pos)
+                std::cout << "=";
+            else if (i == pos)
+                std::cout << ">";
             else
-            {
-                // Estimate direct lighting using sample arrays
-                Spectrum Ld(0.f);
-                for (int k = 0; k < nSamples; ++k)
-                {
-                    Ld += estimateDirect(it, uScatteringArray[k], *light, uLightArray[k], scene, sampler, arena);
-                }
-                L += Ld / nSamples;
-            }
+                std::cout << " ";
         }
-        return L;
-    }
+        std::cout << "] " << int(progress * 100.0) << " %\r";
+        std::cout.flush();
+    };
 
-    Spectrum uniformSampleOneLight(const Interaction &it, const Scene &scene,
-                                   MemoryArena &arena, Sampler &sampler, const Distribution1D *lightDistrib)
+    void TiledIntegrator::Render(const Scene& scene)
     {
-        // Randomly choose a single light to sample, _light_
-        int nLights = int(scene.m_lights.size());
+        auto film = this->_camera->GetFilm();
+        int width = film->GetWidth();
+        int height = film->GetHeight();
+        int img_size = film->GetImageSize();
 
-        if (nLights == 0)
-            return Spectrum(0.f);
-
-        int lightSampledIndex;
-        Float lightPdf;
-
-        if (lightDistrib != nullptr)
+        int has_finished_num = 0;
+        auto calculateRstForEachTile = [&](int rank)
         {
-            lightSampledIndex = lightDistrib->sampleDiscrete(sampler.get1D(), &lightPdf);
-            if (lightPdf == 0)
-                return Spectrum(0.f);
-        }
-        else
-        {
-            lightSampledIndex = glm::min((int)(sampler.get1D() * nLights), nLights - 1);
-            lightPdf = Float(1) / nLights;
-        }
+            const RenderTile& tile = _tiles_manager->GetTile(rank);
 
-        const Light::ptr &light = scene.m_lights[lightSampledIndex];
-        Vector2f uLight = sampler.get2D();
-        Vector2f uScattering = sampler.get2D();
-
-        return estimateDirect(it, uScattering, *light, uLight, scene, sampler, arena) / lightPdf;
-    }
-
-    Spectrum estimateDirect(const Interaction &it, const Vector2f &uScattering, const Light &light,
-                            const Vector2f &uLight, const Scene &scene, Sampler &sampler, MemoryArena &arena, bool specular)
-    {
-        BxDFType bsdfFlags = specular ? BSDF_ALL : BxDFType(BSDF_ALL & ~BSDF_SPECULAR);
-
-        Spectrum Ld(0.f);
-        // Sample light source with multiple importance sampling
-        Vector3f wi;
-        Float lightPdf = 0, scatteringPdf = 0;
-        VisibilityTester visibility;
-        Spectrum Li = light.sample_Li(it, uLight, wi, lightPdf, visibility);
-
-        if (lightPdf > 0 && !Li.isBlack())
-        {
-            // Compute BSDF or phase function's value for light sample
-            Spectrum f;
-            // Evaluate BSDF for light sampling strategy
-            const SurfaceInteraction &isect = (const SurfaceInteraction &)it;
-            f = isect.bsdf->f(isect.wo, wi, bsdfFlags) * absDot(wi, isect.n);
-
-            scatteringPdf = isect.bsdf->pdf(isect.wo, wi, bsdfFlags);
-
-            if (!f.isBlack())
+            for (size_t i = tile.min_x; i < tile.max_x; ++i)
             {
-                // Compute effect of visibility for light source sample
-                if (!visibility.unoccluded(scene))
+                for (size_t j = tile.min_y; j < tile.max_y; ++j)
                 {
-                    Li = Spectrum(0.f);
-                }
-
-                // Add light's contribution to reflected radiance
-                if (!Li.isBlack())
-                {
-                    if (isDeltaLight(light.m_flags))
+                    int px_id = j * width + i;
+                    for (int k = 0; k < _spp; k++)
                     {
-                        Ld += f * Li / lightPdf;
+                        float u = static_cast<float>(i + Random::RandomInUnitFloat()) / static_cast<float>(width);
+                        float v = static_cast<float>(j + Random::RandomInUnitFloat()) / static_cast<float>(height);
+                        auto r = _camera->GetRay(u, v);
+                        auto rst = Li(scene, r, 0);
+                        film->AddPixelValue(px_id, rst / static_cast<float>(_spp));
                     }
-                    else
-                    {
-                        Float weight = powerHeuristic(1, lightPdf, 1, scatteringPdf);
-                        Ld += f * Li * weight / lightPdf;
-                    }
+                    ++has_finished_num;
+                    ++px_id;
                 }
+                // 互斥锁，用于打印处理进程（加上之后影响速度，变为顺序执行）
+                // std::lock_guard<std::mutex> g1(_mutex_ins);
+                // UpdateProgress(static_cast<float>(has_finished_num) / img_size);
             }
-        }
+        };
 
-        // Sample BSDF with multiple importance sampling
-        if (!isDeltaLight(light.m_flags))
+        //concurrency::parallel_for in ppl.h is windows only, so here I just choose thread function.
+        std::vector<std::thread> threads(_tiles_manager->GetTilesCount());
+
+        for (int i = 0; i < _tiles_manager->GetTilesCount(); ++i)
         {
-            Spectrum f;
-            bool sampledSpecular = false;
-            // Sample scattered direction for surface interactions
-            BxDFType sampledType;
-            const SurfaceInteraction &isect = (const SurfaceInteraction &)it;
-            f = isect.bsdf->sample_f(isect.wo, wi, uScattering, scatteringPdf, sampledType, bsdfFlags);
-            f *= absDot(wi, isect.n);
-            sampledSpecular = (sampledType & BSDF_SPECULAR) != 0;
-
-            if (!f.isBlack() && scatteringPdf > 0)
-            {
-                // Account for light contributions along sampled direction _wi_
-                Float weight = 1;
-                if (!sampledSpecular)
-                {
-                    lightPdf = light.pdf_Li(it, wi);
-                    if (lightPdf == 0)
-                        return Ld;
-                    weight = powerHeuristic(1, scatteringPdf, 1, lightPdf);
-                }
-
-                // Find intersection and compute transmittance
-                SurfaceInteraction lightIsect;
-                Ray ray = it.spawnRay(wi);
-                Spectrum Tr(1.f);
-                bool foundSurfaceInteraction = scene.hit(ray, lightIsect);
-
-                // Add light contribution from material sampling
-                Spectrum Li(0.f);
-                if (foundSurfaceInteraction)
-                {
-                    if (lightIsect.hitable->getAreaLight() == &light)
-                        Li = lightIsect.Le(-wi);
-                }
-                else
-                {
-                    Li = light.Le(ray);
-                }
-                if (!Li.isBlack())
-                    Ld += f * Li * Tr * weight / scatteringPdf;
-            }
+            threads[i] = std::move(std::thread(calculateRstForEachTile, i));
         }
-        return Ld;
+        for (auto& th : threads)
+        {
+            th.join();
+        }
+        UpdateProgress(1.f);
+        film->SaveImage();
+
+        // // 分块计算光线追踪
+        // for (int i = 0; i < width; i += kTILESIZE)
+        // {
+        //     for (int j = 0; j < height; j += kTILESIZE)
+        //     {
+        //         int min_i = i;
+        //         int max_i = std::min(i + kTILESIZE, width);
+        //         int min_j = j;
+        //         int max_j = std::min(j + kTILESIZE, height);
+
+        //         th[id] = std::thread(calculateRstForEachTile, i,max_i,j,max_j));
+        //         id++;
+        //     }
+        // }
+        // for (int i = 0; i < tile_width * tile_height; i++)
+        //     th[i].join();
+
+        // for (int cnt = 1; cnt <= _spp; ++cnt)
+        // {
+        //     for (int px_id = 0; px_id < img_size; ++px_id)
+        //     {
+        //         int i = px_id % width;
+        //         int j = px_id / width;
+        //         float u = static_cast<float>(i + Random::RandomInUnitFloat()) / static_cast<float>(width);
+        //         float v = static_cast<float>(j + Random::RandomInUnitFloat()) / static_cast<float>(height);
+
+        //         auto r = _camera->GetRay(u, v);
+        //         auto rst = scene.CastRay(r);
+        //         auto result = rst / static_cast<float>(_spp);
+        //         film->AddPixelValue(px_id, result);
+
+        //     }
+        //     UpdateProgress(static_cast<float>(cnt) / _spp);
+        // }
     }
 
 }

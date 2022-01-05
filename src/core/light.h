@@ -1,97 +1,46 @@
-﻿#ifndef CORE_LIGHT_H_
-#define CORE_LIGHT_H_
+// Copyright 2022 ptcup
+// 
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+// 
+//     http://www.apache.org/licenses/LICENSE-2.0
+// 
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
 
-#include "platinum.h"
-#include "math_utils.h"
-#include "interaction.h"
-#include "rtti.h"
-#include "shape.h"
-#include "spectrum.h"
-#include "transform.h"
+#ifndef CORE_LIGHT_CPP_
+#define CORE_LIGHT_CPP_
+#include <glm/glm.hpp>
+#include <core/ray.h>
+#include <core/intersection.h>
+#include <core/scene.h>
 
+namespace platinum {
+    class Light {
+    public:
+        Light() = default;
+        virtual ~Light() = default;;
+        virtual glm::vec3 Le(const Ray& r)const { return glm::vec3(0); };
+        virtual glm::vec3 SampleLi(const Interaction& inter, float& pdf, glm::vec3& wi, VisibilityTester& vis)const;
+        virtual float PdfLi(const Interaction&, const glm::vec3)const;
+    };
 
-namespace platinum{
-enum class LightFlags
-{
-    // 点光源
-    DeltaPosition = 1,
-    // 方向光，只有一个方向
-    DeltaDirection = 2,
-    // 面光源
-    Area = 4,
-    Infinite = 8,
-    // 环境光
-    Env = 16
-};
+    class VisibilityTester final {
+    public:
+        VisibilityTester() = default;
+        VisibilityTester(const Interaction& p0, const Interaction& p1) :_p0(p0), _p1(p1) {
 
-inline bool isDeltaLight(int flags)
-{
-    return flags & (int)LightFlags::DeltaPosition || flags & (int)LightFlags::DeltaDirection;
+        }
+        const Interaction& P0()const { return _p0; }
+        const Interaction& P1()const { return _p1; }
+        bool Unoccluded(const Scene& scene)const;
+    private:
+        Interaction _p0, _p1;
+    };
 }
 
-class Light : public Object
-{
-public:
-    typedef std::shared_ptr<Light> ptr;
-
-    Light(const PropertyList &props);
-    Light(int flags, const Transform &LightToWorld, int nSamples = 1);
-
-    virtual ~Light();
-
-    virtual Spectrum power() const = 0;
-
-    virtual void preprocess(const Scene &scene) {}
-
-    virtual Spectrum sample_Li(const Interaction &ref, const Vector2f &u,
-                               Vector3f &wi, Float &pdf, VisibilityTester &vis) const = 0;
-
-    virtual Float pdf_Li(const Interaction &, const Vector3f &) const = 0;
-
-    //Emission
-    virtual Spectrum Le(const Ray &r) const;
-
-    virtual Spectrum sample_Le(const Vector2f &u1, const Vector2f &u2, Ray &ray,
-                               Vector3f &nLight, Float &pdfPos, Float &pdfDir) const = 0;
-
-    virtual void pdf_Le(const Ray &, const Vector3f &, Float &pdfPos, Float &pdfDir) const = 0;
-
-    virtual ClassType getClassType() const override { return ClassType::LightType; }
-
-    int m_flags;
-    int m_nSamples;
-
-protected:
-    Transform m_lightToWorld, m_worldToLight;
-};
-
-class VisibilityTester final
-{
-public:
-    VisibilityTester() {}
-    VisibilityTester(const Interaction &p0, const Interaction &p1)
-        : m_p0(p0), m_p1(p1) {}
-
-    const Interaction &P0() const { return m_p0; }
-    const Interaction &P1() const { return m_p1; }
-
-    bool unoccluded(const Scene &scene) const;
-
-    Spectrum tr(const Scene &scene, Sampler &sampler) const;
-
-private:
-    Interaction m_p0, m_p1;
-};
-
-class AreaLight : public Light
-{
-public:
-    typedef std::shared_ptr<AreaLight> ptr;
-
-    AreaLight(const PropertyList &props);
-    AreaLight(const Transform &lightToWorld, int nSamples);
-    virtual Spectrum L(const Interaction &intr, const Vector3f &w) const = 0;
-};
-
-}
 #endif

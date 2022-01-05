@@ -1,67 +1,60 @@
+// The MIT License (MIT)
+
+// Copyright (c) 2021 PtCu
+
+//  Permission is hereby granted, free of charge, to any person obtaining a
+//  copy of this software and associated documentation files (the "Software"),
+//  to deal in the Software without restriction, including without limitation
+//  the rights to use, copy, modify, merge, publish, distribute, sublicense,
+//  and/or sell copies of the Software, and to permit persons to whom the
+//  Software is furnished to do so, subject to the following conditions:
+//
+//  The above copyright notice and this permission notice shall be included in
+//  all copies or substantial portions of the Software.
+//
+//  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+//  OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+//  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+//  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+//  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+//  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+//  DEALINGS IN THE SOFTWARE.
+
 #ifndef CORE_CAMERA_H_
 #define CORE_CAMERA_H_
 
-#include "platinum.h"
-#include "film.h"
-#include "transform.h"
-#include "rtti.h"
+#include <core/defines.h>
+#include <math/rand.h>
+#include <core/material.h>
 
 namespace platinum
 {
-
-    struct CameraSample
+    struct ACameraSample
     {
-        Vector2f pFilm;
+        glm::vec2 p_film;
     };
-
-    inline std::ostream &operator<<(std::ostream &os, const CameraSample &cs)
-    {
-        os << "[ pFilm: " << cs.pFilm << " ]";
-        return os;
-    }
-
-    class Camera : public Object
+    class Camera
     {
     public:
-        typedef std::shared_ptr<Camera> ptr;
-
-        // Camera Interface
-        Camera() = default;
-        Camera(const Transform &cameraToWorld, Film::ptr film);
-        virtual ~Camera();
-
-        virtual Float castingRay(const CameraSample &sample, Ray &ray) const = 0;
-
-        //virtual spectrum We(const Ray &ray, APoint2f *pRaster2 = nullptr) const;
-        //virtual void pdf_We(const Ray &ray, Float *pdfPos, Float *pdfDir) const;
-
-        //virtual Spectrum Sample_Wi(const Interaction &ref, const APoint2f &u,
-        //	Vector3f *wi, Float *pdf, APoint2f *pRaster, VisibilityTester *vis) const;
-
-        virtual ClassType getClassType() const override { return ClassType::CameraType; }
-
-        // Camera Public Data
-        Transform m_cameraToWorld;
-        Film::ptr m_film = nullptr;
-    };
-
-    class ProjectiveCamera : public Camera
-    {
-    public:
-        typedef std::shared_ptr<ProjectiveCamera> ptr;
-
-        ProjectiveCamera() = default;
-        ProjectiveCamera(const Transform &cameraToWorld, const Transform &cameraToScreen, Film::ptr film)
-            : Camera(cameraToWorld, film), m_cameraToScreen(cameraToScreen) {}
+        //For test
+        Camera();
+        Camera(const glm::vec3& lookfrom, const glm::vec3& lookat, const glm::vec3& vup, float vfov, float aspect, float aperture, float focusDist, float t0 = 0.f, float t1 = 1.f);
+        virtual ~Camera() = default;
+        virtual Ray GetRay(float s, float t) const;
+        void SetFilm(std::shared_ptr<Film> film) { _film = film; }
+        std::shared_ptr<Film> GetFilm() { return _film; }
 
     protected:
-        virtual void initialize();
-
-    protected:
-        Transform m_cameraToScreen, m_rasterToCamera;
-        Transform m_screenToRaster, m_rasterToScreen;
+        glm::vec3 origin_;
+        glm::vec3 lower_left_corner;
+        glm::vec3 horizontal;
+        glm::vec3 vertical;
+        glm::vec3 front, up, right; //A set of orthonormal basis, to describe orentation of camera.
+        float lens_radius;
+        std::shared_ptr<Film> _film;
+        float _t0, _t1;
     };
 
-}
+} // namespace platinum
 
 #endif

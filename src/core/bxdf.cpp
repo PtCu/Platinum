@@ -1,247 +1,69 @@
-#include "bxdf.h"
-#include "sampler.h"
+// Copyright 2022 ptcup
+// 
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+// 
+//     http://www.apache.org/licenses/LICENSE-2.0
+// 
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
 
-namespace platinum
-{
-    //-------------------------------------------BSDF-------------------------------------
+#include <core/bxdf.h>
+namespace platinum {
+    float FresnelDielectric::FrDielectric(float cosThetaI, float etaI, float etaT)const {
+        cosThetaI = glm::clamp(cosThetaI, -1.f, 1.f);
 
-    int BSDF::numComponents(BxDFType flags) const
-    {
-        int num = 0;
-        for (int i = 0; i < m_nBxDFs; ++i)
-        {
-            if (m_bxdfs[i]->matchesFlags(flags))
-            {
-                ++num;
-            }
-        }
-        return num;
-    }
-
-    Spectrum BSDF::f(const Vector3f &woW, const Vector3f &wiW, BxDFType flags) const
-    {
-        Vector3f wi = worldToLocal(wiW), wo = worldToLocal(woW);
-        if (wo.z == 0)
-            return 0.f;
-
-        bool reflect = dot(wiW, m_ns) * dot(woW, m_ns) > 0;
-        Spectrum f(0.f);
-        for (int i = 0; i < m_nBxDFs; ++i)
-        {
-            if (m_bxdfs[i]->matchesFlags(flags) &&
-                ((reflect && (m_bxdfs[i]->m_type & BSDF_REFLECTION)) ||
-                 (!reflect && (m_bxdfs[i]->m_type & BSDF_TRANSMISSION))))
-            {
-                f += m_bxdfs[i]->f(wo, wi);
-            }
-        }
-        return f;
-    }
-
-    Spectrum BSDF::sample_f(const Vector3f &woWorld, Vector3f &wiWorld, const Vector2f &u,
-                            Float &pdf, BxDFType &sampledType, BxDFType type) const
-    {
-        // Choose which _BxDF_ to sample
-        int matchingComps = numComponents(type);
-        if (matchingComps == 0)
-        {
-            pdf = 0;
-            if (sampledType)
-            {
-                sampledType = BxDFType(0);
-            }
-            return Spectrum(0);
-        }
-        int comp = glm::min((int)glm::floor(u[0] * matchingComps), matchingComps - 1);
-
-        // Get _BxDF_ pointer for chosen component
-        BxDF *bxdf = nullptr;
-        int count = comp;
-        for (int i = 0; i < m_nBxDFs; ++i)
-        {
-            if (m_bxdfs[i]->matchesFlags(type) && count-- == 0)
-            {
-                bxdf = m_bxdfs[i];
-                break;
-            }
-        }
-        CHECK(bxdf != nullptr);
-
-        // Remap _BxDF_ sample _u_ to $[0,1)^2$
-        Vector2f uRemapped(glm::min(u[0] * matchingComps - comp, OneMinusEpsilon), u[1]);
-
-        // Sample chosen _BxDF_
-        Vector3f wi, wo = worldToLocal(woWorld);
-        if (wo.z == 0)
-        {
-            return 0.f;
-        }
-
-        pdf = 0;
-        if (sampledType)
-        {
-            sampledType = bxdf->m_type;
-        }
-        Spectrum f = bxdf->sample_f(wo, wi, uRemapped, pdf, sampledType);
-
-        if (pdf == 0)
-        {
-            if (sampledType)
-            {
-                sampledType = BxDFType(0);
-            }
-            return 0;
-        }
-
-        wiWorld = localToWorld(wi);
-
-        // Compute overall PDF with all matching _BxDF_s
-        if (!(bxdf->m_type & BSDF_SPECULAR) && matchingComps > 1)
-        {
-            for (int i = 0; i < m_nBxDFs; ++i)
-            {
-                if (m_bxdfs[i] != bxdf && m_bxdfs[i]->matchesFlags(type))
-                    pdf += m_bxdfs[i]->pdf(wo, wi);
-            }
-        }
-        if (matchingComps > 1)
-        {
-            pdf /= matchingComps;
-        }
-
-        // Compute value of BSDF for sampled direction
-        if (!(bxdf->m_type & BSDF_SPECULAR))
-        {
-            bool reflect = dot(wiWorld, m_ns) * dot(woWorld, m_ns) > 0;
-            f = 0.;
-            for (int i = 0; i < m_nBxDFs; ++i)
-            {
-                if (m_bxdfs[i]->matchesFlags(type) &&
-                    ((reflect && (m_bxdfs[i]->m_type & BSDF_REFLECTION)) ||
-                     (!reflect && (m_bxdfs[i]->m_type & BSDF_TRANSMISSION))))
-                {
-                    f += m_bxdfs[i]->f(wo, wi);
-                }
-            }
-        }
-
-        return f;
-    }
-
-    Float BSDF::pdf(const Vector3f &woWorld, const Vector3f &wiWorld, BxDFType flags) const
-    {
-        if (m_nBxDFs == 0)
-        {
-            return 0.f;
-        }
-
-        Vector3f wo = worldToLocal(woWorld), wi = worldToLocal(wiWorld);
-
-        if (wo.z == 0)
-        {
-            return 0.;
-        }
-
-        Float pdf = 0.f;
-        int matchingComps = 0;
-        for (int i = 0; i < m_nBxDFs; ++i)
-        {
-            if (m_bxdfs[i]->matchesFlags(flags))
-            {
-                ++matchingComps;
-                pdf += m_bxdfs[i]->pdf(wo, wi);
-            }
-        }
-        Float v = matchingComps > 0 ? pdf / matchingComps : 0.f;
-        return v;
-    }
-
-    //-------------------------------------------BxDF-------------------------------------
-
-    Spectrum BxDF::sample_f(const Vector3f &wo, Vector3f &wi, const Vector2f &sample,
-                            Float &pdf, BxDFType &sampledType) const
-    {
-        // Cosine-sample the hemisphere, flipping the direction if necessary
-        wi = cosineSampleHemisphere(sample);
-        if (wo.z < 0)
-        {
-            wi.z *= -1;
-        }
-
-        pdf = this->pdf(wo, wi);
-
-        return f(wo, wi);
-    }
-
-    Float BxDF::pdf(const Vector3f &wo, const Vector3f &wi) const
-    {
-        return sameHemisphere(wo, wi) ? glm::abs(wi.z) * InvPi : 0;
-    }
-
-    //-------------------------------------------LambertianReflection-------------------------------------
-
-    Spectrum LambertianReflection::f(const Vector3f &wo, const Vector3f &wi) const
-    {
-        return m_R * InvPi;
-    }
-
-    //-------------------------------------------SpecularReflection-------------------------------------
-
-    Spectrum SpecularReflection::sample_f(const Vector3f &wo, Vector3f &wi, const Vector2f &sample,
-                                          Float &pdf, BxDFType &sampledType) const
-    {
-        wi = Vector3f(-wo.x, -wo.y, wo.z);
-        pdf = 1;
-        return m_fresnel->evaluate(wi.z) * m_R / glm::abs(wi.z);
-    }
-
-    //-------------------------------------------SpecularTransmission-------------------------------------
-
-    Spectrum SpecularTransmission::sample_f(const Vector3f &wo, Vector3f &wi, const Vector2f &sample,
-                                            Float &pdf, BxDFType &sampledType) const
-    {
-        // Figure out which $\eta$ is incident and which is transmitted
-        bool entering = (wo.z) > 0;
-        Float etaI = entering ? m_etaA : m_etaB;
-        Float etaT = entering ? m_etaB : m_etaA;
-
-        // Compute ray direction for specular transmission
-        if (!refract(wo, faceforward(Vector3f(0, 0, 1), wo), etaI / etaT, wi))
-            return 0;
-
-        pdf = 1;
-        Spectrum ft = m_T * (Spectrum(1.) - m_fresnel.evaluate(wi.z));
-
-        // Account for non-symmetry with transmission to different medium
-        if (m_mode == TransportMode::Radiance)
-            ft *= (etaI * etaI) / (etaT * etaT);
-        return ft / glm::abs(wi.z);
-    }
-
-    //-------------------------------------------Utility function-------------------------------------
-
-    Float frDielectric(Float cosThetaI, Float etaI, Float etaT)
-    {
-        cosThetaI = clamp(cosThetaI, -1, 1);
-        // Potentially swap indices of refraction
         bool entering = cosThetaI > 0.f;
-        if (!entering)
-        {
+        // 如果如果入射角大于90° 
+        // 则法线方向反了，cosThetaI取绝对值，对换两个折射率
+        if (!entering) {
             std::swap(etaI, etaT);
-            cosThetaI = glm::abs(cosThetaI);
+            cosThetaI = std::abs(cosThetaI);
         }
 
-        // Compute _cosThetaT_ using Snell's law
-        Float sinThetaI = glm::sqrt(glm::max((Float)0, 1 - cosThetaI * cosThetaI));
-        Float sinThetaT = etaI / etaT * sinThetaI;
+        // 用斯涅耳定律计算sinThetaI
+        float sinThetaI = glm::sqrt(glm::max(0.f, 1.f - cosThetaI * cosThetaI));
+        float sinThetaT = etaI / etaT * sinThetaI;
 
-        // Handle total internal reflection
-        if (sinThetaT >= 1)
-            return 1;
-        Float cosThetaT = glm::sqrt(glm::max((Float)0, 1 - sinThetaT * sinThetaT));
-        Float Rparl = ((etaT * cosThetaI) - (etaI * cosThetaT)) / ((etaT * cosThetaI) + (etaI * cosThetaT));
-        Float Rperp = ((etaI * cosThetaI) - (etaT * cosThetaT)) / ((etaI * cosThetaI) + (etaT * cosThetaT));
+        // 全内部反射情况
+        if (sinThetaT >= 1) {
+            return 1.f;
+        }
+        // 套公式
+        float cosThetaT = glm::sqrt(glm::max(0.f, 1.f - sinThetaT * sinThetaT));
+        float Rparl = ((etaT * cosThetaI) - (etaI * cosThetaT))
+            / ((etaT * cosThetaI) + (etaI * cosThetaT));
+        float Rperp = ((etaI * cosThetaI) - (etaT * cosThetaT))
+            / ((etaI * cosThetaI) + (etaT * cosThetaT));
         return (Rparl * Rparl + Rperp * Rperp) / 2;
     }
 
+    glm::vec3 FresnelConductor::FrConductor(float cosThetaI, const glm::vec3& etaI, const glm::vec3& etaT, const glm::vec3& kt)const {
+        //套公式
+        cosThetaI = glm::clamp(cosThetaI, -1.f, 1.f);
+        glm::vec3 eta = etaT / etaI;
+        glm::vec3 etak = kt / etaI;
+
+        float cosThetaI2 = cosThetaI * cosThetaI;
+        float sinThetaI2 = 1.f - cosThetaI2;
+        glm::vec3 eta2 = eta * eta;
+        glm::vec3 etak2 = etak * etak;
+
+        glm::vec3 t0 = eta2 - etak2 - sinThetaI2;
+        glm::vec3 a2plusb2 = glm::sqrt(t0 * t0 + 4.f * eta2 * etak2);
+        glm::vec3 t1 = a2plusb2 + cosThetaI2;
+        glm::vec3 a = glm::sqrt(0.5f * (a2plusb2 + t0));
+        glm::vec3 t2 = (float)2 * cosThetaI * a;
+        glm::vec3 Rs = (t1 - t2) / (t1 + t2);
+
+        glm::vec3 t3 = cosThetaI2 * a2plusb2 + sinThetaI2 * sinThetaI2;
+        glm::vec3 t4 = t2 * sinThetaI2;
+        glm::vec3 Rp = Rs * (t3 - t4) / (t3 + t4);
+
+        return 0.5f * (Rp + Rs);
+    }
 }
