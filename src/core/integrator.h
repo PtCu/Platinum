@@ -20,6 +20,7 @@
 #include <core/scene.h>
 #include <core/camera.h>
 #include <core/film.h>
+#include <core/sampler.h>
 namespace platinum
 {
     class Integrator
@@ -27,8 +28,8 @@ namespace platinum
     public:
         virtual ~Integrator() = default;
         virtual void Render(const Scene& scene) = 0;
-        glm::vec3 SpecularReflect(const Ray& ray, const Interaction& inter, const Scene& scene, int depth)const;
-        glm::vec3 SpecularTransmit(const Ray& ray, const Interaction& inter, const Scene& scene, int depth)const;
+        glm::vec3 SpecularReflect(const Ray& ray, const Interaction& inter, const Scene& scene, Sampler& sampler, int depth)const;
+        glm::vec3 SpecularTransmit(const Ray& ray, const Interaction& inter, const Scene& scene, Sampler& sampler, int depth)const;
     };
     struct RenderTile
     {
@@ -98,7 +99,8 @@ namespace platinum
     class TiledIntegrator : public Integrator
     {
     public:
-        TiledIntegrator(std::shared_ptr<Camera> camera, int spp, int max_depth = 10) : _camera(camera), _spp(spp), _max_depth(max_depth)
+        TiledIntegrator(std::shared_ptr<Camera> camera, std::shared_ptr<Sampler>sampler, int spp, int max_depth = 10)
+            : _camera(camera), _sampler(sampler), _spp(spp), _max_depth(max_depth)
         {
             _tiles_manager = std::make_unique<TilesManager>(_camera->GetFilm()->GetWidth(), _camera->GetFilm()->GetHeight());
         }
@@ -108,9 +110,10 @@ namespace platinum
     protected:
         // Li() 方法计算有多少光照量沿着
         // 该 Ray 到达成像平面，并把光照量（radiance）保存在 Film 内
-        virtual glm::vec3 Li(const Scene& scene, const Ray& ray, int depth) = 0;
+        virtual glm::vec3 Li(const Scene& scene, const Ray& ray, Sampler& sampler, int depth = 0) = 0;
         void UpdateProgress(float progress);
         std::shared_ptr<Camera> _camera;
+        std::shared_ptr<Sampler>_sampler;
         int _spp;
         std::mutex _mutex_ins;
         std::unique_ptr<TilesManager> _tiles_manager;

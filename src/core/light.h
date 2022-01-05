@@ -20,13 +20,37 @@
 #include <core/scene.h>
 
 namespace platinum {
+    //隐含类型指定为int
+    enum class LightFlags : int
+    {
+        LightDeltaPosition = 1,
+        LightDeltaDirection = 2,
+        LightArea = 4,
+        LightInfinite = 8
+    };
     class Light {
     public:
         Light() = default;
         virtual ~Light() = default;;
+
         virtual glm::vec3 Le(const Ray& r)const { return glm::vec3(0); };
-        virtual glm::vec3 SampleLi(const Interaction& inter, float& pdf, glm::vec3& wi, VisibilityTester& vis)const;
-        virtual float PdfLi(const Interaction&, const glm::vec3)const;
+
+        virtual glm::vec3 SampleLe(const glm::vec2& u1, const glm::vec2& u2, Ray& ray,
+            glm::vec3& nLight, float& pdfPos, float& pdfDir) const = 0;
+
+        virtual void PdfLe(const Ray&, const glm::vec3&, float& pdfPos, float& pdfDir) const = 0;
+
+
+        virtual glm::vec3 SampleLi(const Interaction& inter, const glm::vec2& u,
+            glm::vec3& wi, float& pdf, VisibilityTester& vis)const;
+        /**
+         * @brief   返回在inter处采样光源时，对应的pdf函数值
+         *          用于估计直接光照时，采样bsdf时生成的wi方向，对应的pdf函数值
+         * @param  inter            My Param doc
+         * @param  wi               My Param doc
+         * @return float
+         */
+        virtual float PdfLi(const Interaction& inter, const glm::vec3& wi)const;
     };
 
     class VisibilityTester final {

@@ -46,7 +46,7 @@ namespace platinum {
             float pdf;
             glm::vec3 wi;
             VisibilityTester visibility_tester;
-            glm::vec3 sampled_li = light->SampleLi(inter, pdf, wi, visibility_tester);
+            glm::vec3 sampled_li = light->SampleLi(inter,  wi, pdf,visibility_tester);
             if (sampled_li == glm::vec3(0) || pdf == 0)
                 continue;
             glm::vec3 f = inter.bsdf->F(wo, wi);

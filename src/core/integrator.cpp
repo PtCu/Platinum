@@ -15,11 +15,11 @@
 
 namespace platinum
 {
-    glm::vec3 Integrator::SpecularReflect(const Ray& ray, const Interaction& inter, const Scene& scene, int depth)const {
+    glm::vec3 Integrator::SpecularReflect(const Ray& ray, const Interaction& inter, const Scene& scene, Sampler& sampler, int depth)const {
         return glm::vec3(0);
 
     }
-    glm::vec3 Integrator::SpecularTransmit(const Ray& ray, const Interaction& inter, const Scene& scene, int depth)const {
+    glm::vec3 Integrator::SpecularTransmit(const Ray& ray, const Interaction& inter, const Scene& scene, Sampler& sampler, int depth)const {
         return glm::vec3(0);
 
     }
@@ -49,82 +49,55 @@ namespace platinum
         int width = film->GetWidth();
         int height = film->GetHeight();
         int img_size = film->GetImageSize();
-
+        int tiles_count = _tiles_manager->GetTilesCount();
         int has_finished_num = 0;
-        auto calculateRstForEachTile = [&](int rank)
-        {
-            const RenderTile& tile = _tiles_manager->GetTile(rank);
-
-            for (size_t i = tile.min_x; i < tile.max_x; ++i)
+        auto sampler = _sampler;
+        for (int k = 0;k < _spp;++k) {
+            auto calculateRstForEachTile = [&](int rank)
             {
-                for (size_t j = tile.min_y; j < tile.max_y; ++j)
+                const RenderTile& tile = _tiles_manager->GetTile(rank);
+                std::unique_ptr<Sampler>tile_sampler(sampler->Clone(k * tiles_count + rank));
+                for (size_t i = tile.min_x; i < tile.max_x; ++i)
                 {
-                    int px_id = j * width + i;
-                    for (int k = 0; k < _spp; k++)
+                    for (size_t j = tile.min_y; j < tile.max_y; ++j)
                     {
+                        glm::ivec2 pixel{ i,j };
+                        tile_sampler->StartPixel(pixel);
+                        CameraSample cam_sample;
+                        tile_sampler->GetCameraSample(pixel);
+                        int px_id = j * width + i;
                         float u = static_cast<float>(i + Random::UniformFloat()) / static_cast<float>(width);
                         float v = static_cast<float>(j + Random::UniformFloat()) / static_cast<float>(height);
                         auto r = _camera->GetRay(u, v);
-                        auto rst = Li(scene, r, 0);
+                        auto rst = Li(scene, r, *tile_sampler);
                         film->AddPixelValue(px_id, rst / static_cast<float>(_spp));
+
+                        //++has_finished_num;
+                        //++px_id;
                     }
-                    ++has_finished_num;
-                    ++px_id;
+                    // 互斥锁，用于打印处理进程（加上之后影响速度，变为顺序执行）
+                    // std::lock_guard<std::mutex> g1(_mutex_ins);
+                    // UpdateProgress(static_cast<float>(has_finished_num) / img_size);
                 }
-                // 互斥锁，用于打印处理进程（加上之后影响速度，变为顺序执行）
-                // std::lock_guard<std::mutex> g1(_mutex_ins);
-                // UpdateProgress(static_cast<float>(has_finished_num) / img_size);
+            };
+            //concurrency::parallel_for in ppl.h is windows only, so here I just choose thread function.
+            std::vector<std::thread> threads(tiles_count);
+
+            for (int i = 0; i < tiles_count; ++i)
+            {
+                threads[i] = std::move(std::thread(calculateRstForEachTile, i));
             }
-        };
-
-        //concurrency::parallel_for in ppl.h is windows only, so here I just choose thread function.
-        std::vector<std::thread> threads(_tiles_manager->GetTilesCount());
-
-        for (int i = 0; i < _tiles_manager->GetTilesCount(); ++i)
-        {
-            threads[i] = std::move(std::thread(calculateRstForEachTile, i));
+            for (auto& th : threads)
+            {
+                th.join();
+            }
+            // UpdateProgress(1.f);
+            film->SaveImage();
         }
-        for (auto& th : threads)
-        {
-            th.join();
-        }
-        UpdateProgress(1.f);
-        film->SaveImage();
 
-        // // 分块计算光线追踪
-        // for (int i = 0; i < width; i += kTILESIZE)
-        // {
-        //     for (int j = 0; j < height; j += kTILESIZE)
-        //     {
-        //         int min_i = i;
-        //         int max_i = std::min(i + kTILESIZE, width);
-        //         int min_j = j;
-        //         int max_j = std::min(j + kTILESIZE, height);
 
-        //         th[id] = std::thread(calculateRstForEachTile, i,max_i,j,max_j));
-        //         id++;
-        //     }
-        // }
-        // for (int i = 0; i < tile_width * tile_height; i++)
-        //     th[i].join();
 
-        // for (int cnt = 1; cnt <= _spp; ++cnt)
-        // {
-        //     for (int px_id = 0; px_id < img_size; ++px_id)
-        //     {
-        //         int i = px_id % width;
-        //         int j = px_id / width;
-        //         float u = static_cast<float>(i + Random::UniformFloat()) / static_cast<float>(width);
-        //         float v = static_cast<float>(j + Random::UniformFloat()) / static_cast<float>(height);
 
-        //         auto r = _camera->GetRay(u, v);
-        //         auto rst = scene.CastRay(r);
-        //         auto result = rst / static_cast<float>(_spp);
-        //         film->AddPixelValue(px_id, result);
-
-        //     }
-        //     UpdateProgress(static_cast<float>(cnt) / _spp);
-        // }
     }
 
 }

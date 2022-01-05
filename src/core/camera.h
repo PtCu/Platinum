@@ -29,7 +29,7 @@
 
 namespace platinum
 {
-    struct ACameraSample
+    struct CameraSample
     {
         glm::vec2 p_film;
     };
