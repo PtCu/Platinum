@@ -16,19 +16,18 @@
 #define SAMPLER_RANDOM_SAMPLER_H_
 
 #include <core/sampler.h>
-
+#include <math/rand.h>
 namespace platinum {
     class RandomSampler final :public Sampler
     {
     public:
-
         RandomSampler(int ns, int seed = 0);
-
         virtual void StartPixel(const glm::ivec2&) override;
 
         virtual float Get1D() override;
         virtual glm::vec2 Get2D() override;
 
+        //Clone() 方法生成一个初始采样器的新实例，供渲染线程使用
         virtual std::unique_ptr<Sampler> Clone(int seed) override;
     };
 }

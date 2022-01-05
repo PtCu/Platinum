@@ -215,7 +215,7 @@ HitRst BVHAccel::getIntersection(const Ray& r) const
 
 void BVHAccel::Sample(HitRst& inter, float& pdf) const
 {
-    float p = std::sqrt(Random::RandomInUnitFloat()) * root_->area;
+    float p = std::sqrt(Random::UniformFloat()) * root_->area;
     getSample(root_, p, inter, pdf);
     pdf /= root_->area;
 }

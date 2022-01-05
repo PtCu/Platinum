@@ -83,7 +83,7 @@ namespace platinum
         // p = C * dL
         // p(L) = lim(n->inf, (1 - CL/n)^n) = exp(-CL)
         // L = -(1/C)ln(pL)
-        float hit_dis = -(1.0f / density_) * log(Random::RandomInUnitFloat());
+        float hit_dis = -(1.0f / density_) * log(Random::UniformFloat());
 
         if (hit_dis >= dis_in_vol)
         {

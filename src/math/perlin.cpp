@@ -104,7 +104,7 @@ namespace platinum
     {
         std::vector<glm::vec3> rst(n);
         for (size_t i = 0; i < n; ++i)
-            rst[i] = Random::RandomInUnitSphere();
+            rst[i] = Random::UniformSphere();
 
         return rst;
     }

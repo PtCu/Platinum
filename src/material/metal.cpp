@@ -36,7 +36,7 @@ namespace platinum
 
     bool Metal::ComputeScatteringFunctions(HitRst &rst) const
     {
-        glm::vec3 reflected = Reflect(rst.record.ray.GetDirection(), rst.record.vert.normal_) + fuzz_ * Random::RandomInUnitSphere();
+        glm::vec3 reflected = Reflect(rst.record.ray.GetDirection(), rst.record.vert.normal_) + fuzz_ * Random::UniformSphere();
         if (glm::dot(reflected, rst.record.vert.normal_) < 0)
         {
             rst.record.ray.SetColor(glm::vec3(0, 0, 0));

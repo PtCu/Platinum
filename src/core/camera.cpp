@@ -52,7 +52,7 @@ namespace platinum
     Ray Camera::GetRay(float s, float t) const
     {
         Ray ray(origin_, lower_left_corner + s * horizontal + t * vertical - origin_);
-        float time = _t0 + Random::RandomInUnitFloat() * (_t1 - _t0);
+        float time = _t0 + Random::UniformFloat() * (_t1 - _t0);
         ray.SetTime(time);
         return ray;
     }

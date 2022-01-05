@@ -27,7 +27,7 @@ namespace platinum
 
     void Triangle::Sample(HitRst& rst, float& pdf) const
     {
-        float x = std::sqrt(Random::RandomInUnitFloat()), y = Random::RandomInUnitFloat();
+        float x = std::sqrt(Random::UniformFloat()), y = Random::UniformFloat();
         rst.record.vert.position_ = A.position_ * (1.0f - x) + B.position_ * (x * (1.0f - y)) + C.position_ * (x * y);
         rst.record.vert.normal_ = this->normal_;
         pdf = 1.0f / area_;

@@ -19,8 +19,10 @@
 #include <glm/glm.hpp>
 namespace platinum {
     class Sampler {
-        virtual ~Sampler() = default;
+    public:
         Sampler(int64_t samplesPerPixel);
+
+        virtual ~Sampler() = default;
         // 对某个像素点开始采样
         virtual void StartPixel(const glm::ivec2& p);
 

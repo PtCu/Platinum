@@ -30,7 +30,7 @@ namespace platinum
     }
     bool Lambertian::ComputeScatteringFunctions(HitRst &rst) const
     {
-        auto reflected = glm::vec3(rst.record.vert.normal_) + Random::RandomInUnitSphere();
+        auto reflected = glm::vec3(rst.record.vert.normal_) + Random::UniformSphere();
         auto attenuation = albedo_->GetValue(rst.record.vert.u_, rst.record.vert.v_, rst.record.vert.position_);
         rst.record.ray.Update(rst.record.vert.position_, reflected, attenuation);
         return true;
@@ -42,7 +42,7 @@ namespace platinum
         // uniform sample on the hemisphere
         // See chapter 6.
         // x_1 is for phi, x_2 is for theta
-        float x_1 = Random::RandomInUnitFloat(), x_2 = Random::RandomInUnitFloat();
+        float x_1 = Random::UniformFloat(), x_2 = Random::UniformFloat();
         float cos_theta = std::fabs(1.0f - 2.0f * x_1);
         float r = std::sqrt(1.0f - cos_theta * cos_theta), phi = 2 * PI * x_2;
         glm::vec3 local_ray(r * std::cos(phi), r * std::sin(phi), cos_theta);

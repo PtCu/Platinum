@@ -55,7 +55,7 @@ namespace platinum
       else
          reflect_prob = 1.0;
 
-      if (Random::RandomInUnitFloat() < reflect_prob)
+      if (Random::UniformFloat() < reflect_prob)
          r_in.Update(rst.record.vert.position_, reflected, attenuation);
       else
          r_in.Update(rst.record.vert.position_, refracted, attenuation);

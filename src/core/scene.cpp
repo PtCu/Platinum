@@ -68,7 +68,7 @@ namespace platinum
                 emit_area_sum += objects_[k]->GetArea();
             }
         }
-        float p = Random::RandomInUnitFloat() * emit_area_sum;
+        float p = Random::UniformFloat() * emit_area_sum;
         emit_area_sum = 0;
         for (uint32_t k = 0; k < objects_.size(); ++k)
         {
@@ -159,7 +159,7 @@ namespace platinum
             Lo_dir = light_rst.emit * f_r * cosA * cosB / r2 / light_pdf;
         }
         hit_color += Lo_dir;
-        if (Random::RandomInUnitFloat() > RussianRoulette)
+        if (Random::UniformFloat() > RussianRoulette)
             return hit_color;
 
         //间接光照

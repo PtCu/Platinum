@@ -17,7 +17,6 @@
 
 #include <core/defines.h>
 #include <core/intersection.h>
-#include <core/fresnel.h>
 
 namespace platinum {
     enum class BxDFType {

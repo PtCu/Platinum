@@ -70,8 +70,8 @@ namespace platinum
                 {
                     for (int k = 0; k < _spp; k++)
                     {
-                        float u = static_cast<float>(j + Random::RandomInUnitFloat()) / static_cast<float>(nx);
-                        float v = static_cast<float>(i + Random::RandomInUnitFloat()) / static_cast<float>(ny);
+                        float u = static_cast<float>(j + Random::UniformFloat()) / static_cast<float>(nx);
+                        float v = static_cast<float>(i + Random::UniformFloat()) / static_cast<float>(ny);
                         auto r = cam->GetRay(u, v);
                         auto rst = scene.CastRay(r);
                         framebuffer[px_id] += (rst / static_cast<float>(_spp));
@@ -112,8 +112,8 @@ namespace platinum
         //     {
         //         int i = px_id % nx;
         //         int j = px_id / nx;
-        //         u = static_cast<float>(i + Random::RandomInUnitFloat()) / static_cast<float>(nx);
-        //         v = static_cast<float>(j + Random::RandomInUnitFloat()) / static_cast<float>(ny);
+        //         u = static_cast<float>(i + Random::UniformFloat()) / static_cast<float>(nx);
+        //         v = static_cast<float>(j + Random::UniformFloat()) / static_cast<float>(ny);
 
         //         auto r = cam->GetRay(u, v);
         //         auto rst = scene.CastRay(r);

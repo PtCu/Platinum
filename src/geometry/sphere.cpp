@@ -25,7 +25,7 @@ namespace platinum
 {
     void Sphere::Sample(HitRst& rst, float& pdf) const
     {
-        float theta = 2.0f * PI * Random::RandomInUnitFloat(), phi = PI * Random::RandomInUnitFloat();
+        float theta = 2.0f * PI * Random::UniformFloat(), phi = PI * Random::UniformFloat();
         glm::vec3 dir(std::cos(phi), std::sin(phi) * std::cos(theta), std::sin(phi) * std::sin(theta));
         rst.record.vert.position_ = center_ + radius_ * dir;
         rst.record.vert.normal_ = dir;

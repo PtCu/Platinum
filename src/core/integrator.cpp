@@ -62,8 +62,8 @@ namespace platinum
                     int px_id = j * width + i;
                     for (int k = 0; k < _spp; k++)
                     {
-                        float u = static_cast<float>(i + Random::RandomInUnitFloat()) / static_cast<float>(width);
-                        float v = static_cast<float>(j + Random::RandomInUnitFloat()) / static_cast<float>(height);
+                        float u = static_cast<float>(i + Random::UniformFloat()) / static_cast<float>(width);
+                        float v = static_cast<float>(j + Random::UniformFloat()) / static_cast<float>(height);
                         auto r = _camera->GetRay(u, v);
                         auto rst = Li(scene, r, 0);
                         film->AddPixelValue(px_id, rst / static_cast<float>(_spp));
@@ -114,8 +114,8 @@ namespace platinum
         //     {
         //         int i = px_id % width;
         //         int j = px_id / width;
-        //         float u = static_cast<float>(i + Random::RandomInUnitFloat()) / static_cast<float>(width);
-        //         float v = static_cast<float>(j + Random::RandomInUnitFloat()) / static_cast<float>(height);
+        //         float u = static_cast<float>(i + Random::UniformFloat()) / static_cast<float>(width);
+        //         float v = static_cast<float>(j + Random::UniformFloat()) / static_cast<float>(height);
 
         //         auto r = _camera->GetRay(u, v);
         //         auto rst = scene.CastRay(r);

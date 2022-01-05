@@ -1,3 +1,3 @@
 # Platinum
 
-An offline path tracer.
+A simple offline ray tracer for learning pbrt. 
