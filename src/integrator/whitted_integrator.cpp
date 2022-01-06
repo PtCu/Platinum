@@ -16,7 +16,7 @@
 
 namespace platinum {
 
-    glm::vec3 WhittedIntegrator::Li(const Scene& scene, const Ray& ray, int depth) {
+    glm::vec3 WhittedIntegrator::Li(const Scene& scene, const Ray& ray, Sampler& sampler, int depth) {
 
         auto hit_rst = scene.Hit(ray);
         glm::vec3 L;
@@ -33,7 +33,7 @@ namespace platinum {
         // 没有bsdf
         if (!inter.bsdf)
         {
-            return Li(scene, inter.spawnRay(ray.GetDirection()), depth);
+            return Li(scene, inter.spawnRay(ray.GetDirection()), sampler, depth);
         }
 
         const glm::vec3& n(inter.n);
@@ -46,11 +46,11 @@ namespace platinum {
             float pdf;
             glm::vec3 wi;
             VisibilityTester visibility_tester;
-            glm::vec3 sampled_li = light->SampleLi(inter,  wi, pdf,visibility_tester);
+            glm::vec3 sampled_li = light->SampleLi(inter, sampler.Get2D(), wi, pdf, visibility_tester);
             if (sampled_li == glm::vec3(0) || pdf == 0)
                 continue;
             glm::vec3 f = inter.bsdf->F(wo, wi);
-            
+
             //如果所采样的光源上的光线没被遮挡
             if (visibility_tester.Unoccluded(scene)) {
                 L += f * sampled_li * glm::dot(wi, n) / pdf;
@@ -60,8 +60,8 @@ namespace platinum {
 
         }
         if (depth + 1 < _max_depth) {
-            L += SpecularReflect(ray, inter, scene, depth);
-            L += SpecularTransmit(ray, inter, scene, depth);
+            L += SpecularReflect(ray, inter, scene, sampler, depth);
+            L += SpecularTransmit(ray, inter, scene, sampler, depth);
         }
         return L;
     }

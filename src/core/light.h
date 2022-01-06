@@ -41,6 +41,15 @@ namespace platinum {
         virtual void PdfLe(const Ray&, const glm::vec3&, float& pdfPos, float& pdfDir) const = 0;
 
 
+        /**
+         * @brief 返回从指定位置inter随机采样光源表面的点得到的辐射度
+         * @param  inter            指定位置
+         * @param  u                2维随机变量
+         * @param  wi               返回光线入射方向
+         * @param  pdf              返回对应随机变量的pdf值
+         * @param  vis              可见测试器
+         * @return glm::vec3        辐射度
+         */
         virtual glm::vec3 SampleLi(const Interaction& inter, const glm::vec2& u,
             glm::vec3& wi, float& pdf, VisibilityTester& vis)const;
         /**
@@ -51,6 +60,9 @@ namespace platinum {
          * @return float
          */
         virtual float PdfLi(const Interaction& inter, const glm::vec3& wi)const;
+
+        int _flags;
+        int _nSamples;
     };
 
     class VisibilityTester final {

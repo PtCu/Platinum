@@ -16,7 +16,7 @@
 
 namespace platinum {
 
-    RandomSampler::RandomSampler(int ns, int seed) : Sampler(ns), _rng(seed) {}
+    RandomSampler::RandomSampler(int ns) : Sampler(ns) {}
 
     float RandomSampler::Get1D()
     {

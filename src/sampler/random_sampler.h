@@ -21,7 +21,7 @@ namespace platinum {
     class RandomSampler final :public Sampler
     {
     public:
-        RandomSampler(int ns, int seed = 0);
+        RandomSampler(int ns);
         virtual void StartPixel(const glm::ivec2&) override;
 
         virtual float Get1D() override;
