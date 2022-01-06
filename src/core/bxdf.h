@@ -16,7 +16,7 @@
 #define CORE_BXDF_H_
 
 #include <core/defines.h>
-#include <core/intersection.h>
+#include <core/interaction.h>
 
 namespace platinum {
     enum class BxDFType {

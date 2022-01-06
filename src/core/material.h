@@ -24,7 +24,7 @@
 #define CORE_MATERIAL_H_
 #include <glm/glm.hpp>
 #include <core/ray.h>
-#include <core/intersection.h>
+#include <core/interaction.h>
 #include <core/defines.h>
 
 namespace platinum

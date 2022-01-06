@@ -16,7 +16,7 @@
 #define CORE_LIGHT_CPP_
 #include <glm/glm.hpp>
 #include <core/ray.h>
-#include <core/intersection.h>
+#include <core/interaction.h>
 #include <core/scene.h>
 
 namespace platinum {

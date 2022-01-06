@@ -27,7 +27,7 @@
 #include <glm/glm.hpp>
 #include <core/defines.h>
 #include <core/ray.h>
-#include <core/intersection.h>
+#include <core/interaction.h>
 #include <core/bvh.h>
 #include <functional>
 #include <math/rand.h>

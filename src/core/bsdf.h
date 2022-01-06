@@ -16,7 +16,7 @@
 #define CORE_BSDF_CPP_
 
 #include <core/defines.h>
-#include <core/intersection.h>
+#include <core/interaction.h>
 #include <core/bxdf.h>
 namespace platinum {
 
@@ -60,7 +60,7 @@ namespace platinum {
         static constexpr int NumMaxBxDFs = 8;
         std::vector<std::shared_ptr<BxDF>> _BxDFs;
     };
-   
+
 
 }
 

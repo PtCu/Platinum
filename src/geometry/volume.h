@@ -25,7 +25,7 @@
 
 #include <core/object.h>
 #include <core/ray.h>
-#include <core/intersection.h>
+#include <core/interaction.h>
 #include <core/aabb.h>
 #include <math/rand.h>
 #include <math/rand.h>
