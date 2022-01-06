@@ -32,6 +32,12 @@ namespace platinum
     {
         objects_.clear();
     }
+    bool Scene::Hit(const Ray& ray, SurfaceInteraction& inter)const {
+        return _aggres->Hit(ray, inter);
+    }
+    bool Scene::Hit(const Ray& ray)const {
+        return _aggres->Hit(ray);
+    }
     void Scene::BuildBVH()
     {
         this->bvh_accel_ = std::unique_ptr<BVHAccel>(new BVHAccel(objects_));
@@ -53,7 +59,7 @@ namespace platinum
         this->bvh_accel_.reset();
         this->destroyAll();
     }
-    HitRst Scene::Hit(const Ray& r) const
+    HitRst Scene::RayIn(const Ray& r) const
     {
         return this->bvh_accel_->RayCast(r);
     }
@@ -97,7 +103,7 @@ namespace platinum
         if (dep == 0)
             return glm::vec3(1.0001f / 255.0f);
 
-        auto rst = Hit(ray);
+        auto rst = RayIn(ray);
 
         if (rst.is_hit)
         {
@@ -124,7 +130,7 @@ namespace platinum
     glm::vec3 Scene::castRayPdf(const Ray& ray) const
     {
         //求一条光线与场景的交点
-        HitRst obj_rst = Hit(ray);
+        HitRst obj_rst = RayIn(ray);
         if (!obj_rst.is_hit)
             return glm::vec3(0.f);
 
@@ -146,7 +152,7 @@ namespace platinum
         glm::vec3 light_n = normalize(light_rst.record.vert.normal_);
 
         //测试是否有遮挡.向光源打出一条射线
-        auto bounce_back = Hit(to_light_ray);
+        auto bounce_back = RayIn(to_light_ray);
         if (bounce_back.is_hit && glm::length(bounce_back.record.vert.position_ - light_rst.record.vert.position_) < EPSILON)
         {
             //直接光照
@@ -167,7 +173,7 @@ namespace platinum
         //按材质采样一条射线
         glm::vec3 w_i = glm::normalize(obj_rst.material->Sample(w_o, obj_rst));
         Ray next_ray(obj_rst.record.vert.position_, w_i);
-        auto next_inter = Hit(next_ray);
+        auto next_inter = RayIn(next_ray);
         //下一个物体不发光
         if (next_inter.is_hit && !next_inter.material->IsEmit())
         {

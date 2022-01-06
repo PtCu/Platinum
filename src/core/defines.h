@@ -103,5 +103,8 @@ namespace platinum
     class Filter;
     class Transform;
     class AreaLight;
+    class Hitable;
+    class HitableObject;
+    class HitableAggregate;
 } // namespace platinum
 #endif

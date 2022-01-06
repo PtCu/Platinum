@@ -18,7 +18,7 @@ namespace platinum {
 
     glm::vec3 WhittedIntegrator::Li(const Scene& scene, const Ray& ray, Sampler& sampler, int depth) {
 
-        auto hit_rst = scene.Hit(ray);
+        auto hit_rst = scene.RayIn(ray);
         glm::vec3 L;
         SurfaceInteraction inter;
         if (!hit_rst.is_hit) {

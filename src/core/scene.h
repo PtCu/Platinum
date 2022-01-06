@@ -45,13 +45,14 @@ namespace platinum
         void AddObject(const std::vector<std::shared_ptr<Object>>::iterator& begin, const std::vector<std::shared_ptr<Object>>::iterator& end);
         void Reset();
         void BuildBVH();
-        HitRst Hit(const Ray& r) const;
+        HitRst RayIn(const Ray& r) const;
         glm::vec3 CastRay(const Ray& r) const;
         const std::vector<std::shared_ptr<Object>>& GetObjects() const { return objects_; }
 
         std::vector<std::shared_ptr<Light>>_lights;
 
         bool Hit(const Ray& ray, SurfaceInteraction& inter)const;
+        bool Hit(const Ray& ray)const;
     private:
         void destroyAll();
         glm::vec3 castRayPdf(const Ray& r) const;
@@ -64,6 +65,8 @@ namespace platinum
         bool default_light;
         float RussianRoulette;
         int mode;
+
+        std::shared_ptr<HitableAggregate> _aggres;
     };
 
 } // namespace platinum

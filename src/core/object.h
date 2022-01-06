@@ -66,7 +66,7 @@ namespace platinum
         virtual void ComputeScatteringFunctions(SurfaceInteraction& isect) const = 0;
     };
 
-    class AHitableAggregate : public Hitable
+    class HitableAggregate : public Hitable
     {
     public:
 
