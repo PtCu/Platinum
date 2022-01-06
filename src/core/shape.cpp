@@ -13,14 +13,16 @@
 // limitations under the License.
 
 #include <core/shape.h>
-
+#include <glm/gtx/norm.hpp>
 namespace platinum {
 
 
 
     bool Shape::Hit(const Ray& ray) const
     {
-        return true;
+        float t_hit = ray._t_max;
+        SurfaceInteraction inter;
+        return Hit(ray, t_hit, inter);
     }
 
     void Shape::SetTransform(Transform* object2world, Transform* world2object)
@@ -29,13 +31,39 @@ namespace platinum {
         _world2object = world2object;
     }
 
+    AABB Shape::WorldBound()const {
+        return _object2world->ExecOn(this->ObjectBound());
+    }
     Interaction Shape::Sample(const Interaction& ref, const glm::vec2& u, float& pdf) const
     {
-        return Interaction{};
+        Interaction inter = Sample(u, pdf);
+        glm::vec3 wi = inter.p - ref.p;
+        if (glm::dot(wi, wi) == 0)
+        {
+            pdf = 0;
+        }
+        else
+        {
+            wi = glm::normalize(wi);
+            pdf *= glm::distance2(ref.p, inter.p) / glm::abs(glm::dot(inter.n, -wi));
+            if (std::isinf(pdf))
+                pdf = 0.f;
+        }
+
+        return inter;
+
     }
 
     float Shape::Pdf(const Interaction& ref, const glm::vec3& wi) const
     {
+        Ray ray = ref.spawnRay(wi);
+        float t_hit;
+        SurfaceInteraction inter_light;
+        if (!Hit(ray, t_hit, inter_light))
+            return 0.f;
+        float pdf = glm::distance2(ref.p, inter_light.p) / (glm::abs(glm::dot(inter_light.n, -wi)) * Area());
+        if (std::isinf(pdf))
+            pdf = 0.f;
         return 1.f;
     }
 

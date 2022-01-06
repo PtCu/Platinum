@@ -16,6 +16,30 @@
 
 namespace platinum {
 
+
+    glm::vec3 Transform::ExecOn(const glm::vec3& p, float w)const {
+        glm::vec4 ret = _trans * glm::vec4(p.x, p.y, p.z, w);
+        if (w == 0.f)
+            return glm::vec3(ret.x, ret.y, ret.z);
+        if (ret.w == 1)
+            return glm::vec3(ret.x, ret.y, ret.z);
+        else
+            return glm::vec3(ret.x, ret.y, ret.z) / ret.w;
+
+    }
+    AABB Transform::ExecOn(const AABB& b)const {
+        //每个顶点都进行转化，最后合并
+        const auto& mat = *this;
+        AABB ret(mat.ExecOn(b._p_min, 1.f));
+        ret.UnionWith(mat.ExecOn(glm::vec3(b._p_max.x, b._p_min.y, b._p_min.z), 1.0f));
+        ret.UnionWith(mat.ExecOn(glm::vec3(b._p_min.x, b._p_max.y, b._p_min.z), 1.0f));
+        ret.UnionWith(mat.ExecOn(glm::vec3(b._p_min.x, b._p_min.y, b._p_max.z), 1.0f));
+        ret.UnionWith(mat.ExecOn(glm::vec3(b._p_min.x, b._p_max.y, b._p_max.z), 1.0f));
+        ret.UnionWith(mat.ExecOn(glm::vec3(b._p_max.x, b._p_max.y, b._p_min.z), 1.0f));
+        ret.UnionWith(mat.ExecOn(glm::vec3(b._p_max.x, b._p_min.y, b._p_max.z), 1.0f));
+        ret.UnionWith(mat.ExecOn(glm::vec3(b._p_max.x, b._p_max.y, b._p_max.z), 1.0f));
+        return ret;
+    }
     Transform Translate(const glm::vec3& delta)
     {
         glm::mat4 trans = glm::translate(glm::mat4(1.0f), delta);
@@ -81,5 +105,7 @@ namespace platinum {
         float invTanAng = 1 / glm::tan(glm::radians(fov) / 2);
         return Scale(invTanAng, invTanAng, 1) * Transform(persp);
     }
+
+
 
 }

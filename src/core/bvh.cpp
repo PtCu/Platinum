@@ -89,7 +89,7 @@ shared_ptr<BVH_Node> BVHAccel::recursiveBuild(vector<shared_ptr<Object>>::iterat
     //Choose split dimension
     AABB centroidBounds;
     for (auto iter = begin; iter != end; ++iter)
-        centroidBounds.Expand((*iter)->GetBoundingBox().Centroid());
+        centroidBounds.UnionWith((*iter)->GetBoundingBox().Centroid());
     int dim = centroidBounds.MaxExtent();
 
     // if (centroidBounds.GetMax()[dim] == centroidBounds.GetMin()[dim])

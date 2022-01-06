@@ -56,14 +56,12 @@ namespace platinum
         static const float min_t_;
         float GetTime() const { return _time; }
         void SetTime(float t) { _time = t; }
-    protected:
-        virtual void DoNothing() {}
 
-    private:
+
         glm::vec3 _origin;
         glm::vec3 _dir, inv_direction_;
         glm::vec3 color_;
-        float _t_max;
+        mutable float _t_max;
         std::array<int, 3> is_neg_dir_;
         float _time;
 

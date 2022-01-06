@@ -19,7 +19,7 @@
 #include <core/defines.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
-
+#include <math/bounds.h>
 namespace platinum {
     class Transform {
     public:
@@ -48,6 +48,20 @@ namespace platinum {
         }
         const glm::mat4& GetMatrix()const { return _trans; }
         const glm::mat4& GetInverseMatrix()const { return _trans_inv; }
+
+        /**
+         * @brief 作用于向量，转变其坐标
+         * @param  p                待转变的包围盒
+         * @param  w                齐次坐标的第四维，最后要除以w
+         * @return glm::vec3 
+         */
+        glm::vec3 ExecOn(const glm::vec3& p, float w)const;
+        /**
+         * @brief  作用于包围盒，转变其坐标
+         * @param  b        待转变的包围盒
+         * @return AABB 
+         */
+        AABB ExecOn(const AABB& b)const;
     private:
         glm::mat4 _trans, _trans_inv;
 

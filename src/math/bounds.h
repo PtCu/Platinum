@@ -32,11 +32,12 @@ namespace platinum
     {
     public:
         AABB();
+        AABB(const glm::vec3&p):_p_min(p),_p_max(p){}
         AABB(const glm::vec3& a, const glm::vec3& b);
         ~AABB() = default;
         AABB Intersect(const AABB& b) const;
-        void Expand(const glm::vec3& p);
-        void Expand(const AABB& aabb);
+        void UnionWith(const glm::vec3& p);
+        void UnionWith(const AABB& aabb);
         glm::vec3 Offset(const glm::vec3& p) const;
         bool Overlaps(const AABB& p) const;
         bool Inside(const glm::vec3& p) const;
@@ -45,22 +46,21 @@ namespace platinum
         bool IsHit(const Ray& r) const;
         const glm::vec3 operator[](int i) const
         {
-            return i == 0 ? p_min_ : p_max_;
+            return i == 0 ? _p_min : _p_max;
         }
-        glm::vec3 Diagonal() const { return p_max_ - p_min_; }
-        glm::vec3 Centroid() const { return 0.5f * p_min_ + 0.5f * p_max_; }
+        glm::vec3 Diagonal() const { return _p_max - _p_min; }
+        glm::vec3 Centroid() const { return 0.5f * _p_min + 0.5f * _p_max; }
         float SurfaceArea() const
         {
             auto d = Diagonal();
             return 2 * (d.x * d.y + d.x * d.z + d.y * d.z);
         }
-        glm::vec3 GetMin() const { return p_min_; }
-        glm::vec3 GetMax() const { return p_max_; }
+        glm::vec3 GetMin() const { return _p_min; }
+        glm::vec3 GetMax() const { return _p_max; }
         bool IsValid() const { return is_valid_; }
 
-    protected:
-        glm::vec3 p_min_;
-        glm::vec3 p_max_;
+        glm::vec3 _p_min;
+        glm::vec3 _p_max;
         bool is_valid_{ false };
     };
 

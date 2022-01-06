@@ -84,7 +84,7 @@ namespace platinum
             auto triangle = std::make_shared<Triangle>(vertexs[i], vertexs[i + 1], vertexs[i + 2], material);
             area_ += triangle->GetArea();
             triangles_.emplace_back(triangle);
-            bounding_box_.Expand(triangle->GetBoundingBox());
+            bounding_box_.UnionWith(triangle->GetBoundingBox());
         }
         is_valid_ = true;
         bvh_accel_ = std::make_unique<BVHAccel>(triangles_);

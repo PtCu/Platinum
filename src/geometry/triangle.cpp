@@ -48,7 +48,7 @@ namespace platinum
         normal_ = glm::normalize(glm::cross(e1, e2));
         area_ = 0.5f * glm::length(glm::cross(e1, e2));
         bounding_box_ = AABB(A.position_, B.position_);
-        bounding_box_.Expand(C.position_);
+        bounding_box_.UnionWith(C.position_);
     }
     Triangle::Triangle(const Vertex& a, const Vertex& b, const Vertex& c, std::shared_ptr<Material> material_)
         : A(a), B(b), C(c), Object(material_)
@@ -58,7 +58,7 @@ namespace platinum
         normal_ = glm::normalize(glm::cross(e1, e2));
         area_ = 0.5f * glm::length(glm::cross(e1, e2));
         bounding_box_ = AABB(A.position_, B.position_);
-        bounding_box_.Expand(C.position_);
+        bounding_box_.UnionWith(C.position_);
     }
     glm::vec4 Triangle::intersectRay(const glm::vec3& o, const glm::vec3& d)
     {
