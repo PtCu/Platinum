@@ -12,22 +12,74 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef MATH_TRANSFORM_CPP_
-#define MATH_TRANSFORM_CPP_
-
-
-#include <core/defines.h>
-#include <glm/glm.hpp>
+#include <math/transform.h>
 
 namespace platinum {
-    class Transform {
-    public:
-        Transform()
-        :_trans(glm::mat4(1.f)),_trans_inv(glm::mat4(1.f)){}
-    private:
-        glm::mat4 _trans, _trans_inv;
 
-    };
+    Transform Translate(const glm::vec3& delta)
+    {
+        glm::mat4 trans = glm::translate(glm::mat4(1.0f), delta);
+        glm::mat4 transInv = glm::translate(glm::mat4(1.0f), -delta);
+        return Transform(trans, transInv);
+    }
+
+    Transform Scale(float x, float y, float z)
+    {
+        glm::mat4 trans = glm::scale(glm::mat4(1.0f), glm::vec3(x, y, z));
+        glm::mat4 transInv = glm::scale(glm::mat4(1.0f), glm::vec3(1 / x, 1 / y, 1 / z));
+        return Transform(trans, transInv);
+    }
+
+    Transform RotateX(float theta)
+    {
+        glm::mat4 trans = glm::rotate(glm::mat4(1.0f), glm::radians(theta), glm::vec3(1, 0, 0));
+        glm::mat4 transInv = inverse(trans);
+        return Transform(trans, transInv);
+    }
+
+    Transform RotateY(float theta)
+    {
+        glm::mat4 trans = glm::rotate(glm::mat4(1.0f), glm::radians(theta), glm::vec3(0, 1, 0));
+        glm::mat4 transInv = inverse(trans);
+        return Transform(trans, transInv);
+    }
+
+    Transform RotateZ(float theta)
+    {
+        glm::mat4 trans = glm::rotate(glm::mat4(1.0f), glm::radians(theta), glm::vec3(0, 0, 1));
+        glm::mat4 transInv = inverse(trans);
+        return Transform(trans, transInv);
+    }
+
+    Transform Rotate(float theta, const glm::vec3& axis)
+    {
+        glm::mat4 trans = glm::rotate(glm::mat4(1.0f), glm::radians(theta), axis);
+        glm::mat4 transInv = inverse(trans);
+        return Transform(trans, transInv);
+    }
+
+    Transform LookAt(const glm::vec3& pos, const glm::vec3& look, const glm::vec3& up)
+    {
+        glm::mat4 worldToCamera = glm::lookAt(pos, look, up);
+        return Transform(worldToCamera, inverse(worldToCamera));
+    }
+
+    Transform Orthographic(float znear, float zfar)
+    {
+        return Scale(1, 1, 1 / (zfar - znear)) * Translate(glm::vec3(0, 0, -znear));
+    }
+
+    Transform Perspective(float fov, float n, float f)
+    {
+        // Perform projective divide for perspective projection
+        glm::mat4 persp(
+            1, 0, 0, 0,
+            0, 1, 0, 0,
+            0, 0, f / (f - n), 1,
+            0, 0, -f * n / (f - n), 0);
+        // Scale canonical perspective view to specified field of view
+        float invTanAng = 1 / glm::tan(glm::radians(fov) / 2);
+        return Scale(invTanAng, invTanAng, 1) * Transform(persp);
+    }
+
 }
-
-#endif
