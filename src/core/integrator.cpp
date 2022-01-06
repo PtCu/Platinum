@@ -12,14 +12,33 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #include "integrator.h"
+#include "bsdf.h"
 
 namespace platinum
 {
-    glm::vec3 Integrator::SpecularReflect(const Ray& ray, const Interaction& inter, const Scene& scene, Sampler& sampler, int depth)const {
-        return glm::vec3(0);
+    glm::vec3 TiledIntegrator::SpecularReflect(const Ray& ray, const SurfaceInteraction& inter,
+        const Scene& scene, Sampler& sampler, int depth)const {
+        glm::vec3 wo = inter.wo;
+        glm::vec3 wi;
+        float pdf;
+        BxDFType sampledType;
+        BxDFType type = BxDFType(static_cast<int>(BxDFType::BSDF_REFLECTION) | static_cast<int>(BxDFType::BSDF_SPECULAR));
+        //采样得到入射光
+        glm::vec3 f = inter.bsdf->SampleF(wo, wi, sampler.Get2D(), pdf, sampledType, type);
+
+        const glm::vec3& ns = inter.n;
+        if (pdf > 0.f && f != glm::vec3(0) && glm::abs(glm::dot(wi, ns)) != 0.f) {
+            Ray rd = inter.SpawnRay(wi);
+            return f * Li(scene, rd, sampler, depth + 1) * glm::abs(glm::dot(wi, ns));
+
+        }
+        else {
+            return glm::vec3(0.f);
+        }
 
     }
-    glm::vec3 Integrator::SpecularTransmit(const Ray& ray, const Interaction& inter, const Scene& scene, Sampler& sampler, int depth)const {
+    glm::vec3 TiledIntegrator::SpecularTransmit(const Ray& ray, const SurfaceInteraction& inter,
+        const Scene& scene, Sampler& sampler, int depth)const {
         return glm::vec3(0);
 
     }

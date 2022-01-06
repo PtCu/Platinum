@@ -56,8 +56,6 @@ namespace platinum {
                 L += f * sampled_li * glm::dot(wi, n) / pdf;
             }
 
-
-
         }
         if (depth + 1 < _max_depth) {
             L += SpecularReflect(ray, inter, scene, sampler, depth);

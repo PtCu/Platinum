@@ -33,6 +33,9 @@ namespace platinum {
             _trans = glm::make_mat4(mat);
             _trans_inv = glm::inverse(_trans);
         }
+        friend Transform Inverse(const Transform &t) { return Transform(t._trans_inv, t._trans); }
+		friend Transform Transpose(const Transform &t) { return Transform(glm::transpose(t._trans),glm::transpose(t._trans)); }
+
         bool operator==(const Transform& t)const
         {
             return t._trans == _trans && t._trans_inv == _trans_inv;

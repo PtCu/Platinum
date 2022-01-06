@@ -24,14 +24,7 @@
 
 namespace platinum
 {
-    //For test
-    Camera::Camera()
-    {
-        lower_left_corner = glm::vec3(-2.0, 1.0, -1.0);
-        horizontal = glm::vec3(4.0, 0.0, 0.0);
-        vertical = glm::vec3(0.0, -2.0, 0.0);
-        origin_ = glm::vec3(0.0, 0.0, 0.0);
-    }
+   
     Camera::Camera(const glm::vec3& lookfrom, const glm::vec3& lookat, const glm::vec3& vup, float vfov, float aspect, float aperture, float focus_dist,float t0,float t1) : origin_(lookfrom), lens_radius(aperture/2),_t0(t0),_t1(t1)
     {
         if (focus_dist == -1.0f)
@@ -57,4 +50,28 @@ namespace platinum
         return ray;
     }
 
+    void ProjectiveCamera::Initialize() {
+        int width = _film->GetWidth();
+        int height = _film->GetHeight();
+        glm::vec2 p1, p2;
+        float frame = static_cast<float>(width) / height;
+        if (frame > 1.f) {
+            p1.x = -frame;
+            p1.y = -1.f;
+            p2.x = frame;
+            p2.y = 1.f;
+        }
+        else {
+            p1.x = -1.f;
+            p1.y = -1.f / frame;
+            p2.x = 1.f;
+            p2.y = 1.f / frame;
+        }
+        _screen2raster = Scale(width, height, 1) *
+            Scale(1 / (p2.x - p1.x),
+                1 / (p1.y - p2.y), 1) *
+            Translate(glm::vec3(-p1.x, -p2.y, 0));
+        _raster2screen = Inverse(_screen2raster);
+        _raster2camera = Inverse(_camera2sreen) * _raster2screen;
+    }
 }
