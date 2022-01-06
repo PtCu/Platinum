@@ -29,7 +29,7 @@ namespace platinum {
         }
 
 
-        inter.computeScatteringFunctions(ray);
+        inter.ComputeScatteringFunctions(ray);
         // 没有bsdf
         if (!inter.bsdf)
         {

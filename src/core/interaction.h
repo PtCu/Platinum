@@ -35,7 +35,7 @@ namespace platinum
     public:
 
         HitRecord() = default;
-       
+
         HitRecord(const Ray& _ray, const glm::vec3& pos = glm::vec3(0),
             const glm::vec3& normal = glm::vec3(0, 0, 1), float u = 0, float v = 0) : ray(_ray), vert(pos, normal, u, v) {}
         Ray ray;
@@ -56,6 +56,7 @@ namespace platinum
         static const HitRst InValid;
     };
 
+    //SurfaceInteraction和MediumInteraction的基类
     class Interaction {
     public:
         Interaction() = default;
@@ -90,6 +91,10 @@ namespace platinum
         glm::vec3 n;			//normal vector
     };
 
+    /**
+     * @brief Having this abstraction lets most of the system work with points on surfaces
+     * without needing to consider the particular type of geometric shape the points lie on
+     */
     class SurfaceInteraction final : public Interaction
     {
     public:
@@ -99,12 +104,17 @@ namespace platinum
 
         glm::vec3 Le(const glm::vec3& w) const;
 
-        void computeScatteringFunctions(const Ray& ray,
+        void ComputeScatteringFunctions(const Ray& ray,
             bool allowMultipleLobes = false);
 
 
         BSDF* bsdf{ nullptr };
         glm::vec2 uv;
+        /**
+         * @brief   (u,v)是p点参数化后的表面坐标（如纹理坐标）
+         *          dpdu和dpdv是p在u,v方向的微分。二者不必正交
+         *          
+         */
         glm::vec3 dpdu, dpdv;
 
 

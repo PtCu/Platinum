@@ -26,7 +26,7 @@
 #include <core/object.h>
 #include <core/ray.h>
 #include <core/interaction.h>
-#include <core/aabb.h>
+#include <math/bounds.h>
 #include <math/rand.h>
 #include <geometry/sphere.h>
 
