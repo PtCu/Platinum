@@ -16,13 +16,21 @@
 #define LIGHT_AREA_LIGHT_H_
 
 #include <core/light.h>
+#include <math/transform.h>
+#include <core/interaction.h>
 
 namespace platinum {
-
-    class AreaLight :public Light {
+    class DiffuseAreaLight :public AreaLight {
     public:
-        
+        DiffuseAreaLight(const Transform* light2world, const glm::vec3& Le, int n_samples);
+        virtual glm::vec3 L(const Interaction& inter, const glm::vec3& w)const override {
+            return glm::vec3(0);
+        }
+    private:
+        glm::vec3 _Lemit;
+        float _area;
     };
 }
+
 
 #endif

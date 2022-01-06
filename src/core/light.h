@@ -18,6 +18,7 @@
 #include <core/ray.h>
 #include <core/interaction.h>
 #include <core/scene.h>
+#include <math/transform.h>
 
 namespace platinum {
     //隐含类型指定为int
@@ -77,6 +78,13 @@ namespace platinum {
     private:
         Interaction _p0, _p1;
     };
+
+    class AreaLight :public Light {
+    public:
+        AreaLight(const Transform& light2world, int n_samples);
+        virtual glm::vec3 L(const Interaction& inter, const glm::vec3& w)const = 0;
+    };
+
 }
 
 #endif

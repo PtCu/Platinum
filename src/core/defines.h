@@ -101,5 +101,6 @@ namespace platinum
     class SurfaceInteraction;
     struct CameraSample;
     class Filter;
+    class Transform;
 } // namespace platinum
 #endif
