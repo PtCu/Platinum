@@ -56,7 +56,7 @@ namespace platinum {
 
     float Shape::Pdf(const Interaction& ref, const glm::vec3& wi) const
     {
-        Ray ray = ref.spawnRay(wi);
+        Ray ray = ref.SpawnRay(wi);
         float t_hit;
         SurfaceInteraction inter_light;
         if (!Hit(ray, t_hit, inter_light))

@@ -51,6 +51,7 @@ namespace platinum
 
         std::vector<std::shared_ptr<Light>>_lights;
 
+        bool Hit(const Ray& ray, SurfaceInteraction& inter)const;
     private:
         void destroyAll();
         glm::vec3 castRayPdf(const Ray& r) const;

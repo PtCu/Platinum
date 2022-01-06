@@ -33,7 +33,7 @@ namespace platinum {
         // 没有bsdf
         if (!inter.bsdf)
         {
-            return Li(scene, inter.spawnRay(ray.GetDirection()), sampler, depth);
+            return Li(scene, inter.SpawnRay(ray.GetDirection()), sampler, depth);
         }
 
         const glm::vec3& n(inter.n);
@@ -47,7 +47,7 @@ namespace platinum {
             glm::vec3 wi;
             VisibilityTester visibility_tester;
             glm::vec3 sampled_li = light->SampleLi(inter, sampler.Get2D(), wi, pdf, visibility_tester);
-            if (sampled_li == glm::vec3(0) || pdf == 0)
+            if (glm::vec3(0)==sampled_li|| pdf == 0)
                 continue;
             glm::vec3 f = inter.bsdf->F(wo, wi);
 

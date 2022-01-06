@@ -28,6 +28,8 @@
 #include <core/material.h>
 #include <core/shape.h>
 #include <core/integrator.h>
+#include <core/light.h>
+
 namespace platinum
 {
     class Object
@@ -46,6 +48,34 @@ namespace platinum
         std::shared_ptr<Material> _material;
     };
 
+
+    class Hitable {
+    public:
+        typedef std::shared_ptr<Hitable> ptr;
+
+        virtual ~Hitable() = default;
+
+        virtual bool Hit(const Ray& ray) const = 0;
+        virtual bool Hit(const Ray& ray, SurfaceInteraction& iset) const = 0;
+
+        virtual AABB WorldBound() const = 0;
+
+        virtual const AreaLight* GetAreaLight() const = 0;
+        virtual const Material* GetMaterial() const = 0;
+
+        virtual void ComputeScatteringFunctions(SurfaceInteraction& isect) const = 0;
+    };
+
+    class AHitableAggregate : public Hitable
+    {
+    public:
+
+        virtual const AreaLight* GetAreaLight() const override;
+        virtual const Material* GetMaterial() const override;
+
+        virtual void ComputeScatteringFunctions(SurfaceInteraction& isect) const override;
+
+    };
 
 
 

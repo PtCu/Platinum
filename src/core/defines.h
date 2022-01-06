@@ -102,5 +102,6 @@ namespace platinum
     struct CameraSample;
     class Filter;
     class Transform;
+    class AreaLight;
 } // namespace platinum
 #endif
