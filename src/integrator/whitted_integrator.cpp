@@ -16,7 +16,7 @@
 
 namespace platinum {
 
-    glm::vec3 WhittedIntegrator::Li(const Scene& scene, const Ray& ray, Sampler& sampler, int depth) {
+    glm::vec3 WhittedIntegrator::Li(const Scene& scene, const Ray& ray, Sampler& sampler, int depth)const {
 
         auto hit_rst = scene.RayIn(ray);
         glm::vec3 L;

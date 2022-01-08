@@ -37,6 +37,8 @@ namespace platinum
         RenderTile(int minx, int miny, int maxx, int maxy)
             : min_x(minx), min_y(miny), max_x(maxx), max_y(maxy) {}
     };
+
+    
     class TilesManager
     {
     private:
@@ -109,7 +111,7 @@ namespace platinum
         // Li() 方法计算有多少光照量沿着
         // 该 Ray 到达成像平面，并把光照量（radiance）保存在 Film 内
         virtual glm::vec3 Li(const Scene& scene, const Ray& ray, Sampler& sampler, int depth = 0)const = 0;
-         glm::vec3 SpecularReflect(const Ray& ray, const SurfaceInteraction& inter, const Scene& scene, Sampler& sampler, int depth)const;
+        glm::vec3 SpecularReflect(const Ray& ray, const SurfaceInteraction& inter, const Scene& scene, Sampler& sampler, int depth)const;
         glm::vec3 SpecularTransmit(const Ray& ray, const SurfaceInteraction& inter, const Scene& scene, Sampler& sampler, int depth)const;
         void UpdateProgress(float progress);
         std::shared_ptr<Camera> _camera;

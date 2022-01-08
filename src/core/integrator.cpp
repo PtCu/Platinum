@@ -84,12 +84,14 @@ namespace platinum
                         tile_sampler->StartPixel(pixel);
                         CameraSample cam_sample;
                         tile_sampler->GetCameraSample(pixel);
+                        Ray ray;
+                        float ray_weight = _camera->CastRay(cam_sample, ray);
+                        glm::vec3 L(0.f);
+                        if (ray_weight > 0) {
+                            L = Li(scene, ray, *tile_sampler);
+                        }
                         int px_id = j * width + i;
-                        float u = static_cast<float>(i + Random::UniformFloat()) / static_cast<float>(width);
-                        float v = static_cast<float>(j + Random::UniformFloat()) / static_cast<float>(height);
-                        auto r = _camera->GetRay(u, v);
-                        auto rst = Li(scene, r, *tile_sampler);
-                        film->AddPixelValue(px_id, rst / static_cast<float>(_spp));
+                        film->AddPixelValue(px_id, L / static_cast<float>(_spp));
 
                         //++has_finished_num;
                         //++px_id;

@@ -1,4 +1,4 @@
-// Copyright 2021 ptcup
+// Copyright 2022 ptcup
 // 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,11 +12,3 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "path_integrator.h"
-
-namespace platinum {
-
-    glm::vec3 PathIntegrator::Li(const Scene& scene, const Ray& ray,Sampler& sampler,int depth)const {
-        return glm::vec3(0);
-    }
-}
