@@ -17,10 +17,17 @@
 namespace platinum {
 
 
+    Ray Transform::ExecOn(const Ray& r)const {
+        glm::vec3 o = this->ExecOn(r._origin, 1.f);
+        glm::vec3 d = this->ExecOn(r._dir, 0.f);
+        return Ray(o, d, r._t_max);
+    }
     glm::vec3 Transform::ExecOn(const glm::vec3& p, float w)const {
         glm::vec4 ret = _trans * glm::vec4(p.x, p.y, p.z, w);
+        //w==0 --> vector
         if (w == 0.f)
             return glm::vec3(ret.x, ret.y, ret.z);
+        //w==1 --> point
         if (ret.w == 1)
             return glm::vec3(ret.x, ret.y, ret.z);
         else

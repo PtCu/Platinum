@@ -33,8 +33,8 @@ namespace platinum {
             _trans = glm::make_mat4(mat);
             _trans_inv = glm::inverse(_trans);
         }
-        friend Transform Inverse(const Transform &t) { return Transform(t._trans_inv, t._trans); }
-		friend Transform Transpose(const Transform &t) { return Transform(glm::transpose(t._trans),glm::transpose(t._trans)); }
+        friend Transform Inverse(const Transform& t) { return Transform(t._trans_inv, t._trans); }
+        friend Transform Transpose(const Transform& t) { return Transform(glm::transpose(t._trans), glm::transpose(t._trans)); }
 
         bool operator==(const Transform& t)const
         {
@@ -56,15 +56,18 @@ namespace platinum {
          * @brief 作用于向量，转变其坐标
          * @param  p                待转变的包围盒
          * @param  w                齐次坐标的第四维，最后要除以w
-         * @return glm::vec3 
+         * @return glm::vec3
          */
         glm::vec3 ExecOn(const glm::vec3& p, float w)const;
         /**
          * @brief  作用于包围盒，转变其坐标
          * @param  b        待转变的包围盒
-         * @return AABB 
+         * @return AABB
          */
         AABB ExecOn(const AABB& b)const;
+
+        Ray ExecOn(const Ray& r)const;
+        
     private:
         glm::mat4 _trans, _trans_inv;
 
