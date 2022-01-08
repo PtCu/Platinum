@@ -12,3 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#include <camera/perspective_camera.h>
+
+namespace platinum {
+    PerspectiveCamera::PerspectiveCamera(const Transform& camera2world, float fov, std::shared_ptr<Film>film) {
+        auto x = _film->GetWidth();
+        
+    }
+}

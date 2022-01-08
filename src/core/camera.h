@@ -41,6 +41,12 @@ namespace platinum
         Camera(const Transform& camera2world, std::shared_ptr<Film> film)
             :_camera2world(camera2world), _film(film) {}
         virtual ~Camera();
+        /**
+         * @brief 
+         * @param  sample           My Param doc
+         * @param  ray              My Param doc
+         * @return float            radiance
+         */
         virtual float CastRay(const CameraSample& sample, Ray& ray)const = 0;
         Camera(const glm::vec3& lookfrom, const glm::vec3& lookat, const glm::vec3& vup, float vfov, float aspect, float aperture, float focusDist, float t0 = 0.f, float t1 = 1.f);
         virtual Ray GetRay(float s, float t) const;
@@ -59,6 +65,9 @@ namespace platinum
         float _t0, _t1;
     };
 
+    /**
+     * @brief pbrt用的左手系，朝向z轴正方向
+     */
     class ProjectiveCamera : public Camera
     {
     public:
@@ -67,6 +76,10 @@ namespace platinum
             : Camera(cameraToWorld, film), _camera2sreen(cameraToScreen) { }
 
     protected:
+        /**
+         * @brief   初始化_screen2raster, _raster2screen,_raster2camera.
+         *          必须由基类初始化完_camera2sreen才能调用此函数
+         */
         virtual void Initialize();
 
     protected:
