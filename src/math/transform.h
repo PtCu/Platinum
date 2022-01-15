@@ -54,10 +54,10 @@ namespace platinum {
         const glm::mat4& GetInverseMatrix()const { return _trans_inv; }
 
         /**
-         * @brief 作用于向量，返回转变后的新向量
+         * @brief 作用于向量或点，返回转变后的新向量或点
          * @param  p                待转变的包围盒
          * @param  w                齐次坐标的第四维，最后要除以w
-         * @return glm::vec3        转变后的向量
+         * @return glm::vec3        转变后的向量或点
          */
         glm::vec3 ExecOn(const glm::vec3& p, float w)const;
         /**
