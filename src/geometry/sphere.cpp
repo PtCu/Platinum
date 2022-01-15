@@ -23,7 +23,7 @@
 #include <geometry/sphere.h>
 namespace platinum
 {
-    void Sphere::Sample(HitRst& rst, float& pdf) const
+    void Sphere_::Sample(HitRst &rst, float &pdf) const
     {
         float theta = 2.0f * PI * Random::UniformFloat(), phi = PI * Random::UniformFloat();
         glm::vec3 dir(std::cos(phi), std::sin(phi) * std::cos(theta), std::sin(phi) * std::sin(theta));
@@ -32,19 +32,19 @@ namespace platinum
         pdf = 1.0f / area_;
         rst.emit = _material->Emit();
     }
-    float Sphere::GetArea() const
+    float Sphere_::GetArea() const
     {
         return area_;
     }
-    AABB Sphere::GetBoundingBox() const
+    AABB Sphere_::GetBoundingBox() const
     {
         return bounding_box_;
     }
-    glm::vec3 Sphere::getCenter(const Ray& r) const
+    glm::vec3 Sphere_::getCenter(const Ray &r) const
     {
         return center_;
     }
-    Sphere::Sphere(glm::vec3 cen, float r, std::shared_ptr<Material> m)
+    Sphere_::Sphere_(glm::vec3 cen, float r, std::shared_ptr<Material> m)
         : center_(cen), radius_(r), Object(m)
     {
         glm::vec3 minP = center_ - glm::vec3(radius_);
@@ -52,7 +52,7 @@ namespace platinum
         bounding_box_ = AABB(minP, maxP);
         area_ = PI * 4.0f * r * r;
     };
-    void Sphere::setIntersection(float t, HitRst& rst, const Ray& r) const
+    void Sphere_::setIntersection(float t, HitRst &rst, const Ray &r) const
     {
         rst.record.ray = r;
         rst.record.ray.SetTMax(t);
@@ -63,7 +63,7 @@ namespace platinum
         rst.is_hit = true;
     }
 
-    HitRst Sphere::Intersect(const Ray& r)
+    HitRst Sphere_::Intersect(const Ray &r)
     {
         HitRst rst;
         glm::vec3 oc = r.GetOrigin() - getCenter(r);
@@ -87,7 +87,7 @@ namespace platinum
         return rst;
     }
     //Using the polar coordinates of sphere (phi, theta) to get fractions as u, v.
-    void Sphere::getSphereUV(const glm::vec3& p, float& u, float& v) const
+    void Sphere_::getSphereUV(const glm::vec3 &p, float &u, float &v) const
     {
         float phi = atan2(p.z, p.x);
         float theta = asin(p.y);
@@ -95,4 +95,96 @@ namespace platinum
         v = (theta + PI / 2) / PI;
     }
 
+    AABB Sphere::ObjectBound() const
+    {
+        return AABB(-glm::vec3(_radius, _radius, _radius), glm::vec3(_radius, _radius, _radius));
+    }
+
+    float Sphere::Area() const
+    {
+        return 4.f * PI * _radius * _radius;
+    }
+
+    Interaction Sphere::Sample(const glm::vec2 &u, float &pdf) const
+    {
+        return {};
+    }
+    Interaction Sphere::Sample(const Interaction &ref, const glm::vec2 &u, float &pdf) const
+    {
+        return {};
+    }
+    float Sphere::Pdf(const Interaction &ref, const glm::vec3 &wi) const
+    {
+        return 0.f;
+    }
+
+    bool Sphere::Hit(const Ray &r) const
+    {
+        //先变化光线到局部坐标中
+        Ray ray = _world2object->ExecOn(r);
+
+        float a = glm::dot(ray._direction, ray._direction);
+        float b = glm::dot(ray._direction, ray._origin);
+        float c = glm::dot(ray._origin, ray._origin) - _radius * _radius;
+
+        float discriminant = b * b - a * c;
+        if (discriminant <= 0)
+            return false;
+        float disc_sqrt = glm::sqrt(discriminant);
+        float t0 = (-b - disc_sqrt) / a;
+        float t1 = (-b + disc_sqrt) / a;
+
+        if (t0 > t1)
+            std::swap(t0, t1);
+        //Since t0 is guaranteed to be less than or equal to t1 (and 0 is less than tMax), then if t0 is greater than tMax or t1 is less than 0,
+        //it is certain that both intersections are out of the range of interest.
+        if (t0 > ray._t_max || t1 <= 0)
+            return false;
+
+        float t_shape_hit = t0;
+        if (t_shape_hit <= 0)
+        {
+            t_shape_hit = t1;
+            if (t_shape_hit > ray._t_max)
+                return false;
+        }
+        return true;
+    }
+
+    bool Sphere::Hit(const Ray &r, float &tHit, SurfaceInteraction &isect) const
+    {
+        float phi;
+        glm::vec3 p_hit;
+        //先变化光线到局部坐标中
+        Ray ray = _world2object->ExecOn(r);
+
+        float a = glm::dot(ray._direction, ray._direction);
+        float b = glm::dot(ray._direction, ray._origin);
+        float c = glm::dot(ray._origin, ray._origin) - _radius * _radius;
+
+        float discriminant = b * b - a * c;
+        if (discriminant <= 0)
+            return false;
+        float disc_sqrt = glm::sqrt(discriminant);
+        float t0 = (-b - disc_sqrt) / a;
+        float t1 = (-b + disc_sqrt) / a;
+
+        if (t0 > t1)
+            std::swap(t0, t1);
+        //Since t0 is guaranteed to be less than or equal to t1 (and 0 is less than tMax), then if t0 is greater than tMax or t1 is less than 0,
+        //it is certain that both intersections are out of the range of interest.
+        if (t0 > ray._t_max || t1 <= 0)
+            return false;
+
+        float t_shape_hit = t0;
+        if (t_shape_hit <= 0)
+        {
+            t_shape_hit = t1;
+            if (t_shape_hit > ray._t_max)
+                return false;
+        }
+        
+
+        return true;
+    }
 } // namespace platinum

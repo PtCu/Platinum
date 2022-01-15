@@ -32,7 +32,7 @@
 
 namespace platinum
 {
-    class MovingSphere : public Sphere
+    class MovingSphere : public Sphere_
     {
     public:
         MovingSphere() = default;

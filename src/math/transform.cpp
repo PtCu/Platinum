@@ -19,7 +19,7 @@ namespace platinum {
 
     Ray Transform::ExecOn(const Ray& r)const {
         glm::vec3 o = this->ExecOn(r._origin, 1.f);
-        glm::vec3 d = this->ExecOn(r._dir, 0.f);
+        glm::vec3 d = this->ExecOn(r._direction, 0.f);
         return Ray(o, d, r._t_max);
     }
     glm::vec3 Transform::ExecOn(const glm::vec3& p, float w)const {

@@ -29,7 +29,7 @@ namespace platinum
     void Ray::Init(const glm::vec3& o, const glm::vec3& d)
     {
         this->_origin = o;
-        this->_dir = d;
+        this->_direction = d;
         this->inv_direction_ = { 1.0f / d.x, 1.0f / d.y, 1.0f / d.z };
         this->is_neg_dir_ = { d.x < 0, d.y < 0, d.z < 0 };
         this->color_ = glm::vec3(1.0);
@@ -38,7 +38,7 @@ namespace platinum
     void Ray::Update(const glm::vec3& o, const glm::vec3& d, const glm::vec3& a)
     {
         this->_origin = o;
-        this->_dir = d;
+        this->_direction = d;
         this->inv_direction_ = { 1.0f / d.x, 1.0f / d.y, 1.0f / d.z };
         this->is_neg_dir_ = { d.x < 0, d.y < 0, d.z < 0 };
         this->color_ *= a;
@@ -51,7 +51,7 @@ namespace platinum
 
     void Ray::Transform(const glm::mat4& transform)
     {
-        this->_dir = glm::mat3(transform) * _dir;
+        this->_direction = glm::mat3(transform) * _direction;
         auto originQ = transform * glm::vec4(_origin, 1.0f);
         this->_origin = glm::vec3(originQ) / originQ.w;
     }

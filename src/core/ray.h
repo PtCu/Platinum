@@ -33,7 +33,7 @@ namespace platinum
     public:
         Ray() {}
         Ray(const glm::vec3& o, const glm::vec3& d, float t_max = std::numeric_limits<float>::max())
-            : _origin(o), _dir(glm::normalize(d)), _t_max(t_max) {
+            : _origin(o), _direction(glm::normalize(d)), _t_max(t_max) {
 
             color_ = glm::vec3(1.0);
             inv_direction_ = { 1.0f / d.x, 1.0f / d.y, 1.0f / d.z };
@@ -42,13 +42,13 @@ namespace platinum
         virtual ~Ray() = default;
         void Init(const glm::vec3& o, const glm::vec3& d);
         void Update(const glm::vec3& o, const glm::vec3& d, const glm::vec3& a);
-        glm::vec3 GetOrigin() const { return _origin; }
-        glm::vec3 GetDirection() const { return _dir; }
-        glm::vec3 GetInvDirection() const { return inv_direction_; }
+        const glm::vec3& GetOrigin() const { return _origin; }
+        const glm::vec3& GetDirection() const { return _direction; }
+        const glm::vec3& GetInvDirection() const { return inv_direction_; }
         float GetMinTime() const { return min_t_; }
         float GetMaxTime() const { return _t_max; }
-        glm::vec3 GetColor() const { return color_; }
-        glm::vec3 PointAt(float t) const { return _origin + t * _dir; }
+        const glm::vec3& GetColor() const { return color_; }
+        const glm::vec3& PointAt(float t) const { return _origin + t * _direction; }
         int IsDirNeg(size_t i) const { return is_neg_dir_[i]; }
         void SetColor(const glm::vec3& c);
         void SetTMax(float t) { _t_max = t; }
@@ -59,7 +59,7 @@ namespace platinum
 
 
         glm::vec3 _origin;
-        glm::vec3 _dir, inv_direction_;
+        glm::vec3 _direction, inv_direction_;
         glm::vec3 color_;
         mutable float _t_max;
         std::array<int, 3> is_neg_dir_;
