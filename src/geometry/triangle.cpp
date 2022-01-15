@@ -209,4 +209,9 @@ namespace platinum
         const auto &p2 = _mesh->GetPositionAt(_indices[2]);
         return 0.5f * glm::length(glm::cross(p1 - p0, p2 - p0));
     }
+
+    Interaction Triangle::Sample(const glm::vec2 &u, float &pdf) const
+    {
+        
+    }
 }

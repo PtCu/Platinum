@@ -110,6 +110,24 @@ namespace platinum {
         size_t _array2DOffset;
 
     };
+    glm::vec3 uniformSampleHemisphere(const glm::vec2& u);
+    float uniformHemispherePdf();
+    glm::vec3 uniformSampleSphere(const glm::vec2& u);
+    float uniformSpherePdf();
+
+    glm::vec2 ConcentricSampleDisk(const glm::vec2& u);
+
+    glm::vec2 UniformSampleTriangle(const glm::vec2& u);
+
+    inline glm::vec3 CosineSampleHemisphere(const glm::vec2& u)
+    {
+        glm::vec2 d = ConcentricSampleDisk(u);
+        float z = std::sqrt(glm::max((float)0, 1 - d.x * d.x - d.y * d.y));
+        return glm::vec3(d.x, d.y, z);
+    }
+
+    inline float CosineHemispherePdf(float cosTheta) { return cosTheta * InvPi; }
+
 }
 
 #endif
