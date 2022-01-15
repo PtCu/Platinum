@@ -213,6 +213,7 @@ namespace platinum
 
     Interaction Triangle::Sample(const glm::vec2 &u, float &pdf) const
     {
+        //重心坐标
         glm::vec2 b = UniformSampleTriangle(u);
 		// Get triangle vertices in _p0_, _p1_, and _p2_
 		const auto &p0 = _mesh->GetPositionAt(_indices[0]);
