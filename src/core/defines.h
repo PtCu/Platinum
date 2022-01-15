@@ -63,6 +63,12 @@ namespace platinum
     static constexpr float Sqrt2 = 1.41421356237309504880f;
     static constexpr float EPSILON = 0.0005f;
     static const float OneMinusEpsilon = 0.99999994;
+    constexpr static float MaxFloat = std::numeric_limits<float>::max();
+    constexpr static float Infinity = std::numeric_limits<float>::infinity();
+    constexpr static float MachineEpsilon = std::numeric_limits<float>::epsilon() * 0.5f;
+
+    inline float lerp(float t, float v1, float v2) { return (1 - t) * v1 + t * v2; }
+    inline float gamma(int n) { return (n * MachineEpsilon) / (1 - n * MachineEpsilon); }
 
     class Camera;
     class Material;

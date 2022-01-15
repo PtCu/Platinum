@@ -43,6 +43,7 @@ namespace platinum
         //For best partition when building BVH tree.
         int MaxExtent() const;
         bool IsHit(const Ray& r) const;
+        bool Hit(const Ray &ray, const glm::vec3 &inv_dir, const int dir_is_neg[3]) const;
         const glm::vec3 operator[](int i) const
         {
             return i == 0 ? _p_min : _p_max;
