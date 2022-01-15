@@ -20,6 +20,8 @@
 #include <core/interaction.h>
 #include <math/transform.h>
 #include <glm/gtx/norm.hpp>
+#include <math/bounds.h>
+
 namespace platinum {
     class Shape {
     public:
@@ -36,8 +38,27 @@ namespace platinum {
          */
         virtual AABB WorldBound() const;
 
+     
+        /**
+         * @brief 判断是否相交并计算SurfaceInteration
+         * 
+         * @param ray 
+         * @param tHit 相交时光线的时间t
+         * @param inter 返回的SurfaceInteration
+         * @return true 
+         * @return false 
+         */
+        virtual bool Hit(const Ray &ray, float &tHit, SurfaceInteraction &inter) const = 0;
+
+        /**
+         * @brief 不计算SurfaceInteraction，仅用来判断是否相交
+         * 
+         * @param ray 
+         * @return true 
+         * @return false 
+         */
         virtual bool Hit(const Ray& ray) const;
-        virtual bool Hit(const Ray& ray, float& tHit, SurfaceInteraction& inter) const = 0;
+        
 
         virtual float Area() const = 0;
 

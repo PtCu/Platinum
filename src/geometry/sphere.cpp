@@ -57,7 +57,7 @@ namespace platinum
     {
         rst.record.ray = r;
         rst.record.ray.SetTMax(t);
-        rst.record.vert.position_ = r.At(rst.record.ray.GetMaxTime());
+        rst.record.vert.position_ = r.GetPointAt(rst.record.ray.GetMaxTime());
         rst.record.vert.normal_ = glm::vec3((rst.record.vert.position_ - getCenter(r)) / radius_);
         getSphereUV(rst.record.vert.normal_, rst.record.vert.u_, rst.record.vert.v_);
         rst.material = GetMaterial();
@@ -184,7 +184,7 @@ namespace platinum
                 return false;
         }
 
-        glm::vec3 p_hit = ray.At(t_shape_hit);
+        glm::vec3 p_hit = ray.GetPointAt(t_shape_hit);
 
         // Refine sphere intersection point
         p_hit *= _radius / glm::l2Norm(p_hit);

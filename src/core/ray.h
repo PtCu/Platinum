@@ -48,7 +48,7 @@ namespace platinum
         float GetMinTime() const { return min_t_; }
         float GetMaxTime() const { return _t_max; }
         const glm::vec3& GetColor() const { return color_; }
-        const glm::vec3& At(float t) const { return _origin + t * _direction; }
+        const glm::vec3& GetPointAt(float t) const { return _origin + t * _direction; }
         int IsDirNeg(size_t i) const { return is_neg_dir_[i]; }
         void SetColor(const glm::vec3& c);
         void SetTMax(float t) { _t_max = t; }

@@ -25,22 +25,22 @@
 namespace platinum
 {
 
-    void Triangle::Sample(HitRst& rst, float& pdf) const
+    void Triangle_::Sample(HitRst& rst, float& pdf) const
     {
         float x = std::sqrt(Random::UniformFloat()), y = Random::UniformFloat();
         rst.record.vert.position_ = A.position_ * (1.0f - x) + B.position_ * (x * (1.0f - y)) + C.position_ * (x * y);
         rst.record.vert.normal_ = this->normal_;
         pdf = 1.0f / area_;
     }
-    AABB Triangle::GetBoundingBox() const
+    AABB Triangle_::GetBoundingBox() const
     {
         return bounding_box_;
     }
-    float Triangle::GetArea() const
+    float Triangle_::GetArea() const
     {
         return area_;
     }
-    Triangle::Triangle(const glm::vec3& a, const glm::vec3& b, const glm::vec3& c, std::shared_ptr<Material> material_)
+    Triangle_::Triangle_(const glm::vec3& a, const glm::vec3& b, const glm::vec3& c, std::shared_ptr<Material> material_)
         : A(a), B(b), C(c), Object(material_)
     {
         e1 = B.position_ - A.position_;
@@ -50,7 +50,7 @@ namespace platinum
         bounding_box_ = AABB(A.position_, B.position_);
         bounding_box_.UnionWith(C.position_);
     }
-    Triangle::Triangle(const Vertex& a, const Vertex& b, const Vertex& c, std::shared_ptr<Material> material_)
+    Triangle_::Triangle_(const Vertex& a, const Vertex& b, const Vertex& c, std::shared_ptr<Material> material_)
         : A(a), B(b), C(c), Object(material_)
     {
         e1 = B.position_ - A.position_;
@@ -60,7 +60,7 @@ namespace platinum
         bounding_box_ = AABB(A.position_, B.position_);
         bounding_box_.UnionWith(C.position_);
     }
-    glm::vec4 Triangle::intersectRay(const glm::vec3& o, const glm::vec3& d)
+    glm::vec4 Triangle_::intersectRay(const glm::vec3& o, const glm::vec3& d)
     {
         glm::mat3 equation_A(glm::vec3(A.position_ - B.position_), glm::vec3(A.position_ - C.position_), d);
 
@@ -73,7 +73,7 @@ namespace platinum
         return glm::vec4(alpha, equation_X);
     }
 
-    HitRst Triangle::Intersect(const Ray& r)
+    HitRst Triangle_::Intersect(const Ray& r)
     {
         HitRst rst;
         glm::vec4 abgt = this->intersectRay(r.GetOrigin(), r.GetDirection());

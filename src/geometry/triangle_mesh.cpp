@@ -61,7 +61,7 @@ namespace platinum
                 min_vert = glm::min(min_vert, vert);
                 max_vert = glm::max(max_vert, vert);
             }
-            auto tri = std::make_shared<Triangle>(face_vertices[0], face_vertices[1],
+            auto tri = std::make_shared<Triangle_>(face_vertices[0], face_vertices[1],
                 face_vertices[2], m);
             area_ += tri->GetArea();
             triangles_.emplace_back(tri);
@@ -81,7 +81,7 @@ namespace platinum
 
         for (size_t i = 0; i < vertexs.size(); i += 3)
         {
-            auto triangle = std::make_shared<Triangle>(vertexs[i], vertexs[i + 1], vertexs[i + 2], material);
+            auto triangle = std::make_shared<Triangle_>(vertexs[i], vertexs[i + 1], vertexs[i + 2], material);
             area_ += triangle->GetArea();
             triangles_.emplace_back(triangle);
             bounding_box_.UnionWith(triangle->GetBoundingBox());
