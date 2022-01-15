@@ -21,6 +21,7 @@
 //  DEALINGS IN THE SOFTWARE.
 
 #include <geometry/triangle.h>
+#include <core/sampler.h>
 #include <assimp/scene.h>
 #include <assimp/Importer.hpp>
 #include <assimp/postprocess.h>
@@ -212,6 +213,17 @@ namespace platinum
 
     Interaction Triangle::Sample(const glm::vec2 &u, float &pdf) const
     {
-        
+        glm::vec2 b = UniformSampleTriangle(u);
+		// Get triangle vertices in _p0_, _p1_, and _p2_
+		const auto &p0 = _mesh->GetPositionAt(_indices[0]);
+		const auto &p1 = _mesh->GetPositionAt(_indices[1]);
+		const auto &p2 = _mesh->GetPositionAt(_indices[2]);
+		Interaction it;
+		it.p = b[0] * p0 + b[1] * p1 + (1 - b[0] - b[1]) * p2;
+		// Compute surface normal for sampled point on triangle
+		it.n = glm::normalize(glm::vec3(glm::cross(p1 - p0, p2 - p0)));
+
+		pdf = 1.f / Area();
+		return it;
     }
 }
