@@ -20,6 +20,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <math/bounds.h>
+#include <core/interaction.h>
 namespace platinum {
     class Transform {
     public:
@@ -53,21 +54,35 @@ namespace platinum {
         const glm::mat4& GetInverseMatrix()const { return _trans_inv; }
 
         /**
-         * @brief 作用于向量，转变其坐标
+         * @brief 作用于向量，返回转变后的新向量
          * @param  p                待转变的包围盒
          * @param  w                齐次坐标的第四维，最后要除以w
-         * @return glm::vec3
+         * @return glm::vec3        转变后的向量
          */
         glm::vec3 ExecOn(const glm::vec3& p, float w)const;
         /**
-         * @brief  作用于包围盒，转变其坐标
+         * @brief  作用于包围盒，返回转变后的新包围盒
          * @param  b        待转变的包围盒
          * @return AABB
          */
         AABB ExecOn(const AABB& b)const;
 
+        /**
+         * @brief 作用于光线，返回转变后的新光线
+         * 
+         * @param r 
+         * @return Ray 
+         */
         Ray ExecOn(const Ray& r)const;
-        
+
+        /**
+         * @brief 作用于相交部分，返回转变后的相交部分
+         * 
+         * @param si 
+         * @return SurfaceInteraction 
+         */
+        SurfaceInteraction ExecOn(const SurfaceInteraction &si) const;
+
     private:
         glm::mat4 _trans, _trans_inv;
 

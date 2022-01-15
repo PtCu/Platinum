@@ -1,11 +1,11 @@
 // Copyright 2022 ptcup
-// 
+//
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
-// 
+//
 //     http://www.apache.org/licenses/LICENSE-2.0
-// 
+//
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -14,15 +14,17 @@
 
 #include <math/transform.h>
 
-namespace platinum {
+namespace platinum
+{
 
-
-    Ray Transform::ExecOn(const Ray& r)const {
+    Ray Transform::ExecOn(const Ray &r) const
+    {
         glm::vec3 o = this->ExecOn(r._origin, 1.f);
         glm::vec3 d = this->ExecOn(r._direction, 0.f);
         return Ray(o, d, r._t_max);
     }
-    glm::vec3 Transform::ExecOn(const glm::vec3& p, float w)const {
+    glm::vec3 Transform::ExecOn(const glm::vec3 &p, float w) const
+    {
         glm::vec4 ret = _trans * glm::vec4(p.x, p.y, p.z, w);
         //w==0 --> vector
         if (w == 0.f)
@@ -32,11 +34,11 @@ namespace platinum {
             return glm::vec3(ret.x, ret.y, ret.z);
         else
             return glm::vec3(ret.x, ret.y, ret.z) / ret.w;
-
     }
-    AABB Transform::ExecOn(const AABB& b)const {
+    AABB Transform::ExecOn(const AABB &b) const
+    {
         //每个顶点都进行转化，最后合并
-        const auto& mat = *this;
+        const auto &mat = *this;
         AABB ret(mat.ExecOn(b._p_min, 1.f));
         ret.UnionWith(mat.ExecOn(glm::vec3(b._p_max.x, b._p_min.y, b._p_min.z), 1.0f));
         ret.UnionWith(mat.ExecOn(glm::vec3(b._p_min.x, b._p_max.y, b._p_min.z), 1.0f));
@@ -47,7 +49,23 @@ namespace platinum {
         ret.UnionWith(mat.ExecOn(glm::vec3(b._p_max.x, b._p_max.y, b._p_max.z), 1.0f));
         return ret;
     }
-    Transform Translate(const glm::vec3& delta)
+
+    SurfaceInteraction Transform::ExecOn(const SurfaceInteraction &si) const
+    {
+        SurfaceInteraction inter;
+        //变换相交点
+        inter.p = this->ExecOn(si.p, 1.f);
+
+        inter.n = glm::normalize(this->ExecOn(si.n, 0.f));
+        inter.wo = glm::normalize(this->ExecOn(si.wo, 0.f));
+        inter.uv = si.uv;
+        inter.shape = si.shape;
+        inter.dpdu = this->ExecOn(si.dpdu, 0.f);
+        inter.dpdv = this->ExecOn(si.dpdv, 0.f);
+        inter.hitable = si.hitable;
+        return inter;
+    }
+    Transform Translate(const glm::vec3 &delta)
     {
         glm::mat4 trans = glm::translate(glm::mat4(1.0f), delta);
         glm::mat4 transInv = glm::translate(glm::mat4(1.0f), -delta);
@@ -82,14 +100,14 @@ namespace platinum {
         return Transform(trans, transInv);
     }
 
-    Transform Rotate(float theta, const glm::vec3& axis)
+    Transform Rotate(float theta, const glm::vec3 &axis)
     {
         glm::mat4 trans = glm::rotate(glm::mat4(1.0f), glm::radians(theta), axis);
         glm::mat4 transInv = inverse(trans);
         return Transform(trans, transInv);
     }
 
-    Transform LookAt(const glm::vec3& pos, const glm::vec3& look, const glm::vec3& up)
+    Transform LookAt(const glm::vec3 &pos, const glm::vec3 &look, const glm::vec3 &up)
     {
         glm::mat4 worldToCamera = glm::lookAt(pos, look, up);
         return Transform(worldToCamera, inverse(worldToCamera));
@@ -112,7 +130,5 @@ namespace platinum {
         float invTanAng = 1 / glm::tan(glm::radians(fov) / 2);
         return Scale(invTanAng, invTanAng, 1) * Transform(persp);
     }
-
-
 
 }

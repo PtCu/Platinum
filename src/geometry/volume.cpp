@@ -45,7 +45,7 @@ namespace platinum
         if (!bound_rst.is_hit)
             return HitRst::InValid;
 
-        Ray reverse_ray(r.PointAt(r.GetMinTime() * 1.5f), -r.GetDirection());
+        Ray reverse_ray(r.At(r.GetMinTime() * 1.5f), -r.GetDirection());
         auto reverse_rec = boundary_->Intersect(reverse_ray);
 
         float t0;
@@ -63,7 +63,7 @@ namespace platinum
             // 否则说明光线在外部, 则此时体积内部的起点为 光线撞击处
             // 此时以该起点的撞击结果需计算
             t0 = bound_rst.record.ray.GetMaxTime();
-            Ray t0Ray(r.PointAt(t0), r.GetDirection());
+            Ray t0Ray(r.At(t0), r.GetDirection());
             HitRst t0_rec = boundary_->Intersect(t0Ray);
 
             //太薄
@@ -95,7 +95,7 @@ namespace platinum
 
         HitRst rst;
         rst.is_hit = 1;
-        rst.record = HitRecord(r, r.PointAt(tFinal));
+        rst.record = HitRecord(r, r.At(tFinal));
         rst.material = GetMaterial();
         rst.record.ray = r;
         rst.record.ray.SetTMax(tFinal);
