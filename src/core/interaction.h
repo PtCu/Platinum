@@ -105,8 +105,7 @@ namespace platinum
 
         glm::vec3 Le(const glm::vec3 &w) const;
 
-        void ComputeScatteringFunctions(const Ray &ray,
-                                        bool allowMultipleLobes = false);
+        void ComputeScatteringFunctions(const Ray &ray);
 
     public:
         BSDF *bsdf{nullptr};
