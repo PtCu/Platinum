@@ -85,7 +85,7 @@ namespace platinum
         virtual AABB ObjectBound() const override;
 
         virtual bool Hit(const Ray &ray) const override;
-        virtual bool Hit(const Ray &ray, float &tHit, SurfaceInteraction &isect) const override;
+        virtual bool Hit(const Ray &ray, float &t_hit, SurfaceInteraction &inter) const override;
 
         virtual float SolidAngle(const glm::vec3 &p, int nSamples = 512) const override;
 

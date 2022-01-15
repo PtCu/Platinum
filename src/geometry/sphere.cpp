@@ -152,7 +152,7 @@ namespace platinum
         return true;
     }
 
-    bool Sphere::Hit(const Ray &r, float &tHit, SurfaceInteraction &inter) const
+    bool Sphere::Hit(const Ray &r, float &t_hit, SurfaceInteraction &inter) const
     {
 
         //先变化光线到局部坐标中
@@ -214,8 +214,11 @@ namespace platinum
         glm::vec3 dpdv(p_hit.z * cosPhi, p_hit.z * sinPhi, -_radius * glm::sin(theta));
         dpdv *= 2 * Pi;
 
-        inter = _object2world->ExecOn(SurfaceInteraction(p_hit, glm::vec2(u, v), -ray._direction, dpdu, dpdv));
+        inter = _object2world->ExecOn(SurfaceInteraction(p_hit, glm::vec2(u, v), -ray._direction, dpdu, dpdv, this));
 
+        if (glm::dot(inter.n, inter.wo) < 0)
+            inter.n = -inter.n;
+        t_hit = t_shape_hit;
         return true;
     }
 } // namespace platinum
