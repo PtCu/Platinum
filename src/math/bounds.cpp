@@ -21,7 +21,7 @@
 //  DEALINGS IN THE SOFTWARE.
 
 #include <math/bounds.h>
-
+#include <core/ray.h>
 namespace platinum
 {
     AABB::AABB()

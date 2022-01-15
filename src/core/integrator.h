@@ -38,7 +38,6 @@ namespace platinum
             : min_x(minx), min_y(miny), max_x(maxx), max_y(maxy) {}
     };
 
-    
     class TilesManager
     {
     private:
@@ -99,11 +98,7 @@ namespace platinum
     class TiledIntegrator : public Integrator
     {
     public:
-        TiledIntegrator(std::shared_ptr<Camera> camera, std::shared_ptr<Sampler>sampler, int spp, int max_depth = 10)
-            : _camera(camera), _sampler(sampler), _spp(spp), _max_depth(max_depth)
-        {
-            _tiles_manager = std::make_unique<TilesManager>(_camera->GetFilm()->GetWidth(), _camera->GetFilm()->GetHeight());
-        }
+        TiledIntegrator(std::shared_ptr<Camera> camera, std::shared_ptr<Sampler> sampler, int spp, int max_depth = 10);
         virtual void Render(const Scene& scene);
 
 

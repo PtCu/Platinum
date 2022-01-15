@@ -13,6 +13,8 @@
 // limitations under the License.
 
 #include <math/transform.h>
+#include <math/bounds.h>
+#include <core/interaction.h>
 
 namespace platinum
 {

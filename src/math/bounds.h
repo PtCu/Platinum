@@ -23,9 +23,8 @@
 #ifndef CORE_AABB_H_
 #define CORE_AABB_H_
 
+#include <glm/glm.hpp>
 #include <core/defines.h>
-#include <core/ray.h>
-
 namespace platinum
 {
     class AABB

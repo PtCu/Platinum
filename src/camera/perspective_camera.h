@@ -16,7 +16,7 @@
 #define CAMERA_PERSPECTIVE_CAMERA_H_
 
 #include <core/camera.h>
-
+#include <core/ray.h>
 namespace platinum
 {
 

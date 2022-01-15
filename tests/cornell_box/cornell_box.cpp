@@ -5,7 +5,6 @@
 #include "../src/math/rand.h"
 #include "../src/geometry/sphere.h"
 #include "../src/core/scene.h"
-#include "../src/core/renderer.h"
 #include "../src/material/light.h"
 #include "../src/geometry/vertex.h"
 #include "../src/geometry/triangle_mesh.h"

@@ -153,6 +153,11 @@ namespace platinum
         const aiScene *scene = importer.ReadFile(filename, aiProcess_Triangulate | aiProcess_GenSmoothNormals |
                                                                aiProcess_FlipUVs | aiProcess_FixInfacingNormals | aiProcess_OptimizeMeshes);
 
+        if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
+        {
+            LOG(FATAL) << "ERROR::ASSIMP" << importer.GetErrorString();
+        }
+
         //处理节点
         process_node(scene->mRootNode, scene);
 

@@ -23,9 +23,7 @@
 #ifndef CORE_CAMERA_H_
 #define CORE_CAMERA_H_
 
-#include <core/defines.h>
 #include <math/rand.h>
-#include <core/material.h>
 #include <math/transform.h>
 #include <core/film.h>
 namespace platinum
@@ -47,22 +45,15 @@ namespace platinum
          * @param  ray              My Param doc
          * @return float            radiance
          */
-        virtual float CastRay(const CameraSample& sample, Ray& ray)const = 0;
-        Camera(const glm::vec3& lookfrom, const glm::vec3& lookat, const glm::vec3& vup, float vfov, float aspect, float aperture, float focusDist, float t0 = 0.f, float t1 = 1.f);
-        virtual Ray GetRay(float s, float t) const;
+
         void SetFilm(std::shared_ptr<Film> film) { _film = film; }
         std::shared_ptr<Film> GetFilm() { return _film; }
+
+        virtual float CastRay(const CameraSample& sample, Ray& ray)const = 0;
+
         Transform _camera2world;
         std::shared_ptr<Film> _film;
-    protected:
-        glm::vec3 origin_;
-        glm::vec3 lower_left_corner;
-        glm::vec3 horizontal;
-        glm::vec3 vertical;
-        glm::vec3 front, up, right; //A set of orthonormal basis, to describe orentation of camera.
-        float lens_radius;
 
-        float _t0, _t1;
     };
 
     /**

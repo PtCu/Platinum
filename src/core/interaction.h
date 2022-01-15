@@ -22,6 +22,7 @@
 
 #ifndef CORE_INTERSECTION_H_
 #define CORE_INTERSECTION_H_
+
 #include <glm/glm.hpp>
 #include <core/defines.h>
 #include <core/material.h>
@@ -120,6 +121,21 @@ namespace platinum
          */
         glm::vec2 uv;
         glm::vec3 dpdu, dpdv;
+    };
+
+    class VisibilityTester final
+    {
+    public:
+        VisibilityTester() = default;
+        VisibilityTester(const Interaction &p0, const Interaction &p1) : _p0(p0), _p1(p1)
+        {
+        }
+        const Interaction &P0() const { return _p0; }
+        const Interaction &P1() const { return _p1; }
+        bool Unoccluded(const Scene &scene) const;
+
+    private:
+        Interaction _p0, _p1;
     };
 }
 #endif

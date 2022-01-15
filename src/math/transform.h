@@ -15,12 +15,11 @@
 #ifndef MATH_TRANSFORM_CPP_
 #define MATH_TRANSFORM_CPP_
 
-
-#include <core/defines.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
-#include <math/bounds.h>
-#include <core/interaction.h>
+
+#include <core/defines.h>
+
 namespace platinum {
     class Transform {
     public:

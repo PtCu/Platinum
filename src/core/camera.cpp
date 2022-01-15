@@ -24,31 +24,6 @@
 
 namespace platinum
 {
-   
-    Camera::Camera(const glm::vec3& lookfrom, const glm::vec3& lookat, const glm::vec3& vup, float vfov, float aspect, float aperture, float focus_dist,float t0,float t1) : origin_(lookfrom), lens_radius(aperture/2),_t0(t0),_t1(t1)
-    {
-        if (focus_dist == -1.0f)
-            focus_dist = glm::distance(lookfrom, lookat);
-
-        float theta = vfov / 180.0f * Pi;
-        float height = 2 * focus_dist * tan(theta / 2);
-        float width = aspect * height;
-        origin_ = lookfrom;
-        front = glm::normalize(lookat - lookfrom);
-        right = glm::normalize(glm::cross(vup, -front));
-        up = glm::cross(-front, right);
-        lower_left_corner = origin_ + focus_dist * front - width / 2 * right - height / 2 * up;
-        horizontal = width * right;
-        vertical = height * up;
-    }
-
-    Ray Camera::GetRay(float s, float t) const
-    {
-        Ray ray(origin_, lower_left_corner + s * horizontal + t * vertical - origin_);
-        float time = _t0 + Random::UniformFloat() * (_t1 - _t0);
-        ray.SetTime(time);
-        return ray;
-    }
 
     void ProjectiveCamera::Initialize() {
         int width = _film->GetWidth();

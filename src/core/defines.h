@@ -44,8 +44,8 @@
 #include <typeinfo>
 #include <thread>
 #include <mutex>
-// #include <intrin.h>
 
+#include <glog/logging.h>
 namespace platinum
 {
 // Platform-specific definitions
@@ -64,18 +64,7 @@ namespace platinum
     static constexpr float EPSILON = 0.0005f;
     static const float OneMinusEpsilon = 0.99999994;
 
-    template <typename T>
-    class Vector2;
-    template <typename T>
-    class Vector3;
-    template <typename T>
-    class Point2;
-    template <typename T>
-    class Point3;
-    template <typename T>
-    class Normal3;
     class Camera;
-    class TCamera;
     class Material;
     class Scene;
     class Ray;
@@ -93,11 +82,11 @@ namespace platinum
     class Film;
     class BSDF;
     class BxDF;
-    class Interaction;
     class VisibilityTester;
     class Light;
     class Sampler;
     class Fresnel;
+    class Interaction;
     class SurfaceInteraction;
     struct CameraSample;
     class Filter;
@@ -106,5 +95,6 @@ namespace platinum
     class Hitable;
     class HitableObject;
     class HitableAggregate;
+    class Shape;
 } // namespace platinum
 #endif
