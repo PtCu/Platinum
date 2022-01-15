@@ -19,7 +19,7 @@
 #include <core/defines.h>
 #include <core/interaction.h>
 #include <math/transform.h>
-
+#include <glm/gtx/norm.hpp>
 namespace platinum {
     class Shape {
     public:

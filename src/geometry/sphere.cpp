@@ -21,11 +21,12 @@
 //  DEALINGS IN THE SOFTWARE.
 
 #include <geometry/sphere.h>
+
 namespace platinum
 {
     void Sphere_::Sample(HitRst &rst, float &pdf) const
     {
-        float theta = 2.0f * PI * Random::UniformFloat(), phi = PI * Random::UniformFloat();
+        float theta = 2.0f * Pi * Random::UniformFloat(), phi = Pi * Random::UniformFloat();
         glm::vec3 dir(std::cos(phi), std::sin(phi) * std::cos(theta), std::sin(phi) * std::sin(theta));
         rst.record.vert.position_ = center_ + radius_ * dir;
         rst.record.vert.normal_ = dir;
@@ -50,7 +51,7 @@ namespace platinum
         glm::vec3 minP = center_ - glm::vec3(radius_);
         glm::vec3 maxP = center_ + glm::vec3(radius_);
         bounding_box_ = AABB(minP, maxP);
-        area_ = PI * 4.0f * r * r;
+        area_ = Pi * 4.0f * r * r;
     };
     void Sphere_::setIntersection(float t, HitRst &rst, const Ray &r) const
     {
@@ -91,8 +92,8 @@ namespace platinum
     {
         float phi = atan2(p.z, p.x);
         float theta = asin(p.y);
-        u = 1 - (phi + PI) / (2 * PI);
-        v = (theta + PI / 2) / PI;
+        u = 1 - (phi + Pi) / (2 * Pi);
+        v = (theta + Pi / 2) / Pi;
     }
 
     AABB Sphere::ObjectBound() const
@@ -102,7 +103,7 @@ namespace platinum
 
     float Sphere::Area() const
     {
-        return 4.f * PI * _radius * _radius;
+        return 4.f * Pi * _radius * _radius;
     }
 
     Interaction Sphere::Sample(const glm::vec2 &u, float &pdf) const
@@ -151,10 +152,9 @@ namespace platinum
         return true;
     }
 
-    bool Sphere::Hit(const Ray &r, float &tHit, SurfaceInteraction &isect) const
+    bool Sphere::Hit(const Ray &r, float &tHit, SurfaceInteraction &inter) const
     {
-        float phi;
-        glm::vec3 p_hit;
+
         //先变化光线到局部坐标中
         Ray ray = _world2object->ExecOn(r);
 
@@ -183,7 +183,38 @@ namespace platinum
             if (t_shape_hit > ray._t_max)
                 return false;
         }
-        
+
+        glm::vec3 p_hit = ray.PointAt(t_shape_hit);
+
+        // Refine sphere intersection point
+        p_hit *= _radius / glm::l2Norm(p_hit);
+        if (p_hit.x == 0 && p_hit.y == 0)
+            p_hit.x = 1e-5f * _radius;
+
+        //glm::atan调用的还是std::atan2
+        float phi = glm::atan(p_hit.y, p_hit.x);
+
+        if (phi < 0)
+            phi += 2 * Pi;
+
+        float theta = glm::acos(glm::clamp(p_hit.z / _radius, -1.f, -1.f));
+
+        //Φ的范围为[0,2pi]
+        float u = phi / (Pi * 2);
+        //θ的范围为[-pi/2,pi/2]
+        float v = (theta + PiOver2) / Pi;
+
+        //计算dpdu和dpdv
+        float z_sinTheta = glm::sqrt(p_hit.x * p_hit.x + p_hit.y * p_hit.y);
+        float inv_z_radius = 1.f / z_sinTheta;
+        float cosPhi = p_hit.x * inv_z_radius;
+        float sinPhi = p_hit.y * inv_z_radius;
+
+        glm::vec3 dpdu(-2 * Pi * p_hit.y, 2 * Pi * p_hit.x, 0);
+        glm::vec3 dpdv(p_hit.z * cosPhi, p_hit.z * sinPhi, -_radius * glm::sin(theta));
+        dpdv *= 2 * Pi;
+
+        inter = _object2world->ExecOn(SurfaceInteraction(p_hit, glm::vec2(u, v), -ray._direction, dpdu, dpdv));
 
         return true;
     }

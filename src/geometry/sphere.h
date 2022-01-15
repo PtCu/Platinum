@@ -55,6 +55,22 @@ namespace platinum
         AABB bounding_box_;
     };
 
+    /**
+     * @brief 
+     *      所有球体对象的object坐标系都是以球心为原点
+     *      以z坐标的范围跟φ来裁剪球体，
+     *      球的参数方程可以表示为(和高数的球坐标系的Φ、θ相反)
+     *      x = rsinθcosφ
+     *      y = rsinθsinφ
+     *      z = rcosθ
+     *      其中
+     *      -r ≤ z ≤ r
+     *      0 < φ ≤ 2π ，φ为转动的角度
+     *      表面参数uv为
+     *      φ = u * φmax
+     *      θ = θmin + v * (θmax - θmin)
+     * 
+     */
     class Sphere : public Shape
     {
     public:

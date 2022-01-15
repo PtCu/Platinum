@@ -44,7 +44,7 @@ namespace platinum
         // x_1 is for phi, x_2 is for theta
         float x_1 = Random::UniformFloat(), x_2 = Random::UniformFloat();
         float cos_theta = std::fabs(1.0f - 2.0f * x_1);
-        float r = std::sqrt(1.0f - cos_theta * cos_theta), phi = 2 * PI * x_2;
+        float r = std::sqrt(1.0f - cos_theta * cos_theta), phi = 2 * Pi * x_2;
         glm::vec3 local_ray(r * std::cos(phi), r * std::sin(phi), cos_theta);
         return toWorld(local_ray, rst.record.vert.normal_);
     }
@@ -54,7 +54,7 @@ namespace platinum
         float cosine = glm::dot(wo, rst.record.vert.normal_);
         if (cosine > 0.0f)
         {
-            return 0.5f / PI;
+            return 0.5f / Pi;
         }
         else
         {
@@ -70,7 +70,7 @@ namespace platinum
         if (cosalpha > 0.0f)
         {
             //f_r=albedo/PI
-            auto attenuation = albedo_->GetValue(rst.record.vert.u_, rst.record.vert.v_, rst.record.vert.position_) / PI;
+            auto attenuation = albedo_->GetValue(rst.record.vert.u_, rst.record.vert.v_, rst.record.vert.position_) / Pi;
             return attenuation;
         }
         else

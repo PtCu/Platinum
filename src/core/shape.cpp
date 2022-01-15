@@ -13,7 +13,7 @@
 // limitations under the License.
 
 #include <core/shape.h>
-#include <glm/gtx/norm.hpp>
+
 namespace platinum {
 
 

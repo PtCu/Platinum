@@ -30,7 +30,7 @@ namespace platinum
         if (focus_dist == -1.0f)
             focus_dist = glm::distance(lookfrom, lookat);
 
-        float theta = vfov / 180.0f * PI;
+        float theta = vfov / 180.0f * Pi;
         float height = 2 * focus_dist * tan(theta / 2);
         float width = aspect * height;
         origin_ = lookfrom;
