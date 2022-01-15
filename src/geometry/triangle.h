@@ -72,7 +72,8 @@ namespace platinum
     class Triangle final : public Shape
     {
     public:
-        Triangle(Transform *object2world, Transform *wordl2object, std::array<int, 3> indices, TriangleMesh *mesh);
+        Triangle(Transform *object2world, Transform *wordl2object, std::array<int, 3> indices, TriangleMesh *mesh)
+            : Shape(object2world, wordl2object), _indices(indices), _mesh(mesh) {}
         virtual ~Triangle() = default;
         virtual float Area() const override;
         virtual Interaction Sample(const glm::vec2 &u, float &pdf) const override;
