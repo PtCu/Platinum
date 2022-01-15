@@ -27,17 +27,17 @@
 #include <core/material.h>
 #include <core/ray.h>
 #include <geometry/vertex.h>
-
+#include <core/shape.h>
+#include <core/object.h>
 namespace platinum
 {
     struct HitRecord
     {
     public:
-
         HitRecord() = default;
 
-        HitRecord(const Ray& _ray, const glm::vec3& pos = glm::vec3(0),
-            const glm::vec3& normal = glm::vec3(0, 0, 1), float u = 0, float v = 0) : ray(_ray), vert(pos, normal, u, v) {}
+        HitRecord(const Ray &_ray, const glm::vec3 &pos = glm::vec3(0),
+                  const glm::vec3 &normal = glm::vec3(0, 0, 1), float u = 0, float v = 0) : ray(_ray), vert(pos, normal, u, v) {}
         Ray ray;
         Vertex vert;
     };
@@ -50,34 +50,36 @@ namespace platinum
         glm::vec3 emit;
         HitRecord record;
         std::shared_ptr<const Material> material;
-        HitRst& operator=(const HitRst& e) {
+        HitRst &operator=(const HitRst &e)
+        {
             return *this;
         }
         static const HitRst InValid;
     };
 
     //SurfaceInteraction和MediumInteraction的基类
-    class Interaction {
+    class Interaction
+    {
     public:
         Interaction() = default;
-        explicit Interaction(const glm::vec3& p) : p(p) {}
-        Interaction(const glm::vec3& p, const glm::vec3& wo) : p(p), wo(normalize(wo)) {}
-        Interaction(const glm::vec3& p, const glm::vec3& n, const glm::vec3& wo)
+        explicit Interaction(const glm::vec3 &p) : p(p) {}
+        Interaction(const glm::vec3 &p, const glm::vec3 &wo) : p(p), wo(normalize(wo)) {}
+        Interaction(const glm::vec3 &p, const glm::vec3 &n, const glm::vec3 &wo)
             : p(p), wo(glm::normalize(wo)), n(n) {}
 
-        inline Ray SpawnRay(const glm::vec3& d) const
+        inline Ray SpawnRay(const glm::vec3 &d) const
         {
             glm::vec3 o = p;
             return Ray(o, d, std::numeric_limits<float>::max());
         }
 
-        inline Ray SpawnRayTo(const glm::vec3& p2) const
+        inline Ray SpawnRayTo(const glm::vec3 &p2) const
         {
             glm::vec3 origin = p;
             return Ray(origin, p2 - p, 1.f - ShadowEpsilon);
         }
 
-        inline Ray SpawnRayTo(const Interaction& it) const
+        inline Ray SpawnRayTo(const Interaction &it) const
         {
             glm::vec3 origin = p;
             glm::vec3 target = it.p;
@@ -85,10 +87,9 @@ namespace platinum
             return Ray(origin, d, 1.f - ShadowEpsilon);
         }
 
-
-        glm::vec3 p;			//surface point
-        glm::vec3 wo;			//outgoing direction
-        glm::vec3 n;			//normal vector
+        glm::vec3 p;  //surface point
+        glm::vec3 wo; //outgoing direction
+        glm::vec3 n;  //normal vector
     };
 
     /**
@@ -99,25 +100,27 @@ namespace platinum
     {
     public:
         SurfaceInteraction() = default;
-        SurfaceInteraction(const glm::vec3& p, const glm::vec2& uv, const glm::vec3& wo,
-            const glm::vec3& dpdu, const glm::vec3& dpdv);
+        SurfaceInteraction(const glm::vec3 &p, const glm::vec2 &uv, const glm::vec3 &wo,
+                           const glm::vec3 &dpdu, const glm::vec3 &dpdv,const Shape* sh);
 
-        glm::vec3 Le(const glm::vec3& w) const;
+        glm::vec3 Le(const glm::vec3 &w) const;
 
-        void ComputeScatteringFunctions(const Ray& ray,
-            bool allowMultipleLobes = false);
+        void ComputeScatteringFunctions(const Ray &ray,
+                                        bool allowMultipleLobes = false);
 
+    public:
+        BSDF *bsdf{nullptr};
+        const Shape *shape{nullptr};
+        const Hitable *hitable{nullptr};
 
-        BSDF* bsdf{ nullptr };
-        glm::vec2 uv;
+      
         /**
          * @brief   (u,v)是p点参数化后的表面坐标（如纹理坐标）
          *          dpdu和dpdv是p在u,v方向的微分。二者不必正交
          *
          */
+        glm::vec2 uv;
         glm::vec3 dpdu, dpdv;
-
-
     };
 }
 #endif
