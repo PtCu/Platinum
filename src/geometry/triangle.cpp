@@ -311,7 +311,7 @@ namespace platinum
         return true;
 
     }
-    bool Triangle::Hit(const Ray& ray, float& tHit, SurfaceInteraction& isect) const {
+    bool Triangle::Hit(const Ray& ray, float& tHit, SurfaceInteraction& inter) const {
         const auto& p0 = _mesh->GetPositionAt(_indices[0]);
         const auto& p1 = _mesh->GetPositionAt(_indices[1]);
         const auto& p2 = _mesh->GetPositionAt(_indices[2]);
@@ -421,23 +421,23 @@ namespace platinum
         if (degenerateUV || glm::length2(glm::cross(dpdu, dpdv)) == 0)
         {
             // Handle zero determinant for triangle partial derivative matrix
-            glm::vec3 ng = cross(p2 - p0, p1 - p0);
+            glm::vec3 ng = glm::cross(p2 - p0, p1 - p0);
             // The triangle is actually degenerate; the intersection is bogus.
             if (glm::length2(ng) == 0)
                 return false;
 
-            coordinateSystem(normalize(ng), dpdu, dpdv);
+            coordinateSystem(glm::normalize(ng), dpdu, dpdv);
         }
 
         // Interpolate $(u,v)$ parametric coordinates and hit point
-        glm::vec3 pHit = b0 * p0 + b1 * p1 + b2 * p2;
-        glm::vec2 uvHit = b0 * uv[0] + b1 * uv[1] + b2 * uv[2];
+        glm::vec3 p_hit = b0 * p0 + b1 * p1 + b2 * p2;
+        glm::vec2 uv_hit = b0 * uv[0] + b1 * uv[1] + b2 * uv[2];
 
         // Fill in _SurfaceInteraction_ from triangle hit
-        isect = SurfaceInteraction(pHit, uvHit, -ray._direction, dpdu, dpdv, this);
+        inter = SurfaceInteraction(p_hit, uv_hit, -ray._direction, dpdu, dpdv, this);
 
         // Override surface normal in _isect_ for triangle
-        isect.n = glm::vec3(normalize(cross(dp02, dp12)));
+        inter.n = glm::vec3(glm::normalize(glm::cross(dp02, dp12)));
         tHit = t;
 
         if (_mesh->HasNormal())
@@ -447,13 +447,13 @@ namespace platinum
                 + b2 * _mesh->GetNormalAt(_indices[2]);
             if (glm::length2(ns) > 0)
             {
-                ns = normalize(ns);
+                ns = glm::normalize(ns);
             }
             else
             {
-                ns = isect.n;
+                ns = inter.n;
             }
-            isect.n = ns;
+            inter.n = ns;
         }
 
         return true;
