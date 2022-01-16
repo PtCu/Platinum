@@ -48,7 +48,7 @@
 #include <glog/logging.h>
 namespace platinum
 {
-// Platform-specific definitions
+    // Platform-specific definitions
 #if defined(_WIN32) || defined(_WIN64)
 #define PLT_IS_WINDOWS
 #endif
@@ -70,6 +70,30 @@ namespace platinum
     inline float lerp(float t, float v1, float v2) { return (1 - t) * v1 + t * v2; }
     inline float gamma(int n) { return (n * MachineEpsilon) / (1 - n * MachineEpsilon); }
 
+    inline float minComponent(const glm::vec3& v) { return glm::min(v.x, glm::min(v.y, v.z)); }
+
+
+    inline float maxComponent(const glm::vec3& v) { return glm::max(v.x, glm::max(v.y, v.z)); }
+
+
+    inline int maxDimension(const glm::vec3& v) { return (v.x > v.y) ? ((v.x > v.z) ? 0 : 2) : ((v.y > v.z) ? 1 : 2); }
+
+
+    inline glm::vec3 permute(const glm::vec3& v, int x, int y, int z) { return glm::vec3(v[x], v[y], v[z]); }
+
+    inline glm::vec3 faceforward(const glm::vec3& n, const glm::vec3& v) { return (glm::dot(n, v) < 0.f) ? -n : n; }
+
+    //正交化，用于局部坐标
+    //v1必须已经被归一化过
+    inline void coordinateSystem(const glm::vec3& v1, glm::vec3& v2, glm::vec3& v3)
+    {
+        if (glm::abs(v1.x) > glm::abs(v1.y))
+            v2 = glm::vec3(-v1.z, 0, v1.x) / glm::sqrt(v1.x * v1.x + v1.z * v1.z);
+        else
+            v2 = glm::vec3(0, v1.z, -v1.y) / glm::sqrt(v1.y * v1.y + v1.z * v1.z);
+        v3 = cross(v1, v2);
+    }
+    
     class Camera;
     class Material;
     class Scene;
