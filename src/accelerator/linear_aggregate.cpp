@@ -12,3 +12,36 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#include <accelerator/linear_aggregate.h>
+
+namespace platinum {
+    LinearAggregate::LinearAggregate(const std::vector < std::shared_ptr<Hitable>>& hitables)
+        :_hitables(hitables)
+    {
+        for (const auto& hitable : _hitables) {
+            _world_bounds = Union(_world_bounds, hitable->WorldBound());
+        }
+    }
+
+    bool LinearAggregate::Hit(const Ray& ray)const {
+        for (const auto& hitble : _hitables) {
+            if (hitble->Hit(ray)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    bool LinearAggregate::Hit(const Ray& ray, SurfaceInteraction& inter)const {
+        SurfaceInteraction tmp_inter;
+        bool is_hit = false;
+        for (const auto& hitble : _hitables) {
+            if (hitble->Hit(ray, tmp_inter)) {
+                
+                is_hit = true;
+                inter = tmp_inter;
+            }
+        }
+        return is_hit;
+    }
+}

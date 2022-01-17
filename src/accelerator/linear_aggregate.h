@@ -19,12 +19,12 @@
 namespace platinum {
     class LinearAggregate final :public HitableAggregate {
     public:
-        LinearAggregate(const std::vector < std::shared_ptr<Hitable>& hitables);
+        LinearAggregate(const std::vector < std::shared_ptr<Hitable>>& hitables);
         virtual bool Hit(const Ray& ray)const override;
         virtual bool Hit(const Ray& ray, SurfaceInteraction& inter)const;
-        virtual AABB worldBound()const override;
+        virtual AABB WorldBound()const override { return _world_bounds; }
     private:
-        std::vector < std::shared_ptr<Hitable> _hitable_list;
+        std::vector < std::shared_ptr<Hitable> >_hitables;
         AABB _world_bounds;
     };
 }
