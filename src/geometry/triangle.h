@@ -24,33 +24,10 @@
 #define GEOMETRY_TRIANGLE_H_
 
 #include <core/object.h>
-#include <geometry/vertex.h>
 #include <core/shape.h>
 
 namespace platinum
 {
-    class Triangle_ : public Object
-    {
-    public:
-        Triangle_(const glm::vec3& a, const glm::vec3& b, const glm::vec3& c, std::shared_ptr<Material> material_ = NULL);
-        Triangle_(const Vertex& a, const Vertex& b, const Vertex& c, std::shared_ptr<Material> material_ = NULL);
-        virtual HitRst Intersect(const Ray& r);
-        virtual AABB GetBoundingBox() const;
-        virtual float GetArea() const;
-        virtual void Sample(HitRst& inter, float& pdf) const;
-        const Vertex& GetA() const { return A; }
-        const Vertex& GetB() const { return B; }
-        const Vertex& GetC() const { return C; }
-
-    protected:
-        glm::vec4 intersectRay(const glm::vec3& o, const glm::vec3& d);
-
-    private:
-        Vertex A, B, C;
-        glm::vec3 normal_, e1, e2;
-        float area_{ 0.f };
-        AABB bounding_box_;
-    };
 
     class TriangleMesh final
     {

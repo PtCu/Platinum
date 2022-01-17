@@ -31,31 +31,7 @@
 #include <core/shape.h>
 
 namespace platinum
-{
-    class Sphere_ : public Object
-    {
-    public:
-        Sphere_() = default;
-        Sphere_(glm::vec3 cen, float r, std::shared_ptr<Material> m = nullptr);
-        ~Sphere_() = default;
-        virtual HitRst Intersect(const Ray &r);
-        virtual float GetArea() const;
-        virtual AABB GetBoundingBox() const;
-        virtual void Sample(HitRst &inter, float &pdf) const;
-
-    protected:
-        virtual glm::vec3 getCenter(const Ray &r) const;
-        virtual void setIntersection(float t, HitRst &rec, const Ray &r) const;
-        void getSphereUV(const glm::vec3 &p, float &u, float &v) const;
-
-    private:
-        float area_;
-        glm::vec3 center_;
-        float radius_;
-        AABB bounding_box_;
-    };
-
-    /**
+{    /**
      * @brief 
      *      所有球体对象的object坐标系都是以球心为原点
      *      以z坐标的范围跟φ来裁剪球体，
