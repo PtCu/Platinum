@@ -17,7 +17,6 @@
 namespace platinum
 {
 
-    const HitRst HitRst::InValid(false);
     SurfaceInteraction::SurfaceInteraction(const glm::vec3 &p, const glm::vec2 &uv, const glm::vec3 &wo,
                                            const glm::vec3 &dpdu, const glm::vec3 &dpdv, const Shape *sh)
         : Interaction(p, glm::normalize(glm::cross(dpdu, dpdv)), wo), uv(uv), dpdu(dpdu), dpdv(dpdv), shape(sh)

@@ -27,36 +27,10 @@
 #include <core/defines.h>
 #include <core/material.h>
 #include <core/ray.h>
-#include <geometry/vertex.h>
 #include <core/shape.h>
 #include <core/object.h>
 namespace platinum
 {
-    struct HitRecord
-    {
-    public:
-        HitRecord() = default;
-
-        HitRecord(const Ray &_ray, const glm::vec3 &pos = glm::vec3(0),
-                  const glm::vec3 &normal = glm::vec3(0, 0, 1), float u = 0, float v = 0) : ray(_ray), vert(pos, normal, u, v) {}
-        Ray ray;
-        Vertex vert;
-    };
-
-    struct HitRst
-    {
-    public:
-        explicit HitRst(bool hit = false) : is_hit(hit), material(NULL) {}
-        bool is_hit;
-        glm::vec3 emit;
-        HitRecord record;
-        std::shared_ptr<const Material> material;
-        HitRst &operator=(const HitRst &e)
-        {
-            return *this;
-        }
-        static const HitRst InValid;
-    };
 
     //SurfaceInteraction和MediumInteraction的基类
     class Interaction

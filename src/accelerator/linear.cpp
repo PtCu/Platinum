@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include <accelerator/linear_aggregate.h>
+#include <accelerator/linear.h>
 
 namespace platinum {
     LinearAggregate::LinearAggregate(const std::vector < std::shared_ptr<Hitable>>& hitables)

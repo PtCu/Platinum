@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include <camera/perspective_camera.h>
+#include <camera/perspective.h>
 
 namespace platinum
 {
