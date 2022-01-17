@@ -21,7 +21,7 @@ namespace platinum {
     class Matte final : public Material {
     public:
         Matte(const glm::vec3& r) :_Kr(r) {}
-        virtual void ComputeScatterFunction(SurfaceInteraction& si)const override;
+        virtual void ComputeScatteringFunctions(SurfaceInteraction& si)const override;
     private:
         glm::vec3 _Kr;
     }

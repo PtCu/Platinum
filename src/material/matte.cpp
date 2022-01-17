@@ -15,7 +15,7 @@
 #include <material/matte.h>
 
 namespace platinum {
-    void Matte::ComputeScatterFunction(SurfaceInteraction& si)const {
+    void Matte::ComputeScatteringFunctions(SurfaceInteraction& si)const {
      
     }
 }
