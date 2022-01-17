@@ -12,19 +12,3 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef MATERIAL_MATTE_H_
-#define MATERIAL_MATTE_H_
-
-#include <core/material.h>
-
-namespace platinum {
-    class Matte final : public Material {
-    public:
-        Matte(const glm::vec3& r) :_Kr(r) {}
-        virtual void ComputeScatterFunction(SurfaceInteraction& si)const override;
-    private:
-        glm::vec3 _Kr;
-    }
-}
-
-#endif
