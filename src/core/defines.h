@@ -44,7 +44,7 @@
 #include <typeinfo>
 #include <thread>
 #include <mutex>
-
+#include <glm/glm.hpp>
 #include <glog/logging.h>
 namespace platinum
 {
