@@ -15,7 +15,7 @@
 #include <accelerator/linear.h>
 
 namespace platinum {
-    LinearAggregate::LinearAggregate(const std::vector < std::shared_ptr<Hitable>>& hitables)
+    LinearAggregate::LinearAggregate(const std::vector < std::shared_ptr<Primitive>>& hitables)
         :_hitables(hitables)
     {
         for (const auto& hitable : _hitables) {

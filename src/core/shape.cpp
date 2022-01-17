@@ -13,6 +13,10 @@
 // limitations under the License.
 
 #include <core/shape.h>
+#include <core/interaction.h>
+#include <math/transform.h>
+#include <glm/gtx/norm.hpp>
+#include <math/bounds.h>
 
 namespace platinum {
 

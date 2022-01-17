@@ -23,12 +23,11 @@
 #ifndef CORE_WORLD_H_
 #define CORE_WORLD_H_
 
-#include <core/object.h>
+#include <core/primitive.h>
 #include <glm/glm.hpp>
 #include <core/defines.h>
 #include <core/ray.h>
 #include <core/interaction.h>
-#include <core/bvh.h>
 #include <functional>
 #include <math/rand.h>
 #include <core/light.h>
@@ -37,18 +36,18 @@ namespace platinum
     class Scene
     {
     public:
-        Scene(const std::shared_ptr< HitableAggregate>& aggre, const std::vector<std::shared_ptr<Light>>& light)
+        Scene(const std::shared_ptr< Aggregate>& aggre, const std::vector<std::shared_ptr<Light>>& light)
             :_aggres(aggre), _lights(light) {
 
         }
 
         bool Hit(const Ray& ray, SurfaceInteraction& inter)const;
         bool Hit(const Ray& ray)const;
-        
+
         std::vector<std::shared_ptr<Light>>_lights;
 
     private:
-        std::shared_ptr<HitableAggregate> _aggres;
+        std::shared_ptr<Aggregate> _aggres;
 
     };
 

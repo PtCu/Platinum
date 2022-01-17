@@ -12,19 +12,26 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef MATERIAL_MATTE_H_
-#define MATERIAL_MATTE_H_
+#include <core/primitive.h>
 
-#include <core/material.h>
+namespace platinum
+{
 
-namespace platinum {
-    class Matte final : public Material {
-    public:
-        Matte(const glm::vec3& r) :_Kr(r) {}
-        virtual void ComputeScatteringFunctions(SurfaceInteraction& si)const override;
-    private:
-        glm::vec3 _Kr;
-    };
+
+    bool GeometricPrimitive::Hit(const Ray& ray, SurfaceInteraction& inter) const {
+        float t;
+        if (!_shape->Hit(ray, t, inter))
+            return false;
+        ray._t_max = t;
+        inter.hitable = this;
+        return true;
+    }
+
+
+
+    void GeometricPrimitive::ComputeScatteringFunctions(SurfaceInteraction& inter) const {
+        if (_material) {
+            _material->ComputeScatteringFunctions(inter);
+        }
+    }
 }
-
-#endif

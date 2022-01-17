@@ -98,15 +98,8 @@ namespace platinum
     class Material;
     class Scene;
     class Ray;
-    class Object;
-    struct HitRecord;
-    struct HitRst;
     class AABB;
     class Texture;
-    class ConstTexture;
-    class CheckerTexture;
-    class BVHAccel;
-    struct BVH_Node;
     class Integrator;
     class TiledIntegrator;
     class Film;
@@ -122,9 +115,11 @@ namespace platinum
     class Filter;
     class Transform;
     class AreaLight;
-    class Hitable;
-    class HitableObject;
-    class HitableAggregate;
+    class Primitive;
+    class GeometricPrimitive;
+    class Aggregate;
     class Shape;
+    class AABB;
+
 } // namespace platinum
 #endif

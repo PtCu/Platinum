@@ -23,7 +23,7 @@
 #ifndef GEOMETRY_TRIANGLE_H_
 #define GEOMETRY_TRIANGLE_H_
 
-#include <core/object.h>
+#include <core/primitive.h>
 #include <core/shape.h>
 
 namespace platinum

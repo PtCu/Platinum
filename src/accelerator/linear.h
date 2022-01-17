@@ -14,17 +14,17 @@
 #ifndef ACCELERATOR_LINEAR_AGGREGATE_CPP_
 #define ACCELERATOR_LINEAR_AGGREGATE_CPP_
 
-#include <core/object.h>
+#include <core/primitive.h>
 
 namespace platinum {
-    class LinearAggregate final :public HitableAggregate {
+    class LinearAggregate final :public Aggregate {
     public:
-        LinearAggregate(const std::vector < std::shared_ptr<Hitable>>& hitables);
+        LinearAggregate(const std::vector < std::shared_ptr<Primitive>>& hitables);
         virtual bool Hit(const Ray& ray)const override;
         virtual bool Hit(const Ray& ray, SurfaceInteraction& inter)const;
         virtual AABB WorldBound()const override { return _world_bounds; }
     private:
-        std::vector < std::shared_ptr<Hitable> >_hitables;
+        std::vector < std::shared_ptr<Primitive> >_hitables;
         AABB _world_bounds;
     };
 }

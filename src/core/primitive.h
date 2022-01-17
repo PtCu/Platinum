@@ -27,33 +27,17 @@
 #include <core/defines.h>
 #include <core/material.h>
 #include <core/shape.h>
-#include <core/integrator.h>
 #include <core/light.h>
+#include <math/bounds.h>
 
 namespace platinum
 {
-    class Object
-    {
+
+    class Primitive {
     public:
-        Object() {}
-        Object(std::shared_ptr<Material> mat = NULL) : _material(mat) {}
-        virtual std::shared_ptr<Material> GetMaterial() const { return _material; }
-        virtual ~Object() {}
-        //TODO: 考虑将虚拟函数声明为非公用的，将公用函数声明为非虚拟的
-        virtual HitRst Intersect(const Ray& r) = 0;
-        virtual AABB GetBoundingBox() const = 0;
-        virtual void Sample(HitRst& inter, float& pdf) const = 0;
-        virtual float GetArea() const = 0;
-    protected:
-        std::shared_ptr<Material> _material;
-    };
+        typedef std::shared_ptr<Primitive> ptr;
 
-
-    class Hitable {
-    public:
-        typedef std::shared_ptr<Hitable> ptr;
-
-        virtual ~Hitable() = default;
+        virtual ~Primitive() = default;
 
         virtual bool Hit(const Ray& ray) const = 0;
         virtual bool Hit(const Ray& ray, SurfaceInteraction& iset) const = 0;
@@ -66,7 +50,33 @@ namespace platinum
         virtual void ComputeScatteringFunctions(SurfaceInteraction& isect) const = 0;
     };
 
-    class HitableAggregate : public Hitable
+    class GeometricPrimitive :public Primitive {
+    public:
+
+        GeometricPrimitive(const std::shared_ptr<Shape>& shape, const Material* material,
+            const std::shared_ptr<AreaLight>& area_light)
+            :_shape(shape), _material(material), _area_light(area_light) {}
+
+        virtual bool Hit(const Ray& ray) const override { return _shape->Hit(ray); }
+        virtual bool Hit(const Ray& ray, SurfaceInteraction& iset) const override;
+
+        virtual AABB WorldBound() const override { return _shape->WorldBound(); }
+
+        Shape* GetShape() const { return _shape.get(); }
+        std::shared_ptr<AreaLight> GetAreaLightPtr() const { return _area_light; }
+        virtual const AreaLight* GetAreaLight() const override { return _area_light.get(); }
+        virtual const Material* GetMaterial() const override { return _material; }
+
+        virtual void ComputeScatteringFunctions(SurfaceInteraction& isect) const override;
+
+    private:
+        std::shared_ptr<Shape> _shape;
+        std::shared_ptr<AreaLight> _area_light;
+
+        const Material* _material;
+    };
+
+    class Aggregate : public Primitive
     {
     public:
 

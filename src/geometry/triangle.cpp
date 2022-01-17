@@ -22,6 +22,10 @@
 
 #include <geometry/triangle.h>
 #include <core/sampler.h>
+#include <core/interaction.h>
+#include <math/transform.h>
+#include <glm/gtx/norm.hpp>
+#include <math/bounds.h>
 #include <assimp/scene.h>
 #include <assimp/Importer.hpp>
 #include <assimp/postprocess.h>
