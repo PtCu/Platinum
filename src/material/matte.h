@@ -17,6 +17,7 @@
 
 #include <core/material.h>
 
+
 namespace platinum {
     class Matte final : public Material {
     public:

@@ -83,7 +83,7 @@ namespace platinum
         void ComputeScatteringFunctions(const Ray& ray);
 
     public:
-        BSDF* bsdf{ nullptr };
+        std::shared_ptr<BSDF> bsdf{ nullptr };
         const Shape* shape{ nullptr };
         const Primitive* hitable{ nullptr };
 
