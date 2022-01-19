@@ -20,7 +20,7 @@
 //  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 //  DEALINGS IN THE SOFTWARE.
 
-#include <geometry/sphere.h>
+#include <shape/sphere.h>
 #include <core/interaction.h>
 #include <math/transform.h>
 #include <glm/gtx/norm.hpp>
@@ -40,20 +40,20 @@ namespace platinum
         return 4.f * Pi * _radius * _radius;
     }
 
-    Interaction Sphere::Sample(const glm::vec2 &u, float &pdf) const
+    Interaction Sphere::Sample(const glm::vec2& u, float& pdf) const
     {
         return {};
     }
-    Interaction Sphere::Sample(const Interaction &ref, const glm::vec2 &u, float &pdf) const
+    Interaction Sphere::Sample(const Interaction& ref, const glm::vec2& u, float& pdf) const
     {
         return {};
     }
-    float Sphere::Pdf(const Interaction &ref, const glm::vec3 &wi) const
+    float Sphere::Pdf(const Interaction& ref, const glm::vec3& wi) const
     {
         return 0.f;
     }
 
-    bool Sphere::Hit(const Ray &r) const
+    bool Sphere::Hit(const Ray& r) const
     {
         //先变化光线到局部坐标中
         Ray ray = _world2object->ExecOn(r);
@@ -86,7 +86,7 @@ namespace platinum
         return true;
     }
 
-    bool Sphere::Hit(const Ray &r, float &t_hit, SurfaceInteraction &inter) const
+    bool Sphere::Hit(const Ray& r, float& t_hit, SurfaceInteraction& inter) const
     {
 
         //先变化光线到局部坐标中

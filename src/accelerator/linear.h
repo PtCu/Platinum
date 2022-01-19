@@ -23,9 +23,7 @@ namespace platinum {
         virtual bool Hit(const Ray& ray)const override;
         virtual bool Hit(const Ray& ray, SurfaceInteraction& inter)const;
         virtual AABB WorldBound()const override { return _world_bounds; }
-    private:
-        std::vector < std::shared_ptr<Primitive> >_hitables;
-        AABB _world_bounds;
+  
     };
 }
 

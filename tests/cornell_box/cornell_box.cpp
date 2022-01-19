@@ -11,6 +11,28 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-int main() {
+#include <ROOT_PATH.h>
+#include <core/scene.h>
+#include <core/integrator.h>
+#include <core/primitive.h>
+#include <core/light.h>
+#include <accelerator/linear.h>
+#include <camera/perspective.h>
+#include <integrator/whitted_integrator.h>
+#include <light/diffuse_light.h>
+#include <material/matte.h>
+
+using namespace platinum;
+using namespace glm;
+using namespace std;
+
+const static string root_path(ROOT_PATH);
+const static string assets_path = root_path + "/assets/";
+
+void CreateScene(vector<Primitive>& prim, vector<Light>& light) {
     
+    
+}
+int main() {
+
 }

@@ -20,7 +20,7 @@
 //  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 //  DEALINGS IN THE SOFTWARE.
 
-#include <geometry/triangle.h>
+#include <shape/triangle.h>
 #include <core/sampler.h>
 #include <core/interaction.h>
 #include <math/transform.h>

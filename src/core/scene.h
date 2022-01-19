@@ -40,7 +40,6 @@ namespace platinum
             :_aggres(aggre), _lights(light) {
 
         }
-
         bool Hit(const Ray& ray, SurfaceInteraction& inter)const;
         bool Hit(const Ray& ray)const;
 

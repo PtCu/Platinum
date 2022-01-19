@@ -16,7 +16,7 @@
 
 namespace platinum {
     LinearAggregate::LinearAggregate(const std::vector < std::shared_ptr<Primitive>>& hitables)
-        :_hitables(hitables)
+        :Aggregate(hitables)
     {
         for (const auto& hitable : _hitables) {
             _world_bounds = Union(_world_bounds, hitable->WorldBound());
