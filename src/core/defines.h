@@ -93,7 +93,35 @@ namespace platinum
             v2 = glm::vec3(0, v1.z, -v1.y) / glm::sqrt(v1.y * v1.y + v1.z * v1.z);
         v3 = glm::cross(v1, v2);
     }
-    
+
+    inline uint32_t floatToBits(float f) 
+	{
+		uint32_t ui;
+		memcpy(&ui, &f, sizeof(float));
+		return ui;
+	}
+
+	inline float bitsToFloat(uint32_t ui) 
+	{
+		float f;
+		memcpy(&f, &ui, sizeof(uint32_t));
+		return f;
+	}
+
+	inline uint64_t floatToBits(double f) 
+	{
+		uint64_t ui;
+		memcpy(&ui, &f, sizeof(double));
+		return ui;
+	}
+
+	inline double bitsToFloat(uint64_t ui) 
+	{
+		double f;
+		memcpy(&f, &ui, sizeof(uint64_t));
+		return f;
+	}
+
     class Camera;
     class Material;
     class Scene;
@@ -118,6 +146,7 @@ namespace platinum
     class GeometricPrimitive;
     class Aggregate;
     class Shape;
+    class Spectrum;
 
 } // namespace platinum
 #endif

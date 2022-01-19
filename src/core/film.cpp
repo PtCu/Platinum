@@ -13,29 +13,29 @@
 // limitations under the License.
 #include "film.h"
 
-inline static float clamp(const float &lo, const float &hi, const float &v)
-{
-    return std::max(lo, std::min(hi, v));
-}
+// inline static float clamp(const float &lo, const float &hi, const float &v)
+// {
+//     return std::max(lo, std::min(hi, v));
+// }
 namespace platinum
 {
 
-    void Film::SaveImage()
-    {
-#pragma omp parallel for schedule(dynamic, 1024)
-        for (int px_id = 0; px_id < _img_size; ++px_id)
-        {
-            int i = px_id % _width;
-            int j = px_id / _width;
-            auto col = _framebuffer[px_id];
-            col.r = std::pow(clamp(0, 1, col.r), 0.6f);
-            col.g = std::pow(clamp(0, 1, col.g), 0.6f);
-            col.b = std::pow(clamp(0, 1, col.b), 0.6f);
-            glm::vec3 new_col(col.r, col.g, col.b);
+//     void Film::SaveImage()
+//     {
+// #pragma omp parallel for schedule(dynamic, 1024)
+//         for (int px_id = 0; px_id < _img_size; ++px_id)
+//         {
+//             int i = px_id % _width;
+//             int j = px_id / _width;
+//             auto col = _framebuffer[px_id];
+//             col.r = std::pow(clamp(0, 1, col.r), 0.6f);
+//             col.g = std::pow(clamp(0, 1, col.g), 0.6f);
+//             col.b = std::pow(clamp(0, 1, col.b), 0.6f);
+//             glm::vec3 new_col(col.r, col.g, col.b);
 
-            _img.SetPixel(i, j, new_col);
-        }
-        // UpdateProgress(1.f);
-        _img.SaveAsPNG(_filename);
-    }
+//             _img.SetPixel(i, j, new_col);
+//         }
+//         // UpdateProgress(1.f);
+//         _img.SaveAsPNG(_filename);
+//     }
 }

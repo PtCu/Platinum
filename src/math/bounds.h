@@ -165,7 +165,11 @@ namespace platinum
             p.y <= b._p_max.y && p.z >= b._p_min.z && p.z <= b._p_max.z);
     }
 
-
+	template <typename T>
+	bool insideExclusive(const AVector2<T> &pt, const ABounds2<T> &b) 
+	{
+		return (pt.x >= b.m_pMin.x && pt.x < b.m_pMax.x && pt.y >= b.m_pMin.y && pt.y < b.m_pMax.y);
+	}
     template<typename T>
     class Bounds2
     {
