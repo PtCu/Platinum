@@ -30,9 +30,9 @@ namespace platinum
 {
 
 
-    AABB Sphere::ObjectBound() const
+    Bounds3f Sphere::ObjectBound() const
     {
-        return AABB(-glm::vec3(_radius, _radius, _radius), glm::vec3(_radius, _radius, _radius));
+        return Bounds3f(-glm::vec3(_radius, _radius, _radius), glm::vec3(_radius, _radius, _radius));
     }
 
     float Sphere::Area() const

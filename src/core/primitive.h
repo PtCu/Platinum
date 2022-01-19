@@ -42,7 +42,7 @@ namespace platinum
         virtual bool Hit(const Ray& ray) const = 0;
         virtual bool Hit(const Ray& ray, SurfaceInteraction& iset) const = 0;
 
-        virtual AABB WorldBound() const = 0;
+        virtual Bounds3f WorldBound() const = 0;
 
         virtual const AreaLight* GetAreaLight() const = 0;
         virtual const Material* GetMaterial() const = 0;
@@ -60,7 +60,7 @@ namespace platinum
         virtual bool Hit(const Ray& ray) const override { return _shape->Hit(ray); }
         virtual bool Hit(const Ray& ray, SurfaceInteraction& iset) const override;
 
-        virtual AABB WorldBound() const override { return _shape->WorldBound(); }
+        virtual Bounds3f WorldBound() const override { return _shape->WorldBound(); }
 
         Shape* GetShape() const { return _shape.get(); }
         std::shared_ptr<AreaLight> GetAreaLightPtr() const { return _area_light; }
@@ -87,7 +87,7 @@ namespace platinum
         virtual void ComputeScatteringFunctions(SurfaceInteraction& isect) const override;
     protected:
         std::vector < std::shared_ptr<Primitive> >_hitables;
-        AABB _world_bounds;
+        Bounds3f _world_bounds;
     };
 
 

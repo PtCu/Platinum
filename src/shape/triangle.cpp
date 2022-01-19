@@ -129,20 +129,20 @@ namespace platinum
         _indices.assign(indices_total.begin(), indices_total.end());
     }
 
-    AABB Triangle::ObjectBound() const
+    Bounds3f Triangle::ObjectBound() const
     {
         const auto& p0 = _mesh->GetPositionAt(_indices[0]);
         const auto& p1 = _mesh->GetPositionAt(_indices[1]);
         const auto& p2 = _mesh->GetPositionAt(_indices[2]);
-        return Union(AABB(_world2object->ExecOn(p0, 1.f), _world2object->ExecOn(p1, 1.f)), _world2object->ExecOn(p2, 1.f));
+        return Union(Bounds3f(_world2object->ExecOn(p0, 1.f), _world2object->ExecOn(p1, 1.f)), _world2object->ExecOn(p2, 1.f));
     }
 
-    AABB Triangle::WorldBound() const
+    Bounds3f Triangle::WorldBound() const
     {
         const auto& p0 = _mesh->GetPositionAt(_indices[0]);
         const auto& p1 = _mesh->GetPositionAt(_indices[1]);
         const auto& p2 = _mesh->GetPositionAt(_indices[2]);
-        return Union(AABB(p0, p1), p2);
+        return Union(Bounds3f(p0, p1), p2);
     }
     float Triangle::Area()const {
         const auto& p0 = _mesh->GetPositionAt(_indices[0]);

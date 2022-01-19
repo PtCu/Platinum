@@ -98,7 +98,7 @@ namespace platinum
     class TiledIntegrator : public Integrator
     {
     public:
-        TiledIntegrator(std::shared_ptr<Camera> camera, std::shared_ptr<Sampler> sampler, int spp, int max_depth = 10);
+        TiledIntegrator(std::shared_ptr<Camera> camera, std::shared_ptr<Sampler> sampler, int max_depth = 10);
         virtual void Render(const Scene& scene);
 
 
@@ -108,10 +108,8 @@ namespace platinum
         virtual glm::vec3 Li(const Scene& scene, const Ray& ray, Sampler& sampler, int depth = 0)const = 0;
         glm::vec3 SpecularReflect(const Ray& ray, const SurfaceInteraction& inter, const Scene& scene, Sampler& sampler, int depth)const;
         glm::vec3 SpecularTransmit(const Ray& ray, const SurfaceInteraction& inter, const Scene& scene, Sampler& sampler, int depth)const;
-        void UpdateProgress(float progress);
         std::shared_ptr<Camera> _camera;
         std::shared_ptr<Sampler>_sampler;
-        int _spp;
         std::mutex _mutex_ins;
         std::unique_ptr<TilesManager> _tiles_manager;
         int _max_depth;

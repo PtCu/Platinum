@@ -37,11 +37,11 @@ namespace platinum
         else
             return glm::vec3(ret.x, ret.y, ret.z) / ret.w;
     }
-    AABB Transform::ExecOn(const AABB &b) const
+    Bounds3f Transform::ExecOn(const Bounds3f &b) const
     {
         //每个顶点都进行转化，最后合并
         const auto &mat = *this;
-        AABB ret(mat.ExecOn(b._p_min, 1.f));
+        Bounds3f ret(mat.ExecOn(b._p_min, 1.f));
         ret.UnionWith(mat.ExecOn(glm::vec3(b._p_max.x, b._p_min.y, b._p_min.z), 1.0f));
         ret.UnionWith(mat.ExecOn(glm::vec3(b._p_min.x, b._p_max.y, b._p_min.z), 1.0f));
         ret.UnionWith(mat.ExecOn(glm::vec3(b._p_min.x, b._p_min.y, b._p_max.z), 1.0f));

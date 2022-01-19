@@ -35,7 +35,7 @@ namespace platinum {
         _world2object = world2object;
     }
 
-    AABB Shape::WorldBound()const {
+    Bounds3f Shape::WorldBound()const {
         return _object2world->ExecOn(this->ObjectBound());
     }
     Interaction Shape::Sample(const Interaction& ref, const glm::vec2& u, float& pdf) const

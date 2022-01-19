@@ -22,7 +22,7 @@ namespace platinum {
         LinearAggregate(const std::vector < std::shared_ptr<Primitive>>& hitables);
         virtual bool Hit(const Ray& ray)const override;
         virtual bool Hit(const Ray& ray, SurfaceInteraction& inter)const;
-        virtual AABB WorldBound()const override { return _world_bounds; }
+        virtual Bounds3f WorldBound()const override { return _world_bounds; }
   
     };
 }

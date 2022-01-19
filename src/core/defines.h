@@ -98,7 +98,7 @@ namespace platinum
     class Material;
     class Scene;
     class Ray;
-    class AABB;
+    class Bounds3f;
     class Texture;
     class Integrator;
     class TiledIntegrator;
@@ -119,7 +119,7 @@ namespace platinum
     class GeometricPrimitive;
     class Aggregate;
     class Shape;
-    class AABB;
+    class Bounds3f;
 
 } // namespace platinum
 #endif

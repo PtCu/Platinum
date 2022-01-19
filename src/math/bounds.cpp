@@ -24,144 +24,71 @@
 #include <core/ray.h>
 namespace platinum
 {
-    AABB::AABB()
-    {
-        float _min = std::numeric_limits<float>::lowest();
-        float _max = std::numeric_limits<float>::max();
-        _p_min = glm::vec3{_max, _max, _max};
-        _p_max = glm::vec3{_min, _min, _min};
-        is_valid_ = false;
-    }
-    AABB::AABB(const glm::vec3 &a, const glm::vec3 &b)
-    {
-        _p_min = glm::min(a, b);
-        _p_max = glm::max(a, b);
-        is_valid_ = true;
-    }
-    bool AABB::IsHit(const Ray &r) const
-    {
-        if (is_valid_ == false)
-            return false;
-        const glm::vec3 invDir = r.GetInvDirection();
-        const AABB &bounds = *this;
-        // Check for ray intersection against $x$ and $y$ slabs
-        auto tMin = (bounds[r.IsDirNeg(0)].x - r.GetOrigin().x) * invDir.x;
-        auto tMax = (bounds[1 - r.IsDirNeg(0)].x - r.GetOrigin().x) * invDir.x;
-        auto tyMin = (bounds[r.IsDirNeg(1)].y - r.GetOrigin().y) * invDir.y;
-        auto tyMax = (bounds[1 - r.IsDirNeg(1)].y - r.GetOrigin().y) * invDir.y;
+    template <typename T>
+	inline bool Bounds3<T>::Hit(const Ray &ray, float &hitt0, float &hitt1) const
+	{
+		float t0 = 0, t1 = ray.m_tMax;
+		for (int i = 0; i < 3; ++i)
+		{
+			// Update interval for _i_th bounding box slab
+			float invRayDir = 1 / ray.m_dir[i];
+			float tNear = (m_pMin[i] - ray.m_origin[i]) * invRayDir;
+			float tFar = (m_pMax[i] - ray.m_origin[i]) * invRayDir;
 
-        if (tMin > tyMax || tyMin > tMax)
-            return false;
-        if (tyMin > tMin)
-            tMin = tyMin;
-        if (tyMax < tMax)
-            tMax = tyMax;
+			// Update parametric interval from slab intersection $t$ values
+			if (tNear > tFar)
+			{
+				std::swap(tNear, tFar);
+			}
 
-        // Check for ray intersection against $z$ slab
-        auto tzMin = (bounds[r.IsDirNeg(2)].z - r.GetOrigin().z) * invDir.z;
-        auto tzMax = (bounds[1 - r.IsDirNeg(2)].z - r.GetOrigin().z) * invDir.z;
+			// Update _tFar_ to ensure robust ray--bounds intersection
+			tFar *= 1 + 2 * gamma(3);
+			t0 = tNear > t0 ? tNear : t0;
+			t1 = tFar < t1 ? tFar : t1;
+			if (t0 > t1)
+			{
+				return false;
+			}
+		}
+		hitt0 = t0;
+		hitt1 = t1;
+		return true;
+	}
 
-        if (tMin > tzMax || tzMin > tMax)
-            return false;
-        if (tzMin > tMin)
-            tMin = tzMin;
-        if (tzMax < tMax)
-            tMax = tzMax;
+	template <typename T>
+	inline bool Bounds3<T>::Hit(const Ray &ray, const glm::vec3 &invDir, const int dirIsNeg[3]) const
+	{
+		const ABounds3f &bounds = *this;
+		// Check for ray intersection against $x$ and $y$ slabs
+		float tMin = (bounds[dirIsNeg[0]].x - ray.m_origin.x) * invDir.x;
+		float tMax = (bounds[1 - dirIsNeg[0]].x - ray.m_origin.x) * invDir.x;
+		float tyMin = (bounds[dirIsNeg[1]].y - ray.m_origin.y) * invDir.y;
+		float tyMax = (bounds[1 - dirIsNeg[1]].y - ray.m_origin.y) * invDir.y;
 
-        return (tMin < r.GetMaxTime()) && (tMax > 0);
-    }
+		// Update _tMax_ and _tyMax_ to ensure robust bounds intersection
+		tMax *= 1 + 2 * gamma(3);
+		tyMax *= 1 + 2 * gamma(3);
+		if (tMin > tyMax || tyMin > tMax)
+			return false;
+		if (tyMin > tMin)
+			tMin = tyMin;
+		if (tyMax < tMax)
+			tMax = tyMax;
 
-    bool AABB::Hit(const Ray &ray, const glm::vec3 &inv_dir, const int dir_is_neg[3]) const
-    {
-        //取最大的t_min_x,y,z作为t_min
-        //取最小的t_max_x,y,z作为t_max
-        const AABB &bounds = *this;
-        float t_min = (bounds[dir_is_neg[0]].x - ray._origin.x) * inv_dir.x;
-        float t_max = (bounds[1 - dir_is_neg[0]].x - ray._origin.x) * inv_dir.x;
-        float t_y_min = (bounds[dir_is_neg[1]].y - ray._origin.y) * inv_dir.y;
-        float t_y_max = (bounds[1 - dir_is_neg[1]].y - ray._origin.y) * inv_dir.y;
+		// Check for ray intersection against $z$ slab
+		float tzMin = (bounds[dirIsNeg[2]].z - ray.m_origin.z) * invDir.z;
+		float tzMax = (bounds[1 - dirIsNeg[2]].z - ray.om_origin.z) * invDir.z;
 
-        // 更新tmax，增加抗误差性
-        t_max *= 1 + 2 * gamma(3);
-        t_y_max *= 1 + 2 * gamma(3);
-        if (t_min > t_y_max || t_y_min > t_max)
-            return false;
-        if (t_y_min > t_min)
-            t_min = t_y_min;
-        if (t_y_max < t_max)
-            t_max = t_y_max;
+		// Update _tzMax_ to ensure robust bounds intersection
+		tzMax *= 1 + 2 * gamma(3);
+		if (tMin > tzMax || tzMin > tMax)
+			return false;
+		if (tzMin > tMin)
+			tMin = tzMin;
+		if (tzMax < tMax)
+			tMax = tzMax;
+		return (tMin < ray.m_tMax) && (tMax > 0);
+	}
 
-        float t_z_min = (bounds[dir_is_neg[2]].z - ray._origin.z) * inv_dir.z;
-        float t_z_max = (bounds[1 - dir_is_neg[2]].z - ray._origin.z) * inv_dir.z;
-
-        t_z_max *= 1 + 2 * gamma(3);
-        if (t_min > t_z_min || t_z_min > t_max)
-            return false;
-        if (t_z_min > t_min)
-            t_min = t_z_min;
-        if (t_z_max < t_max)
-            t_max = t_z_max;
-        return (t_min < ray._t_max) && (t_max > 0);
-    }
-    AABB AABB::Intersect(const AABB &b) const
-    {
-        return AABB(glm::max(_p_min, b._p_min), glm::min(_p_max, b._p_max));
-    }
-    void AABB::UnionWith(const AABB &aabb)
-    {
-        if (aabb.is_valid_)
-        {
-            if (is_valid_)
-            {
-                _p_min = glm::min(_p_min, aabb._p_min);
-                _p_max = glm::max(_p_max, aabb._p_max);
-            }
-            else
-            {
-                _p_min = aabb.GetMin();
-                _p_max = aabb.GetMax();
-                is_valid_ = true;
-            }
-        }
-    }
-    void AABB::UnionWith(const glm::vec3 &p)
-    {
-        _p_min = glm::min(_p_min, p);
-        _p_max = glm::max(_p_max, p);
-        is_valid_ = true;
-    }
-    glm::vec3 AABB::Offset(const glm::vec3 &p) const
-    {
-        assert(_p_max.x > _p_min.x && _p_max.y > _p_min.y && _p_max.z > _p_min.z);
-        glm::vec3 o = p - _p_min;
-        o.x /= _p_max.x - _p_min.x;
-        o.y /= _p_max.y - _p_min.y;
-        o.z /= _p_max.z - _p_min.z;
-        return o;
-    }
-    bool AABB::Overlaps(const AABB &p) const
-    {
-        bool x = (_p_max.x >= p._p_min.x) && (_p_min.x <= p._p_max.x);
-        bool y = (_p_max.y >= p._p_min.y) && (_p_min.y <= p._p_max.y);
-        bool z = (_p_max.z >= p._p_min.z) && (_p_min.z <= p._p_max.z);
-        return (x && y && z);
-    }
-    bool AABB::Inside(const glm::vec3 &p) const
-    {
-        return p.x >= _p_min.x && p.x <= _p_max.x &&
-               p.y >= _p_min.y && p.y <= _p_max.y &&
-               p.z >= _p_min.z && p.z <= _p_max.z;
-    }
-
-    int AABB::MaxExtent() const
-    {
-        glm::vec3 d = Diagonal();
-        if (d.x > d.y && d.x > d.z)
-            return 0;
-        else if (d.y > d.z)
-            return 1;
-        else
-            return 2;
-    }
 
 }

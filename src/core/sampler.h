@@ -17,14 +17,33 @@
 
 #include <core/defines.h>
 #include <glm/glm.hpp>
+
 namespace platinum {
     class Sampler {
     public:
         Sampler(int64_t samplesPerPixel);
 
         virtual ~Sampler() = default;
-        // 对某个像素点开始采样
+     
+        /**
+         * @brief 对某个像素点开始采样
+         * @param  p                像素点
+         */
         virtual void StartPixel(const glm::ivec2& p);
+        
+        /**
+         * @brief Set the Sample Number object
+         * @param  sampleNum        My Param doc
+         * @return true 
+         * @return false 
+         */
+        virtual bool SetSampleNumber(int64_t sampleNum);
+        /**
+         * @brief 开始下一个样本，返回值为该像素是否采样完毕
+         * @return true 没有完毕
+         * @return false 完毕，可以采集下一个了
+         */
+        virtual bool StartNextSample();
 
         /**
          * 返回一维随机变量，每次调用之后，维度下标都会自增
@@ -40,7 +59,7 @@ namespace platinum {
          */
         virtual glm::vec2 Get2D() = 0;
 
-        CameraSample GetCameraSample(const glm::ivec2& pRaster, Filter* flter = nullptr);
+        CameraSample GetCameraSample(const glm::ivec2& p_raster, Filter* flter = nullptr);
 
         // 申请一个长度为n的一维随机变量数组
         void Request1DArray(int n);
@@ -71,9 +90,17 @@ namespace platinum {
          */
         const glm::ivec2* Get2DArray(int n);
 
-        // 开始下一个样本，返回值为该像素是否采样完毕
-        virtual bool StartNextSample();
+        /**
+         * @brief   由于Sampler的实现类存储一些状态信息，
+         *          因此在多个线程中使用同一个采样器是线程不安全的。
+         *          Clone()方法用来生成一个该采样器的一个新实例供多线程使用，
+         *          并接受一个参数，若采样器包含随机数生成器，可以通过该参数为新的采样器指定一个不一样的随机数种子。
+         *          这么做的原因在于相同的随机数序列可能会产生规则重复的噪声（repeating noise patterns），
+         *          为了避免出现artifacts我们必须为新的采样器指定不同的随机数种子。
 
+         * @param  seed             种子数
+         * @return std::unique_ptr<Sampler> 
+         */
         virtual std::unique_ptr<Sampler> Clone(int seed) = 0;
 
         virtual bool SetSampleIndex(int64_t sampleNum);
@@ -83,7 +110,7 @@ namespace platinum {
             return _currentPixelSampleIndex;
         }
 
-        const int64_t samplesPerPixel;
+        const int64_t _samplesPerPixel;
     protected:
 
         // 当前处理的像素点
@@ -102,7 +129,7 @@ namespace platinum {
         std::vector<std::vector<float>> _sampleArray1D;
 
         // 用于存储二维样本的列表
-        std::vector<std::vector<glm::vec2>> _sampleArray2D;
+        std::vector<std::vector<glm::ivec2>> _sampleArray2D;
 
     private:
 

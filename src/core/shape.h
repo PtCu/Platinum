@@ -26,13 +26,13 @@ namespace platinum {
         virtual ~Shape() = default;
         void SetTransform(Transform* objectToWorld, Transform* worldToObject);
 
-        virtual AABB ObjectBound() const = 0;
+        virtual Bounds3f ObjectBound() const = 0;
 
         /**
          * @brief 将包围盒转化为世界坐标
          * @return AABB 
          */
-        virtual AABB WorldBound() const;
+        virtual Bounds3f WorldBound() const;
 
      
         /**

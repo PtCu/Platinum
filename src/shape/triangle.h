@@ -57,8 +57,8 @@ namespace platinum
         virtual float Area() const override;
         virtual Interaction Sample(const glm::vec2& u, float& pdf) const override;
 
-        virtual AABB ObjectBound() const override;
-        virtual AABB WorldBound() const override;
+        virtual Bounds3f ObjectBound() const override;
+        virtual Bounds3f WorldBound() const override;
 
         virtual bool Hit(const Ray& ray) const override;
         virtual bool Hit(const Ray& ray, float& tHit, SurfaceInteraction& isect) const override;

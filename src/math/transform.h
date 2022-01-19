@@ -64,7 +64,7 @@ namespace platinum {
          * @param  b        待转变的包围盒
          * @return AABB
          */
-        AABB ExecOn(const AABB& b)const;
+        Bounds3f ExecOn(const Bounds3f& b)const;
 
         /**
          * @brief 作用于光线，返回转变后的新光线
