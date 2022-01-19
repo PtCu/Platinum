@@ -17,7 +17,7 @@
 
 
 #include <core/defines.h>
-
+#include <math/bounds.h>
 namespace platinum {
     class Shape {
     public:

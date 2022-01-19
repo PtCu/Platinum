@@ -134,7 +134,7 @@ namespace platinum
         const auto& p0 = _mesh->GetPositionAt(_indices[0]);
         const auto& p1 = _mesh->GetPositionAt(_indices[1]);
         const auto& p2 = _mesh->GetPositionAt(_indices[2]);
-        return Union(Bounds3f(_world2object->ExecOn(p0, 1.f), _world2object->ExecOn(p1, 1.f)), _world2object->ExecOn(p2, 1.f));
+        return UnionBounds(Bounds3f(_world2object->ExecOn(p0, 1.f), _world2object->ExecOn(p1, 1.f)), _world2object->ExecOn(p2, 1.f));
     }
 
     Bounds3f Triangle::WorldBound() const
@@ -142,7 +142,7 @@ namespace platinum
         const auto& p0 = _mesh->GetPositionAt(_indices[0]);
         const auto& p1 = _mesh->GetPositionAt(_indices[1]);
         const auto& p2 = _mesh->GetPositionAt(_indices[2]);
-        return Union(Bounds3f(p0, p1), p2);
+        return UnionBounds(Bounds3f(p0, p1), p2);
     }
     float Triangle::Area()const {
         const auto& p0 = _mesh->GetPositionAt(_indices[0]);

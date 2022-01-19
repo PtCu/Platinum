@@ -42,13 +42,13 @@ namespace platinum
         //每个顶点都进行转化，最后合并
         const auto &mat = *this;
         Bounds3f ret(mat.ExecOn(b._p_min, 1.f));
-        ret.UnionWith(mat.ExecOn(glm::vec3(b._p_max.x, b._p_min.y, b._p_min.z), 1.0f));
-        ret.UnionWith(mat.ExecOn(glm::vec3(b._p_min.x, b._p_max.y, b._p_min.z), 1.0f));
-        ret.UnionWith(mat.ExecOn(glm::vec3(b._p_min.x, b._p_min.y, b._p_max.z), 1.0f));
-        ret.UnionWith(mat.ExecOn(glm::vec3(b._p_min.x, b._p_max.y, b._p_max.z), 1.0f));
-        ret.UnionWith(mat.ExecOn(glm::vec3(b._p_max.x, b._p_max.y, b._p_min.z), 1.0f));
-        ret.UnionWith(mat.ExecOn(glm::vec3(b._p_max.x, b._p_min.y, b._p_max.z), 1.0f));
-        ret.UnionWith(mat.ExecOn(glm::vec3(b._p_max.x, b._p_max.y, b._p_max.z), 1.0f));
+        ret=UnionBounds(ret,mat.ExecOn(glm::vec3(b._p_max.x, b._p_min.y, b._p_min.z), 1.0f));
+        ret=UnionBounds(ret,mat.ExecOn(glm::vec3(b._p_min.x, b._p_max.y, b._p_min.z), 1.0f));
+        ret=UnionBounds(ret,mat.ExecOn(glm::vec3(b._p_min.x, b._p_min.y, b._p_max.z), 1.0f));
+        ret=UnionBounds(ret,mat.ExecOn(glm::vec3(b._p_min.x, b._p_max.y, b._p_max.z), 1.0f));
+        ret=UnionBounds(ret,mat.ExecOn(glm::vec3(b._p_max.x, b._p_max.y, b._p_min.z), 1.0f));
+        ret=UnionBounds(ret,mat.ExecOn(glm::vec3(b._p_max.x, b._p_min.y, b._p_max.z), 1.0f));
+        ret=UnionBounds(ret,mat.ExecOn(glm::vec3(b._p_max.x, b._p_max.y, b._p_max.z), 1.0f));
         return ret;
     }
 

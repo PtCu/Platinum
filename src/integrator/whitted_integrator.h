@@ -23,7 +23,7 @@ namespace platinum
     class WhittedIntegrator : public TiledIntegrator
     {
     public:
-        WhittedIntegrator(std::shared_ptr<Camera> camera, std::shared_ptr<Sampler>sampler, int spp, int max_depth) :TiledIntegrator(camera, sampler, spp, max_depth) {}
+        WhittedIntegrator(std::shared_ptr<Camera> camera, std::shared_ptr<Sampler>sampler,  int max_depth) :TiledIntegrator(camera, sampler, max_depth) {}
 
     protected:
         virtual glm::vec3 Li(const Scene& scene, const Ray& ray, Sampler& sampler, int depth)const override;

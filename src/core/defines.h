@@ -91,14 +91,13 @@ namespace platinum
             v2 = glm::vec3(-v1.z, 0, v1.x) / glm::sqrt(v1.x * v1.x + v1.z * v1.z);
         else
             v2 = glm::vec3(0, v1.z, -v1.y) / glm::sqrt(v1.y * v1.y + v1.z * v1.z);
-        v3 = cross(v1, v2);
+        v3 = glm::cross(v1, v2);
     }
     
     class Camera;
     class Material;
     class Scene;
     class Ray;
-    class Bounds3f;
     class Texture;
     class Integrator;
     class TiledIntegrator;
@@ -119,7 +118,6 @@ namespace platinum
     class GeometricPrimitive;
     class Aggregate;
     class Shape;
-    class Bounds3f;
 
 } // namespace platinum
 #endif

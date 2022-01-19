@@ -19,7 +19,7 @@
 #include <glm/gtc/type_ptr.hpp>
 
 #include <core/defines.h>
-
+#include <math/bounds.h>
 namespace platinum {
     class Transform {
     public:
@@ -68,19 +68,19 @@ namespace platinum {
 
         /**
          * @brief 作用于光线，返回转变后的新光线
-         * 
-         * @param r 
-         * @return Ray 
+         *
+         * @param r
+         * @return Ray
          */
         Ray ExecOn(const Ray& r)const;
 
         /**
          * @brief 作用于相交部分，返回转变后的相交部分
-         * 
-         * @param si 
-         * @return SurfaceInteraction 
+         *
+         * @param si
+         * @return SurfaceInteraction
          */
-        SurfaceInteraction ExecOn(const SurfaceInteraction &si) const;
+        SurfaceInteraction ExecOn(const SurfaceInteraction& si) const;
 
     private:
         glm::mat4 _trans, _trans_inv;

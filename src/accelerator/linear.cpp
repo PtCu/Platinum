@@ -19,7 +19,7 @@ namespace platinum {
         :Aggregate(hitables)
     {
         for (const auto& hitable : _hitables) {
-            _world_bounds = Union(_world_bounds, hitable->WorldBound());
+            _world_bounds = UnionBounds(_world_bounds, hitable->WorldBound());
         }
     }
 
