@@ -26,10 +26,9 @@ namespace platinum
 {
 
     void ProjectiveCamera::Initialize() {
-        int width = _film->GetWidth();
-        int height = _film->GetHeight();
+        auto res = _film->getResolution();
         glm::vec2 p_min, p_max;
-        float ratio = static_cast<float>(width) / height;
+        float ratio = static_cast<float>(res.x) / res.y;
         if (ratio > 1.f) {
             p_min.x = -ratio;
             p_min.y = -1.f;
@@ -43,8 +42,8 @@ namespace platinum
             p_max.y = 1.f / ratio;
         }
         // 屏幕空间(0,0)为胶片平面矩形的中点，范围由p_min和p_max两个点决定
-        // 自左向右乘：先将左下角平移至原点，再缩放到[0,1]x[0,1]，再缩放到[0,width]x[0,height]
-        _screen2raster = Scale(width, height, 1) *
+        // 自左向右乘：先将左下角平移至原点，再缩放到[0,1]x[0,1]，再缩放到[0,res.x]x[0,res.y]
+        _screen2raster = Scale(res.x, res.y, 1) *
             Scale(1 / (p_max.x - p_min.x),
                 1 / (p_min.y - p_max.y), 1) *
             Translate(glm::vec3(-p_min.x, -p_max.y, 0));

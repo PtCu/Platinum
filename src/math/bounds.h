@@ -118,58 +118,7 @@ namespace platinum
         glm::vec<3, T> _p_min, _p_max;
     };
 
-    template <typename T>
-    inline Bounds3<T> UnionBounds(const Bounds3<T>& b, const glm::vec<3, T>& p)
-    {
-        Bounds3<T> ret;
-        ret._p_min = min(b._p_min, p);
-        ret._p_max = max(b._p_max, p);
-        return ret;
-    }
 
-    template <typename T>
-    inline Bounds3<T> UnionBounds(const Bounds3<T>& b1, const Bounds3<T>& b2)
-    {
-        Bounds3<T> ret;
-        ret._p_min = min(b1._p_min, b2._p_min);
-        ret._p_max = max(b1._p_max, b2._p_max);
-        return ret;
-    }
-
-    template <typename T>
-    inline Bounds3<T> Intersect(const Bounds3<T>& b1, const Bounds3<T>& b2)
-    {
-        // Important: assign to pMin/pMax directly and don't run the ABounds2()
-        // constructor, since it takes min/max of the points passed to it.  In
-        // turn, that breaks returning an invalid bound for the case where we
-        // intersect non-overlapping bounds (as we'd like to happen).
-        Bounds3<T> ret;
-        ret._p_min = glm::max(b1._p_min, b2._p_min);
-        ret._p_max = glm::min(b1._p_max, b2._p_max);
-        return ret;
-    }
-
-    template <typename T>
-    inline bool Overlaps(const Bounds3<T>& b1, const Bounds3<T>& b2)
-    {
-        bool x = (b1._p_max.x >= b2._p_min.x) && (b1._p_min.x <= b2._p_max.x);
-        bool y = (b1._p_max.y >= b2._p_min.y) && (b1._p_min.y <= b2._p_max.y);
-        bool z = (b1._p_max.z >= b2._p_min.z) && (b1._p_min.z <= b2._p_max.z);
-        return (x && y && z);
-    }
-
-    template <typename T>
-    inline bool Inside(const glm::vec<3, T>& p, const Bounds3<T>& b)
-    {
-        return (p.x >= b._p_min.x && p.x <= b._p_max.x && p.y >= b._p_min.y &&
-            p.y <= b._p_max.y && p.z >= b._p_min.z && p.z <= b._p_max.z);
-    }
-
-	template <typename T>
-	bool insideExclusive(const AVector2<T> &pt, const ABounds2<T> &b) 
-	{
-		return (pt.x >= b.m_pMin.x && pt.x < b.m_pMax.x && pt.y >= b.m_pMin.y && pt.y < b.m_pMax.y);
-	}
     template<typename T>
     class Bounds2
     {
@@ -251,62 +200,11 @@ namespace platinum
         glm::vec<2, T> _p_min, _p_max;
 
     };
-
+   
     typedef Bounds2<float> Bounds2f;
     typedef Bounds2<int> Bounds2i;
     typedef Bounds3<float> Bounds3f;
     typedef Bounds3<int> Bounds3i;
-    
-    template <typename T>
-    inline Bounds2<T> UnionBounds(const Bounds2<T>& b, const glm::vec<2, T>& p)
-    {
-        Bounds2<T> ret;
-        ret._p_min = min(b._p_min, p);
-        ret._p_max = max(b._p_max, p);
-        return ret;
-    }
-
-    template <typename T>
-    inline Bounds2<T> UnionBounds(const Bounds2<T>& b, const Bounds2<T>& b2)
-    {
-        Bounds2<T> ret;
-        ret._p_min = min(b._p_min, b2._p_min);
-        ret._p_max = max(b._p_max, b2._p_max);
-        return ret;
-    }
-
-    template <typename T>
-    inline Bounds2<T> Intersect(const Bounds2<T>& b1, const Bounds2<T>& b2)
-    {
-        // Important: assign to pMin/pMax directly and don't run the Bounds2()
-        // constructor, since it takes min/max of the points passed to it.  In
-        // turn, that breaks returning an invalid bound for the case where we
-        // intersect non-overlapping bounds (as we'd like to happen).
-        Bounds2<T> ret;
-        ret._p_min = max(b1._p_min, b2._p_min);
-        ret._p_max = min(b1._p_max, b2._p_max);
-        return ret;
-    }
-
-    template <typename T>
-    inline bool Overlaps(const Bounds2<T>& ba, const Bounds2<T>& bb)
-    {
-        bool x = (ba._p_max.x >= bb._p_min.x) && (ba._p_min.x <= bb._p_max.x);
-        bool y = (ba._p_max.y >= bb._p_min.y) && (ba._p_min.y <= bb._p_max.y);
-        return (x && y);
-    }
-
-    template <typename T>
-    inline bool Inside(const glm::vec<2, T>& pt, const Bounds2<T>& b)
-    {
-        return (pt.x >= b._p_min.x && pt.x <= b._p_max.x && pt.y >= b._p_min.y && pt.y <= b._p_max.y);
-    }
-
-    template <typename T>
-    bool InsideExclusive(const glm::vec<2, T>& pt, const Bounds2<T>& b)
-    {
-        return (pt.x >= b._p_min.x && pt.x < b._p_max.x&& pt.y >= b._p_min.y && pt.y < b._p_max.y);
-    }
 
     class Bounds2iIterator : public std::forward_iterator_tag
     {
@@ -371,6 +269,107 @@ namespace platinum
             pEnd = b._p_min;
         return Bounds2iIterator(b, pEnd);
     }
+ 
+    
+    template <typename T>
+    inline Bounds3<T> UnionBounds(const Bounds3<T>& b, const glm::vec<3, T>& p)
+    {
+        Bounds3<T> ret;
+        ret._p_min = glm::min(b._p_min, p);
+        ret._p_max = glm::max(b._p_max, p);
+        return ret;
+    }
+
+    template <typename T>
+    inline Bounds3<T> UnionBounds(const Bounds3<T>& b1, const Bounds3<T>& b2)
+    {
+        Bounds3<T> ret;
+        ret._p_min = glm::min(b1._p_min, b2._p_min);
+        ret._p_max = glm::max(b1._p_max, b2._p_max);
+        return ret;
+    }
+
+    template <typename T>
+    inline Bounds3<T> Intersect(const Bounds3<T>& b1, const Bounds3<T>& b2)
+    {
+        // Important: assign to pMin/pMax directly and don't run the ABounds2()
+        // constructor, since it takes min/max of the points passed to it.  In
+        // turn, that breaks returning an invalid bound for the case where we
+        // intersect non-overlapping bounds (as we'd like to happen).
+        Bounds3<T> ret;
+        ret._p_min = glm::max(b1._p_min, b2._p_min);
+        ret._p_max = glm::min(b1._p_max, b2._p_max);
+        return ret;
+    }
+
+    template <typename T>
+    inline bool Overlaps(const Bounds3<T>& b1, const Bounds3<T>& b2)
+    {
+        bool x = (b1._p_max.x >= b2._p_min.x) && (b1._p_min.x <= b2._p_max.x);
+        bool y = (b1._p_max.y >= b2._p_min.y) && (b1._p_min.y <= b2._p_max.y);
+        bool z = (b1._p_max.z >= b2._p_min.z) && (b1._p_min.z <= b2._p_max.z);
+        return (x && y && z);
+    }
+
+    template <typename T>
+    inline bool Inside(const glm::vec<3, T>& p, const Bounds3<T>& b)
+    {
+        return (p.x >= b._p_min.x && p.x <= b._p_max.x && p.y >= b._p_min.y &&
+            p.y <= b._p_max.y && p.z >= b._p_min.z && p.z <= b._p_max.z);
+    }
+
+    
+    template <typename T>
+    inline Bounds2<T> UnionBounds(const Bounds2<T>& b, const glm::vec<2, T>& p)
+    {
+        Bounds2<T> ret;
+        ret._p_min = min(b._p_min, p);
+        ret._p_max = max(b._p_max, p);
+        return ret;
+    }
+
+    template <typename T>
+    inline Bounds2<T> UnionBounds(const Bounds2<T>& b, const Bounds2<T>& b2)
+    {
+        Bounds2<T> ret;
+        ret._p_min = min(b._p_min, b2._p_min);
+        ret._p_max = max(b._p_max, b2._p_max);
+        return ret;
+    }
+
+    template <typename T>
+    inline Bounds2<T> Intersect(const Bounds2<T>& b1, const Bounds2<T>& b2)
+    {
+        // Important: assign to pMin/pMax directly and don't run the Bounds2()
+        // constructor, since it takes min/max of the points passed to it.  In
+        // turn, that breaks returning an invalid bound for the case where we
+        // intersect non-overlapping bounds (as we'd like to happen).
+        Bounds2<T> ret;
+        ret._p_min = max(b1._p_min, b2._p_min);
+        ret._p_max = min(b1._p_max, b2._p_max);
+        return ret;
+    }
+
+    template <typename T>
+    inline bool Overlaps(const Bounds2<T>& ba, const Bounds2<T>& bb)
+    {
+        bool x = (ba._p_max.x >= bb._p_min.x) && (ba._p_min.x <= bb._p_max.x);
+        bool y = (ba._p_max.y >= bb._p_min.y) && (ba._p_min.y <= bb._p_max.y);
+        return (x && y);
+    }
+
+    template <typename T>
+    inline bool Inside(const glm::vec<2, T>& pt, const Bounds2<T>& b)
+    {
+        return (pt.x >= b._p_min.x && pt.x <= b._p_max.x && pt.y >= b._p_min.y && pt.y <= b._p_max.y);
+    }
+
+    template <typename T>
+    bool InsideExclusive(const glm::vec<2, T>& pt, const Bounds2<T>& b)
+    {
+        return (pt.x >= b._p_min.x && pt.x < b._p_max.x&& pt.y >= b._p_min.y && pt.y < b._p_max.y);
+    }
+
 
       template <typename T>
 	inline bool Bounds3<T>::Hit(const Ray &ray, float &hitt0, float &hitt1) const

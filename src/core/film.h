@@ -20,6 +20,7 @@
 #include <core/image.h>
 #include <core/parallel.h>
 #include <core/spectrum.h>
+#include <math/bounds.h>
 
 namespace platinum
 {
@@ -148,8 +149,8 @@ namespace platinum
             glm::vec2 pFilmDiscrete = pFilm - glm::vec2(0.5f, 0.5f);
             glm::ivec2 p0 = (glm::ivec2)ceil(pFilmDiscrete - m_filterRadius);
             glm::ivec2 p1 = (glm::ivec2)floor(pFilmDiscrete + m_filterRadius) + glm::ivec2(1, 1);
-            p0 = max(p0, m_pixelBounds._p_min);
-            p1 = min(p1, m_pixelBounds._p_max);
+            p0 = glm::max(p0, m_pixelBounds._p_min);
+            p1 = glm::min(p1, m_pixelBounds._p_max);
 
             // Loop over filter support and add sample to pixel arrays
 
