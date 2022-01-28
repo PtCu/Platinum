@@ -82,6 +82,7 @@
         "map": "cpp",
         "numeric": "cpp",
         "valarray": "cpp",
-        "*.rh": "cpp"
+        "*.rh": "cpp",
+        "bit": "cpp"
     }
 }

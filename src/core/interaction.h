@@ -78,6 +78,7 @@ namespace platinum
         SurfaceInteraction(const glm::vec3& p, const glm::vec2& uv, const glm::vec3& wo,
             const glm::vec3& dpdu, const glm::vec3& dpdv, const Shape* sh);
 
+        //compute the emitted radiance at a surface point intersected by a ray.
         glm::vec3 Le(const glm::vec3& w) const;
 
         void ComputeScatteringFunctions(const Ray& ray);

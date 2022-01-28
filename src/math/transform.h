@@ -25,7 +25,7 @@ namespace platinum {
     public:
         Transform()
             :_trans(glm::mat4(1.f)), _trans_inv(glm::mat4(1.f)) {}
-        Transform(const glm::mat4& m) :
+        explicit Transform(const glm::mat4& m) :
             _trans(m), _trans_inv(glm::inverse(m)) {}
         Transform(const glm::mat4& m, const glm::mat4& m_inv)
             :_trans(m), _trans_inv(m_inv) {}
