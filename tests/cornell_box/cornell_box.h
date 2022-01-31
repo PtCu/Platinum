@@ -18,7 +18,7 @@ using namespace std;
 const static string root_path(ROOT_PATH);
 const static string assets_path = root_path + "/assets/";
 
-void AddMesh(vector<std::shared_ptr<Primitive>> &primitives, Transform *obj2world, Transform *world2obj, Material *material, TriangleMesh *mesh, shared_ptr<AreaLight> arealight = nullptr)
+void AddMesh(vector<std::shared_ptr<Primitive>> &primitives, Transform *obj2world, Transform *world2obj, Material *material, TriangleMesh *mesh, shared_ptr<Light> arealight = nullptr)
 {
     const auto &meshIndices = mesh->GetIndices();
     for (size_t i = 0; i < meshIndices.size(); i += 3)
@@ -29,11 +29,11 @@ void AddMesh(vector<std::shared_ptr<Primitive>> &primitives, Transform *obj2worl
         indices[2] = meshIndices[i + 2];
         auto triangle = std::make_shared<Triangle>(obj2world, world2obj, indices, mesh);
 
-        primitives.push_back(std::make_shared<GeometricPrimitive>(triangle, material, arealight));
+        primitives.push_back(std::make_shared<GeometricPrimitive>(triangle, material, dynamic_pointer_cast<AreaLight>(arealight)));
     }
 }
 
-void CreateScene(vector<shared_ptr<Primitive>> &primitives, vector<shared_ptr<AreaLight>> &lights)
+void CreateScene(vector<shared_ptr<Primitive>> &primitives, vector<shared_ptr<Light>> &lights)
 {
     Transform obj2world;
     Transform world2obj{obj2world.GetInverseMatrix()};
@@ -50,7 +50,7 @@ void CreateScene(vector<shared_ptr<Primitive>> &primitives, vector<shared_ptr<Ar
     auto blue = make_unique<Matte>((0.1f, 0.1f, 0.73f));
     auto cube = make_unique<Matte>((1.0f, 1.0f, 1.0f));
 
-    shared_ptr<AreaLight> area_light = make_shared<DiffuseAreaLight>(obj2world, Spectrum(2.f, 2.f, 2.f), 8, nullptr);
+    shared_ptr<Light> area_light = make_shared<DiffuseAreaLight>(obj2world, Spectrum(2.f, 2.f, 2.f), 8, nullptr);
 
     AddMesh(primitives, &obj2world, &world2obj, gray.get(), floor.get());
     AddMesh(primitives, &obj2world, &world2obj, cube.get(), shortbox.get());

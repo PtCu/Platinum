@@ -82,10 +82,10 @@ namespace platinum
     public:
         Aggregate(const std::vector<std::shared_ptr<Primitive>> &hitables)
             : _hitables(hitables) {}
-        virtual const AreaLight *GetAreaLight() const override;
-        virtual const Material *GetMaterial() const override;
+        virtual const AreaLight *GetAreaLight() const override { return nullptr; }
+        virtual const Material *GetMaterial() const override { return nullptr; }
 
-        virtual void ComputeScatteringFunctions(SurfaceInteraction &isect) const override;
+        virtual void ComputeScatteringFunctions(SurfaceInteraction &isect) const override{}
 
     protected:
         std::vector<std::shared_ptr<Primitive>> _hitables;

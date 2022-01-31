@@ -13,15 +13,32 @@
 // limitations under the License.
 
 #include "cornell_box.h"
-
-
+#include "filter/box_filter.h"
+#include "sampler/random_sampler.h"
+static const string file_name = "cornell_box";
 int main()
 {
-    // vector<shared_ptr<Primitive>> primitives;
-    // vector<shared_ptr<Light>> lights;
-    // CreateScene(primitives, lights);
+    vector<shared_ptr<Primitive>> primitives;
+    vector<shared_ptr<Light>> lights;
+    CreateScene(primitives, lights);
 
+    glm::vec3 eye{278,273,-800};
+    glm::vec3 focus{278, 273, -799};
+    glm::vec3 up{0, 0, 1};
+    Transform camera2world = Inverse(LookAt(eye, focus, up));
 
-    // std::unique_ptr<Camera> camera = make_unique<PerspectiveCamera>();
+    unique_ptr<Filter> filter = make_unique<BoxFilter>(glm::vec2{0.5f, 0.5f});
+    auto film = make_shared<Film>(glm::ivec2{600, 550}, Bounds2f{{0, 0}, {1, 1}}, std::move(filter), file_name);
+
+    std::shared_ptr<Camera> camera = make_shared<PerspectiveCamera>(camera2world,39,film);
+
+    std::shared_ptr<Sampler> sampler = make_shared<RandomSampler>(16);
+
+    unique_ptr<Integrator> integrator = make_unique<WhittedIntegrator>(camera, sampler, 10);
+
+    std::shared_ptr<Aggregate> aggre = make_shared<LinearAggregate>(primitives);
+
+    auto scene = make_shared<Scene>(aggre, lights);
+    integrator->Render(*scene);
 
 }

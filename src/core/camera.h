@@ -38,7 +38,7 @@ namespace platinum
         Camera() = default;
         Camera(const Transform& camera2world, std::shared_ptr<Film> film)
             :_camera2world(camera2world), _film(film) {}
-        virtual ~Camera();
+        virtual ~Camera()=default;
         /**
          * @brief 
          * @param  sample           My Param doc

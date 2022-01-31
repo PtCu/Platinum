@@ -23,7 +23,7 @@ namespace platinum
     class Sampler
     {
     public:
-        Sampler(int64_t samplesPerPixel);
+        Sampler(int64_t samplesPerPixel) : _samplesPerPixel(samplesPerPixel) {}
 
         virtual ~Sampler() = default;
 
@@ -105,8 +105,6 @@ namespace platinum
          * @return std::unique_ptr<Sampler> 
          */
         virtual std::unique_ptr<Sampler> Clone(int seed) = 0;
-
-        virtual bool SetSampleIndex(int64_t sampleNum);
 
         int64_t CurrentSampleIndex() const
         {

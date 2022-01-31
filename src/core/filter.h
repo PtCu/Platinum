@@ -27,7 +27,7 @@ namespace platinum
         Filter(const glm::vec2 &radius)
             : m_radius(radius), m_invRadius(glm::vec2(1 / radius.x, 1 / radius.y)) {}
 
-        virtual float evaluate(const glm::vec2 &p) const = 0;
+        virtual float Evaluate(const glm::vec2 &p) const = 0;
 
         const glm::vec2 m_radius, m_invRadius;
     };

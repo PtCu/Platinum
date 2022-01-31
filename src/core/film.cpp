@@ -52,7 +52,7 @@ namespace platinum
                 glm::vec2 p;
                 p.x = (x + 0.5f) * m_filter->m_radius.x / filterTableWidth;
                 p.y = (y + 0.5f) * m_filter->m_radius.y / filterTableWidth;
-                m_filterTable[offset] = m_filter->evaluate(p);
+                m_filterTable[offset] = m_filter->Evaluate(p);
             }
         }
     }

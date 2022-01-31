@@ -17,7 +17,7 @@
 
 #include <glm/glm.hpp>
 #include <core/utilities.h>
-#include <core/image.h>
+
 #include <core/parallel.h>
 #include <core/spectrum.h>
 #include <math/bounds.h>
