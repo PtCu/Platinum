@@ -32,7 +32,7 @@ int main()
 
     std::shared_ptr<Camera> camera = make_shared<PerspectiveCamera>(camera2world,39,film);
 
-    std::shared_ptr<Sampler> sampler = make_shared<RandomSampler>(16);
+    std::shared_ptr<Sampler> sampler = make_shared<RandomSampler>(4);
 
     unique_ptr<Integrator> integrator = make_unique<WhittedIntegrator>(camera, sampler, 10);
 

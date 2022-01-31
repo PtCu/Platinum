@@ -16,9 +16,9 @@ using namespace glm;
 using namespace std;
 
 const static string root_path(ROOT_PATH);
-const static string assets_path = root_path + "/assets/";
+const static string assets_path = root_path + "/assets/models/cornellbox/";
 
-void AddMesh(vector<std::shared_ptr<Primitive>> &primitives, Transform *obj2world, Transform *world2obj, Material *material, TriangleMesh *mesh, shared_ptr<Light> arealight = nullptr)
+void AddMesh(vector<std::shared_ptr<Primitive>> &primitives, vector<shared_ptr<Light>> &lights, Transform *obj2world, Transform *world2obj, Material *material, TriangleMesh *mesh, bool isLight = false)
 {
     const auto &meshIndices = mesh->GetIndices();
     for (size_t i = 0; i < meshIndices.size(); i += 3)
@@ -28,8 +28,14 @@ void AddMesh(vector<std::shared_ptr<Primitive>> &primitives, Transform *obj2worl
         indices[1] = meshIndices[i + 1];
         indices[2] = meshIndices[i + 2];
         auto triangle = std::make_shared<Triangle>(obj2world, world2obj, indices, mesh);
+        shared_ptr<Light> area_light = nullptr;
+        if (isLight)
+        {
+            area_light = make_shared<DiffuseAreaLight>(*obj2world, Spectrum(2.f, 2.f, 2.f), 8, triangle.get());
+            lights.push_back(area_light);
+        }
 
-        primitives.push_back(std::make_shared<GeometricPrimitive>(triangle, material, dynamic_pointer_cast<AreaLight>(arealight)));
+        primitives.push_back(std::make_shared<GeometricPrimitive>(triangle, material, dynamic_pointer_cast<AreaLight>(area_light)));
     }
 }
 
@@ -37,12 +43,12 @@ void CreateScene(vector<shared_ptr<Primitive>> &primitives, vector<shared_ptr<Li
 {
     Transform obj2world;
     Transform world2obj{obj2world.GetInverseMatrix()};
-    auto floor = make_unique<TriangleMesh>(&obj2world, "floor.obj");
-    auto left = make_unique<TriangleMesh>(&obj2world, "left.obj");
-    auto right = make_unique<TriangleMesh>(&obj2world, "right.obj");
-    auto shortbox = make_unique<TriangleMesh>(&obj2world, "shortbox.obj");
-    auto tallbox = make_unique<TriangleMesh>(&obj2world, "tallbox.obj");
-    auto light = make_unique<TriangleMesh>(&obj2world, "light.obj");
+    auto floor = make_unique<TriangleMesh>(&obj2world, assets_path + "floor.obj");
+    auto left = make_unique<TriangleMesh>(&obj2world, assets_path + "left.obj");
+    auto right = make_unique<TriangleMesh>(&obj2world, assets_path + "right.obj");
+    auto shortbox = make_unique<TriangleMesh>(&obj2world, assets_path + "shortbox.obj");
+    auto tallbox = make_unique<TriangleMesh>(&obj2world, assets_path + "tallbox.obj");
+    auto light = make_unique<TriangleMesh>(&obj2world, assets_path + "light.obj");
 
     auto red = make_unique<Matte>((0.63f, 0.065f, 0.05f));
     auto green = make_unique<Matte>((0.14f, 0.45f, 0.091f));
@@ -50,14 +56,12 @@ void CreateScene(vector<shared_ptr<Primitive>> &primitives, vector<shared_ptr<Li
     auto blue = make_unique<Matte>((0.1f, 0.1f, 0.73f));
     auto cube = make_unique<Matte>((1.0f, 1.0f, 1.0f));
 
-    shared_ptr<Light> area_light = make_shared<DiffuseAreaLight>(obj2world, Spectrum(2.f, 2.f, 2.f), 8, nullptr);
+    AddMesh(primitives, lights, &obj2world, &world2obj, gray.get(), floor.get());
+    AddMesh(primitives, lights, &obj2world, &world2obj, cube.get(), shortbox.get());
+    AddMesh(primitives, lights, &obj2world, &world2obj, cube.get(), tallbox.get());
+    AddMesh(primitives, lights, &obj2world, &world2obj, red.get(), left.get());
+    AddMesh(primitives, lights, &obj2world, &world2obj, green.get(), right.get());
+    AddMesh(primitives, lights, &obj2world, &world2obj, gray.get(), light.get(), true);
 
-    AddMesh(primitives, &obj2world, &world2obj, gray.get(), floor.get());
-    AddMesh(primitives, &obj2world, &world2obj, cube.get(), shortbox.get());
-    AddMesh(primitives, &obj2world, &world2obj, cube.get(), tallbox.get());
-    AddMesh(primitives, &obj2world, &world2obj, red.get(), left.get());
-    AddMesh(primitives, &obj2world, &world2obj, green.get(), right.get());
-    AddMesh(primitives, &obj2world, &world2obj, gray.get(), light.get(), area_light);
 
-    lights.push_back(area_light);
 }
