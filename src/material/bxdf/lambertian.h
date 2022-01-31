@@ -26,17 +26,16 @@ namespace platinum {
     **/
     class LambertianReflection :public BxDF {
     public:
-        LambertianReflection(const glm::vec3& R)
-            :BxDF(BxDFType(static_cast<int>(BxDFType::BSDF_REFLECTION) | static_cast<int>(BxDFType::BSDF_DIFFUSE))),
-            _R(R) {}
+        LambertianReflection(const Spectrum &R)
+            : BxDF(BxDFType(static_cast<int>(BxDFType::BSDF_REFLECTION) | static_cast<int>(BxDFType::BSDF_DIFFUSE))),
+              _R(R) {}
 
-
-        virtual glm::vec3 F(const glm::vec3& wo, const glm::vec3& wi)const override {
+        virtual Spectrum F(const glm::vec3& wo, const glm::vec3& wi)const override {
             return _R * InvPi;
         }
     private:
         // 反照率（颜色方面）
-        const glm::vec3 _R;
+        const Spectrum _R;
     };
 
 }

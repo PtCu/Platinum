@@ -29,10 +29,10 @@ namespace platinum {
 
         float Pdf(const glm::vec3& wo, const glm::vec3& wi, BxDFType type = BxDFType::BSDF_ALL) const;
 
-        glm::vec3 F(const glm::vec3& woW, const glm::vec3& wiW, BxDFType flags = BxDFType::BSDF_ALL)const;
+        Spectrum F(const glm::vec3 &woW, const glm::vec3 &wiW, BxDFType flags = BxDFType::BSDF_ALL) const;
 
-        glm::vec3 SampleF(const glm::vec3& wo, glm::vec3& wi, const glm::vec2& u, float& pdf,
-            BxDFType& sampledType, BxDFType type = BxDFType::BSDF_ALL)const;
+        Spectrum SampleF(const glm::vec3 &wo, glm::vec3 &wi, const glm::vec2 &u, float &pdf,
+                         BxDFType &sampledType, BxDFType type = BxDFType::BSDF_ALL) const;
 
         void Add(std::shared_ptr<BxDF> b) {
             _BxDFs.push_back(b);

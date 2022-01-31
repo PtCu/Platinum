@@ -40,10 +40,27 @@ namespace platinum
         virtual ~Light() = default;
         ;
 
-        virtual glm::vec3 Le(const Ray &r) const { return glm::vec3(0); };
+        /**
+         * @brief  环境光
+         * 
+         * @param r 
+         * @return Spectrum 
+         */
+        virtual Spectrum Le(const Ray &r) const { return Spectrum(0.f); };
 
-        virtual glm::vec3 SampleLe(const glm::vec2 &u1, const glm::vec2 &u2, Ray &ray,
-                                   glm::vec3 &nLight, float &pdfPos, float &pdfDir) const = 0;
+        /**
+         * 根据Le分布采样光源
+         * @param  u1     用于光源表面
+         * @param  u2     用于生成方向
+         * @param  time   时间
+         * @param  ray    返回生成的ray
+         * @param  nLight 光源表面法线
+         * @param  pdfPos 位置PDF
+         * @param  pdfDir 方向PDF
+         * @return        [description]
+         */
+        virtual Spectrum SampleLe(const glm::vec2 &u1, const glm::vec2 &u2, Ray &ray,
+                                  glm::vec3 &nLight, float &pdfPos, float &pdfDir) const = 0;
 
         virtual void PdfLe(const Ray &, const glm::vec3 &, float &pdfPos, float &pdfDir) const = 0;
 
@@ -83,7 +100,6 @@ namespace platinum
     class AreaLight : public Light
     {
     public:
-     
         AreaLight(const Transform &light2world, int n_samples);
 
         /**

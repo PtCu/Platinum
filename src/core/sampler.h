@@ -1,11 +1,11 @@
 // Copyright 2022 ptcup
-// 
+//
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
-// 
+//
 //     http://www.apache.org/licenses/LICENSE-2.0
-// 
+//
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -18,19 +18,21 @@
 #include <core/defines.h>
 #include <glm/glm.hpp>
 
-namespace platinum {
-    class Sampler {
+namespace platinum
+{
+    class Sampler
+    {
     public:
         Sampler(int64_t samplesPerPixel);
 
         virtual ~Sampler() = default;
-     
+
         /**
          * @brief 对某个像素点开始采样
          * @param  p                像素点
          */
-        virtual void StartPixel(const glm::ivec2& p);
-        
+        virtual void StartPixel(const glm::ivec2 &p);
+
         /**
          * @brief Set the Sample Number object
          * @param  sampleNum        My Param doc
@@ -59,7 +61,7 @@ namespace platinum {
          */
         virtual glm::vec2 Get2D() = 0;
 
-        CameraSample GetCameraSample(const glm::ivec2& p_raster, Filter* flter = nullptr);
+        CameraSample GetCameraSample(const glm::ivec2 &p_raster, Filter *flter = nullptr);
 
         // 申请一个长度为n的一维随机变量数组
         void Request1DArray(int n);
@@ -67,7 +69,8 @@ namespace platinum {
         // 申请一个长度为n的二维随机变量数组
         void Request2DArray(int n);
 
-        virtual int RoundCount(int n) const {
+        virtual int RoundCount(int n) const
+        {
             return n;
         }
 
@@ -77,7 +80,7 @@ namespace platinum {
          * @param  n
          * @return   数组首地址
          */
-        const float* Get1DArray(int n);
+        const float *Get1DArray(int n);
 
         /**
          * 获取包含n个样本的一维数组，需要根据之前request的值做校验
@@ -88,7 +91,7 @@ namespace platinum {
          * @param  n
          * @return   数组首地址
          */
-        const glm::ivec2* Get2DArray(int n);
+        const glm::ivec2 *Get2DArray(int n);
 
         /**
          * @brief   由于Sampler的实现类存储一些状态信息，
@@ -105,14 +108,14 @@ namespace platinum {
 
         virtual bool SetSampleIndex(int64_t sampleNum);
 
-
-        int64_t CurrentSampleIndex() const {
+        int64_t CurrentSampleIndex() const
+        {
             return _currentPixelSampleIndex;
         }
 
         const int64_t _samplesPerPixel;
-    protected:
 
+    protected:
         // 当前处理的像素点
         glm::ivec2 _currentPixel;
 
@@ -132,21 +135,19 @@ namespace platinum {
         std::vector<std::vector<glm::ivec2>> _sampleArray2D;
 
     private:
-
         size_t _array1DOffset;
         size_t _array2DOffset;
-
     };
-    glm::vec3 uniformSampleHemisphere(const glm::vec2& u);
+    glm::vec3 uniformSampleHemisphere(const glm::vec2 &u);
     float uniformHemispherePdf();
-    glm::vec3 uniformSampleSphere(const glm::vec2& u);
+    glm::vec3 uniformSampleSphere(const glm::vec2 &u);
     float uniformSpherePdf();
 
-    glm::vec2 ConcentricSampleDisk(const glm::vec2& u);
+    glm::vec2 ConcentricSampleDisk(const glm::vec2 &u);
 
-    glm::vec2 UniformSampleTriangle(const glm::vec2& u);
+    glm::vec2 UniformSampleTriangle(const glm::vec2 &u);
 
-    inline glm::vec3 CosineSampleHemisphere(const glm::vec2& u)
+    inline glm::vec3 CosineSampleHemisphere(const glm::vec2 &u)
     {
         glm::vec2 d = ConcentricSampleDisk(u);
         float z = std::sqrt(glm::max((float)0, 1 - d.x * d.x - d.y * d.y));
@@ -155,6 +156,16 @@ namespace platinum {
 
     inline float CosineHemispherePdf(float cosTheta) { return cosTheta * InvPi; }
 
+    inline float BalanceHeuristic(int nf, float fPdf, int ng, float gPdf)
+    {
+        return (nf * fPdf) / (nf * fPdf + ng * gPdf);
+    }
+
+    inline float PowerHeuristic(int nf, float fPdf, int ng, float gPdf)
+    {
+        float f = nf * fPdf, g = ng * gPdf;
+        return (f * f) / (f * f + g * g);
+    }
 }
 
 #endif

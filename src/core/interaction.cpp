@@ -23,13 +23,13 @@ namespace platinum
     {
     }
 
-    glm::vec3 SurfaceInteraction::Le(const glm::vec3 &w) const
+    Spectrum SurfaceInteraction::Le(const glm::vec3 &w) const
     {
         const AreaLight *area = hitable->GetAreaLight();
         if (area)
             return area->L(*this, w);
         else
-            return glm::vec3(0.f);
+            return Spectrum(0.f);
     }
 
     void SurfaceInteraction::ComputeScatteringFunctions(const Ray &ray)

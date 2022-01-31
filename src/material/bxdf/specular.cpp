@@ -15,7 +15,8 @@
 #include <material/bxdf/specular.h>
 
 namespace platinum {
-    glm::vec3 SpecularReflection::SampleF(const glm::vec3& wo, glm::vec3& wi, const glm::vec2& sample, float& pdf, BxDFType& sampleType)const {
+    Spectrum SpecularReflection::SampleF(const glm::vec3 &wo, glm::vec3 &wi, const glm::vec2 &sample, float &pdf, BxDFType &sampleType) const
+    {
         wi = glm::vec3(-wo.x, -wo.y, wo.z);
         pdf = 1.f;
         return _fresnel->Evaluate(wi.z) * _R / glm::abs(wi.z);

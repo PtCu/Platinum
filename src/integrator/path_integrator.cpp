@@ -16,7 +16,8 @@
 
 namespace platinum {
 
-    glm::vec3 PathIntegrator::Li(const Scene& scene, const Ray& ray,Sampler& sampler,int depth)const {
-        return glm::vec3(0);
+    Spectrum PathIntegrator::Li(const Scene &scene, const Ray &ray, Sampler &sampler, int depth) const
+    {
+        return Spectrum(0);
     }
 }

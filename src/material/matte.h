@@ -21,10 +21,10 @@
 namespace platinum {
     class Matte final : public Material {
     public:
-        Matte(const glm::vec3& r) :_Kr(r) {}
+        Matte(const Spectrum &r) : _Kr(r) {}
         virtual void ComputeScatteringFunctions(SurfaceInteraction& si)const override;
     private:
-        glm::vec3 _Kr;
+        Spectrum _Kr;
     };
 }
 

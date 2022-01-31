@@ -26,16 +26,16 @@ namespace platinum {
 
     }
 
-    glm::vec3 BSDF::F(const glm::vec3& woW, const glm::vec3& wiW, BxDFType flags) const
+    Spectrum BSDF::F(const glm::vec3 &woW, const glm::vec3 &wiW, BxDFType flags) const
     {
         glm::vec3 wi = World2Local(wiW), wo = World2Local(woW);
         if (wo.z == 0)
-            return glm::vec3(0.f);
+            return Spectrum(0.f);
 
         //BSDF的值为BRDF与BTDF之和
         //reflect表示入射光和出射光是否在一个半球内
         bool reflect = glm::dot(wiW, _ns) * glm::dot(woW, _ns) > 0;
-        glm::vec3 f(0.f);
+        Spectrum f(0.f);
         for (const auto& b : _BxDFs) {
             if (b->MatchTypes(flags) &&
                 (reflect && (static_cast<int>(b->_type) & static_cast<int>(BxDFType::BSDF_REFLECTION))) ||
@@ -47,8 +47,8 @@ namespace platinum {
         return f;
     }
 
-    glm::vec3 BSDF::SampleF(const glm::vec3& woWorld, glm::vec3& wiWorld, const glm::vec2& u, float& pdf,
-        BxDFType& sampledType, BxDFType type)const
+    Spectrum BSDF::SampleF(const glm::vec3 &woWorld, glm::vec3 &wiWorld, const glm::vec2 &u, float &pdf,
+                           BxDFType &sampledType, BxDFType type) const
     {
         // Choose which _BxDF_ to sample
         int matchingComps = NumComponents(type);
@@ -59,7 +59,7 @@ namespace platinum {
             {
                 sampledType = BxDFType(0);
             }
-            return glm::vec3(0);
+            return Spectrum(0);
         }
         // 根据随机变量u随机选择bxdf组件
         int comp = glm::min((int)glm::floor(u[0] * matchingComps), matchingComps - 1);
@@ -82,7 +82,7 @@ namespace platinum {
         glm::vec3 wo = World2Local(woWorld);
         if (wo.z == 0)
         {
-            return glm::vec3(0.f);
+            return Spectrum(0.f);
         }
 
         pdf = 0;
@@ -92,7 +92,7 @@ namespace platinum {
         }
 
         // 对选中的bxdf采样
-        glm::vec3 f = bxdf->SampleF(wo, wi, uRemapped, pdf, sampledType);
+        Spectrum f = bxdf->SampleF(wo, wi, uRemapped, pdf, sampledType);
 
         if (pdf == 0)
         {
@@ -100,7 +100,7 @@ namespace platinum {
             {
                 sampledType = BxDFType(0);
             }
-            return glm::vec3(0.f);
+            return Spectrum(0.f);
         }
 
         wiWorld = Local2World(wi);
@@ -125,7 +125,7 @@ namespace platinum {
         if (!(static_cast<int>(bxdf->_type) & static_cast<int>(BxDFType::BSDF_SPECULAR)))
         {
             bool reflect = glm::dot(wiWorld, _ns) * glm::dot(woWorld, _ns) > 0;
-            f = glm::vec3(0.f);
+            f = Spectrum(0.f);
             for (const auto& b : _BxDFs) {
                 if (b->MatchTypes(type) &&
                     (reflect && (static_cast<int>(b->_type) & static_cast<int>(BxDFType::BSDF_REFLECTION))) ||

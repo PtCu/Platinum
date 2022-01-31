@@ -50,7 +50,7 @@ namespace platinum {
          * @param  wi               入射方向
          * @return glm::vec3        radiance
          */
-        virtual glm::vec3 F(const glm::vec3& wo, const glm::vec3& wi)const = 0;
+        virtual Spectrum F(const glm::vec3& wo, const glm::vec3& wi)const = 0;
 
 
         /**
@@ -76,7 +76,7 @@ namespace platinum {
         * @param  sampledType BxDF的类型
          * @return glm::vec3  radiance
          */
-        virtual glm::vec3 SampleF(const glm::vec3& wo, glm::vec3& wi, const glm::vec2& sample, float& pdf, BxDFType& sampleType)const;
+        virtual Spectrum SampleF(const glm::vec3& wo, glm::vec3& wi, const glm::vec2& sample, float& pdf, BxDFType& sampleType)const;
 
 
         const BxDFType _type;
@@ -100,37 +100,40 @@ namespace platinum {
         /**
          * @brief
          * @param  cosI             入射角余弦值
-         * @return glm::vec3        返回对应入射角的菲涅尔函数值
+         * @return Spectrum        返回对应入射角的菲涅尔函数值
          */
-        virtual glm::vec3 Evaluate(float cosI)const = 0;
+        virtual Spectrum Evaluate(float cosI) const = 0;
     };
 
     //菲涅尔项的Schlick近似
     class FresnelSchlick :public Fresnel {
     public:
-        FresnelSchlick(const glm::vec3 F0) :_F0(F0) {}
+        FresnelSchlick(const Spectrum F0) : _F0(F0) {}
         FresnelSchlick(float etaI, float etaT) {
             float F0_1 = (etaI - etaT) / (etaI + etaT);
             float F0 = F0_1 * F0_1;
-            _F0 = glm::vec3{ F0 };
+            _F0 = Spectrum{F0};
         }
-        virtual glm::vec3 Evaluate(float cosTheta)const override {
+        virtual Spectrum Evaluate(float cosTheta) const override
+        {
             auto pow5 = [](float i) {return (i * i) * (i * i) * i;};
-            return _F0 + (glm::vec3(1.f) - _F0) * pow5(1 - cosTheta);
+            return _F0 + (Spectrum(1.f) - _F0) * pow5(1 - cosTheta);
         }
+
     private:
         //基础反射率
-        glm::vec3 _F0;
-
+        Spectrum _F0;
     };
 
     //绝缘体的菲涅尔项
     class FresnelDielectric :public Fresnel {
     public:
         FresnelDielectric(float etaI, float etaT) :_etaI(etaI), _etaT(etaT) {}
-        virtual glm::vec3 Evaluate(float cosThetaI)const override {
-            return glm::vec3(FrDielectric(cosThetaI, _etaI, _etaT));
+        virtual Spectrum Evaluate(float cosThetaI) const override
+        {
+            return Spectrum(FrDielectric(cosThetaI, _etaI, _etaT));
         }
+
     private:
         float _etaI, _etaT;
         float FrDielectric(float cosThetaI, float etaI, float etaT)const;
@@ -139,15 +142,16 @@ namespace platinum {
 
     class FresnelConductor :public Fresnel {
     public:
-        FresnelConductor(const glm::vec3& etaI, const glm::vec3& etaT, const glm::vec3& kt)
-            :_etaI(etaI), _etaT(etaT), _kt(kt) {}
-        virtual glm::vec3 Evaluate(float cosThetaI)const override {
+        FresnelConductor(const Spectrum &etaI, const Spectrum &etaT, const Spectrum &kt)
+            : _etaI(etaI), _etaT(etaT), _kt(kt) {}
+        virtual Spectrum Evaluate(float cosThetaI) const override
+        {
             return FrConductor(cosThetaI, _etaI, _etaT, _kt);
         }
-    private:
-        glm::vec3 FrConductor(float cosThetaI, const glm::vec3& etaI, const glm::vec3& etaT, const glm::vec3& kt)const;
-        glm::vec3 _etaI, _etaT, _kt;
 
+    private:
+        Spectrum FrConductor(float cosThetaI, const Spectrum &etaI, const Spectrum &etaT, const Spectrum &kt) const;
+        Spectrum _etaI, _etaT, _kt;
     };
 }
 

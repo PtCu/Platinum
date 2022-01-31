@@ -16,9 +16,10 @@
 
 namespace platinum {
 
-    glm::vec3 WhittedIntegrator::Li(const Scene& scene, const Ray& ray, Sampler& sampler, int depth)const {
+    Spectrum WhittedIntegrator::Li(const Scene &scene, const Ray &ray, Sampler &sampler, int depth) const
+    {
 
-        glm::vec3 L;
+        Spectrum L;
         SurfaceInteraction inter;
         if (!scene.Hit(ray,inter)) {
             //返回lights emission
@@ -45,10 +46,10 @@ namespace platinum {
             float pdf;
             glm::vec3 wi;
             VisibilityTester visibility_tester;
-            glm::vec3 sampled_li = light->SampleLi(inter, sampler.Get2D(), wi, pdf, visibility_tester);
-            if (glm::vec3(0)==sampled_li|| pdf == 0)
+            Spectrum sampled_li = light->SampleLi(inter, sampler.Get2D(), wi, pdf, visibility_tester);
+            if (sampled_li.isBlack()|| pdf == 0)
                 continue;
-            glm::vec3 f = inter.bsdf->F(wo, wi);
+            Spectrum f = inter.bsdf->F(wo, wi);
 
             //如果所采样的光源上的光线没被遮挡
             if (visibility_tester.Unoccluded(scene)) {

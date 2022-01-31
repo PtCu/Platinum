@@ -25,24 +25,24 @@ namespace platinum {
 
     class SpecularReflection :public BxDF {
     public:
-        SpecularReflection(const glm::vec3& R, Fresnel* fresnel)
-            :BxDF(BxDFType(static_cast<int>(BxDFType::BSDF_REFLECTION) | static_cast<int>(BxDFType::BSDF_DIFFUSE))),
-            _R(R),
-            _fresnel(fresnel) {}
-
+        SpecularReflection(const Spectrum &R, Fresnel *fresnel)
+            : BxDF(BxDFType(static_cast<int>(BxDFType::BSDF_REFLECTION) | static_cast<int>(BxDFType::BSDF_DIFFUSE))),
+              _R(R),
+              _fresnel(fresnel) {}
 
         //完美的镜面反射和透射非常特殊，给定一个入射方向ωi，则该表面散射的方向有且仅有一个ωo，
         //而非遍布整个半球方向。所以用用于处理特殊BxDF的SampleF函数来计算完美镜面反射的BRDF。
-        virtual glm::vec3 F(const glm::vec3& wo, const glm::vec3& wi)const override {
-            return glm::vec3(0.f);
+        virtual Spectrum F(const glm::vec3 &wo, const glm::vec3 &wi) const override
+        {
+            return Spectrum(0.f);
         }
 
         //给定入射方向ωi，我们可以很容易地求出相应的完美镜面反射方向ωo，
-        virtual glm::vec3 SampleF(const glm::vec3& wo, glm::vec3& wi, const glm::vec2& sample, float& pdf, BxDFType& sampleType)const override;
+        virtual Spectrum SampleF(const glm::vec3 &wo, glm::vec3 &wi, const glm::vec2 &sample, float &pdf, BxDFType &sampleType) const override;
         virtual float Pdf(const glm::vec3& wo, const glm::vec3& wi)const override { return 0.f; }
     private:
         //反照率(颜色方面)
-        const glm::vec3 _R;
+        const Spectrum _R;
         //菲涅尔项
         const Fresnel* _fresnel;
     };

@@ -105,9 +105,9 @@ namespace platinum
     protected:
         // Li() 方法计算有多少光照量沿着
         // 该 Ray 到达成像平面，并把光照量（radiance）保存在 Film 内
-        virtual glm::vec3 Li(const Scene& scene, const Ray& ray, Sampler& sampler, int depth = 0)const = 0;
-        glm::vec3 SpecularReflect(const Ray& ray, const SurfaceInteraction& inter, const Scene& scene, Sampler& sampler, int depth)const;
-        glm::vec3 SpecularTransmit(const Ray& ray, const SurfaceInteraction& inter, const Scene& scene, Sampler& sampler, int depth)const;
+        virtual Spectrum Li(const Scene &scene, const Ray &ray, Sampler &sampler, int depth = 0) const = 0;
+        Spectrum SpecularReflect(const Ray &ray, const SurfaceInteraction &inter, const Scene &scene, Sampler &sampler, int depth) const;
+        Spectrum SpecularTransmit(const Ray &ray, const SurfaceInteraction &inter, const Scene &scene, Sampler &sampler, int depth) const;
         std::shared_ptr<Camera> _camera;
         std::shared_ptr<Sampler>_sampler;
         std::mutex _mutex_ins;

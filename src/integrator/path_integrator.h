@@ -25,7 +25,7 @@ namespace platinum
     public:
         PathIntegrator(std::shared_ptr<Camera> camera, std::shared_ptr<Sampler>sampler, int max_depth,float rr_threshold = 0.8) :TiledIntegrator(camera, sampler,max_depth), _rr_threshold(rr_threshold) {}
     protected:
-        virtual glm::vec3 Li(const Scene& scene, const Ray& ray,Sampler& sampler,int depth)const override;
+        virtual Spectrum Li(const Scene &scene, const Ray &ray, Sampler &sampler, int depth) const override;
         float _rr_threshold;
     };
 }

@@ -15,11 +15,12 @@
 #include <material/matte.h>
 #include <material/bxdf/lambertian.h>
 #include <core/bsdf.h>
+#include <core/spectrum.h>
 namespace platinum {
     void Matte::ComputeScatteringFunctions(SurfaceInteraction& si)const {
         si.bsdf = std::make_shared<BSDF>(si);
-        glm::vec3 R = _Kr;
-        if (R != glm::vec3(0.f)) {
+        Spectrum R = _Kr;
+        if (!R.isBlack()) {
             si.bsdf->Add(std::make_shared<LambertianReflection>(R));
         }
     }
