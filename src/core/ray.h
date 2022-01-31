@@ -31,40 +31,30 @@ namespace platinum
     class Ray
     {
     public:
-        Ray() {}
-        Ray(const glm::vec3 &o, const glm::vec3 &d, float t_max = std::numeric_limits<float>::max())
-            : _origin(o), _direction(glm::normalize(d)), _t_max(t_max)
-        {
+    public:
+        Ray() : _t_max(Infinity) {}
 
-            color_ = glm::vec3(1.0);
-            inv_direction_ = {1.0f / d.x, 1.0f / d.y, 1.0f / d.z};
-            is_neg_dir_ = {d.x < 0, d.y < 0, d.z < 0};
-        }
-        virtual ~Ray() = default;
-        void Init(const glm::vec3 &o, const glm::vec3 &d);
-        void Update(const glm::vec3 &o, const glm::vec3 &d, const glm::vec3 &a);
+        Ray(const glm::vec3 &o, const glm::vec3 &d, float tMax = Infinity)
+            : _origin(o), _direction(normalize(d)), _t_max(tMax) {}
+
         const glm::vec3 &GetOrigin() const { return _origin; }
         const glm::vec3 &GetDirection() const { return _direction; }
-        const glm::vec3 &GetInvDirection() const { return inv_direction_; }
-        float GetMinTime() const { return min_t_; }
-        float GetMaxTime() const { return _t_max; }
-        const glm::vec3 &GetColor() const { return color_; }
-        const glm::vec3 &GetPointAt(float t) const { return _origin + t * _direction; }
-        int IsDirNeg(size_t i) const { return is_neg_dir_[i]; }
-        void SetColor(const glm::vec3 &c);
-        void SetTMax(float t) { _t_max = t; }
-        void Transform(const glm::mat4 &transform);
-        static const float min_t_;
-        float GetTime() const { return _time; }
-        void SetTime(float t) { _time = t; }
 
+        glm::vec3 GetPointAt(float t) const { return _origin + _direction * t; }
+
+        friend std::ostream &operator<<(std::ostream &os, const Ray &r)
+        {
+            os << "[o=" << r._origin << ", d=" << r._direction << ", tMax=" << r._t_max << "]";
+            return os;
+        }
+
+    public:
         glm::vec3 _origin;
-        glm::vec3 _direction, inv_direction_;
-        glm::vec3 color_;
+        glm::vec3 _direction;
         mutable float _t_max;
-        std::array<int, 3> is_neg_dir_;
-        float _time;
     };
+
+  
 } // namespace platinum
 
 #endif

@@ -33,7 +33,7 @@ namespace platinum
         //采样得到入射光
         Spectrum f = inter.bsdf->SampleF(wo, wi, sampler.Get2D(), pdf, sampledType, type);
 
-        const glm::vec3& ns = inter.n;
+        const glm::vec3 &ns = inter.n;
         if (pdf > 0.f && !f.isBlack() && glm::abs(glm::dot(wi, ns)) != 0.f)
         {
             Ray rd = inter.SpawnRay(wi);
@@ -50,62 +50,109 @@ namespace platinum
         return Spectrum(0.f);
     }
 
-
-
-    void TiledIntegrator::Render(const Scene& scene)
+    void TiledIntegrator::Render(const Scene &scene)
     {
-        // auto film = this->_camera->GetFilm();
-        // int width = film->getResolution().x;
-        // int height = film->getResolution().y;
-        // int img_size = width*height;
-        // int tiles_count = _tiles_manager->GetTilesCount();
-        // int has_finished_num = 0;
-        // auto sampler = _sampler;
+        glm::ivec2 resolution = _camera->_film->getResolution();
 
-        // auto calculateRstForEachTile = [&](int rank)
-        // {
-        //     const RenderTile& tile = _tiles_manager->GetTile(rank);
-        //     std::unique_ptr<Sampler> tile_sampler(sampler->Clone(rank));
+        auto &sampler = _sampler;
 
-        //     do {
-        //         for (size_t i = tile.min_x; i < tile.max_x; ++i)
-        //         {
-        //             for (size_t j = tile.min_y; j < tile.max_y; ++j)
-        //             {
-        //                 glm::ivec2 pixel{ i, j };
-        //                 tile_sampler->StartPixel(pixel);
-        //                 CameraSample cam_sample = tile_sampler->GetCameraSample(pixel);
-        //                 Ray ray;
-        //                 float ray_weight = _camera->CastRay(cam_sample, ray);
-        //                 glm::vec3 L(0.f);
-        //                 if (ray_weight > 0)
-        //                 {
-        //                     L = Li(scene, ray, *tile_sampler);
-        //                 }
-        //                 int px_id = j * width + i;
-        //                 // film->AddPixelValue(px_id, L / static_cast<float>(_spp));
+        // Compute number of tiles, _nTiles_, to use for parallel rendering
+        Bounds2i sampleBounds = _camera->_film->getSampleBounds();
+        glm::ivec2 sampleExtent = sampleBounds.Diagonal();
+        constexpr int tileSize = 16;
+        glm::ivec2 nTiles((sampleExtent.x + tileSize - 1) / tileSize, (sampleExtent.y + tileSize - 1) / tileSize);
 
+        // AReporter reporter(nTiles.x * nTiles.y, "Rendering");
+        ParallelUtils::parallelFor((size_t)0, (size_t)(nTiles.x * nTiles.y), [&](const size_t &t)
+                                   {
+                                       glm::ivec2 tile(t % nTiles.x, t / nTiles.x);
 
-        //             }
+                                       // Get sampler instance for tile
+                                       int seed = t;
+                                       std::unique_ptr<Sampler> tileSampler = sampler->Clone(seed);
 
-        //         }
-        //     } while (tile_sampler->StartNextSample());
+                                       // Compute sample bounds for tile
+                                       int x0 = sampleBounds._p_min.x + tile.x * tileSize;
+                                       int x1 = glm::min(x0 + tileSize, sampleBounds._p_max.x);
+                                       int y0 = sampleBounds._p_min.y + tile.y * tileSize;
+                                       int y1 = glm::min(y0 + tileSize, sampleBounds._p_max.y);
+                                       Bounds2i tileBounds(glm::ivec2(x0, y0), glm::ivec2(x1, y1));
+                                       LOG(INFO) << "Starting image tile " << tileBounds;
 
-        // };
+                                       // Get _FilmTile_ for tile
+                                       std::unique_ptr<FilmTile> filmTile = _camera->_film->getFilmTile(tileBounds);
 
-        // std::vector<std::thread> threads(tiles_count);
+                                       // Loop over pixels in tile to render them
+                                       for (glm::ivec2 pixel : tileBounds)
+                                       {
+                                           tileSampler->StartPixel(pixel);
 
-        // for (int i = 0; i < tiles_count; ++i)
-        // {
-        //     threads[i] = std::move(std::thread(calculateRstForEachTile, i));
-        // }
-        // for (auto& th : threads)
-        // {
-        //     th.join();
-        // }
-        // // UpdateProgress(1.f);
-        // film->SaveImage();
+                                           do
+                                           {
+                                               // Initialize _CameraSample_ for current sample
+                                               CameraSample cameraSample = tileSampler->GetCameraSample(pixel);
 
+                                               // Generate camera ray for current sample
+                                               Ray ray;
+                                               float rayWeight = _camera->CastingRay(cameraSample, ray);
+
+                                               // Evaluate radiance along camera ray
+                                               Spectrum L(0.f);
+                                               if (rayWeight > 0)
+                                               {
+                                                   L = Li(scene, ray, *tileSampler);
+                                               }
+
+                                               // Issue warning if unexpected radiance value returned
+                                               if (L.hasNaNs())
+                                               {
+                                                   LOG(ERROR) << stringPrintf(
+                                                       "Not-a-number radiance value returned "
+                                                       "for pixel (%d, %d), sample %d. Setting to black.",
+                                                       pixel.x, pixel.y,
+                                                       (int)tileSampler->CurrentSampleIndex());
+                                                   L = Spectrum(0.f);
+                                               }
+                                               else if (L.y() < -1e-5)
+                                               {
+                                                   LOG(ERROR) << stringPrintf(
+                                                       "Negative luminance value, %f, returned "
+                                                       "for pixel (%d, %d), sample %d. Setting to black.",
+                                                       L.y(), pixel.x, pixel.y,
+                                                       (int)tileSampler->CurrentSampleIndex());
+                                                   L = Spectrum(0.f);
+                                               }
+                                               else if (std::isinf(L.y()))
+                                               {
+                                                   LOG(ERROR) << stringPrintf(
+                                                       "Infinite luminance value returned "
+                                                       "for pixel (%d, %d), sample %d. Setting to black.",
+                                                       pixel.x, pixel.y,
+                                                       (int)tileSampler->CurrentSampleIndex());
+                                                   L = Spectrum(0.f);
+                                               }
+                                               VLOG(1) << "Camera sample: " << cameraSample << " -> ray: " << ray << " -> L = " << L;
+
+                                               // Add camera ray's contribution to image
+                                               filmTile->addSample(cameraSample.p_film, L, rayWeight);
+
+                                              
+                                            
+
+                                           } while (tileSampler->StartNextSample());
+                                       }
+                                       LOG(INFO) << "Finished image tile " << tileBounds;
+
+                                       _camera->_film->mergeFilmTile(std::move(filmTile));
+                                    //    reporter.update();
+                                   },
+                                   ExecutionPolicy::PARALLEL);
+
+        // reporter.done();
+
+        LOG(INFO) << "Rendering finished";
+
+        _camera->_film->writeImageToFile();
     }
 
 }

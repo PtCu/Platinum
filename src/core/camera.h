@@ -32,6 +32,12 @@ namespace platinum
     {
         glm::vec2 p_film;
     };
+
+    inline std::ostream &operator<<(std::ostream &os, const CameraSample &cs)
+    {
+        os << "[ pFilm: " << cs.p_film << " ]";
+        return os;
+    }
     class Camera
     {
     public:
@@ -49,7 +55,7 @@ namespace platinum
         void SetFilm(std::shared_ptr<Film> film) { _film = film; }
         std::shared_ptr<Film> GetFilm() { return _film; }
 
-        virtual float CastRay(const CameraSample& sample, Ray& ray)const = 0;
+        virtual float CastingRay(const CameraSample& sample, Ray& ray)const = 0;
 
         Transform _camera2world;
         std::shared_ptr<Film> _film;

@@ -25,7 +25,7 @@ namespace platinum
     public:
         PerspectiveCamera(const Transform &camera2world, float fov, std::shared_ptr<Film> film);
 
-        virtual float CastRay(const CameraSample &sample, Ray &ray) const override;
+        virtual float CastingRay(const CameraSample &sample, Ray &ray) const override;
 
     protected:
         virtual void Initialize() override;

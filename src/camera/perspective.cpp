@@ -33,7 +33,7 @@ namespace platinum
         ProjectiveCamera::Initialize();
     }
 
-    float PerspectiveCamera::CastRay(const CameraSample &sample, Ray &ray) const
+    float PerspectiveCamera::CastingRay(const CameraSample &sample, Ray &ray) const
     {
         //取film上一点
         glm::vec3 p_film(sample.p_film.x, sample.p_film.y, 0);
