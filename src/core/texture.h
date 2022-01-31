@@ -25,14 +25,14 @@
 
 #include <core/ray.h>
 #include <core/interaction.h>
-#include <core/defines.h>
+#include <core/utilities.h>
 
 namespace platinum
 {
     class Texture
     {
     public:
-        virtual glm::vec3 GetValue(float u, float v, const glm::vec3& p) const = 0;
+        virtual glm::vec3 GetValue(float u, float v, const glm::vec3 &p) const = 0;
         virtual ~Texture() = default;
     };
 }

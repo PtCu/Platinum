@@ -24,7 +24,7 @@
 #define CORE_INTERSECTION_H_
 
 #include <glm/glm.hpp>
-#include <core/defines.h>
+#include <core/utilities.h>
 #include <core/material.h>
 #include <core/ray.h>
 #include <core/shape.h>
@@ -37,24 +37,24 @@ namespace platinum
     {
     public:
         Interaction() = default;
-        explicit Interaction(const glm::vec3& p) : p(p) {}
-        Interaction(const glm::vec3& p, const glm::vec3& wo) : p(p), wo(normalize(wo)) {}
-        Interaction(const glm::vec3& p, const glm::vec3& n, const glm::vec3& wo)
+        explicit Interaction(const glm::vec3 &p) : p(p) {}
+        Interaction(const glm::vec3 &p, const glm::vec3 &wo) : p(p), wo(normalize(wo)) {}
+        Interaction(const glm::vec3 &p, const glm::vec3 &n, const glm::vec3 &wo)
             : p(p), wo(glm::normalize(wo)), n(n) {}
 
-        inline Ray SpawnRay(const glm::vec3& d) const
+        inline Ray SpawnRay(const glm::vec3 &d) const
         {
             glm::vec3 o = p;
             return Ray(o, d, std::numeric_limits<float>::max());
         }
 
-        inline Ray SpawnRayTo(const glm::vec3& p2) const
+        inline Ray SpawnRayTo(const glm::vec3 &p2) const
         {
             glm::vec3 origin = p;
             return Ray(origin, p2 - p, 1.f - ShadowEpsilon);
         }
 
-        inline Ray SpawnRayTo(const Interaction& it) const
+        inline Ray SpawnRayTo(const Interaction &it) const
         {
             glm::vec3 origin = p;
             glm::vec3 target = it.p;
@@ -75,19 +75,18 @@ namespace platinum
     {
     public:
         SurfaceInteraction() = default;
-        SurfaceInteraction(const glm::vec3& p, const glm::vec2& uv, const glm::vec3& wo,
-            const glm::vec3& dpdu, const glm::vec3& dpdv, const Shape* sh);
+        SurfaceInteraction(const glm::vec3 &p, const glm::vec2 &uv, const glm::vec3 &wo,
+                           const glm::vec3 &dpdu, const glm::vec3 &dpdv, const Shape *sh);
 
         //compute the emitted radiance at a surface point intersected by a ray.
         Spectrum Le(const glm::vec3 &w) const;
 
-        void ComputeScatteringFunctions(const Ray& ray);
+        void ComputeScatteringFunctions(const Ray &ray);
 
     public:
-        std::shared_ptr<BSDF> bsdf{ nullptr };
-        const Shape* shape{ nullptr };
-        const Primitive* hitable{ nullptr };
-
+        std::shared_ptr<BSDF> bsdf{nullptr};
+        const Shape *shape{nullptr};
+        const Primitive *hitable{nullptr};
 
         /**
          * @brief   (u,v)是p点参数化后的表面坐标（如纹理坐标）
@@ -102,12 +101,12 @@ namespace platinum
     {
     public:
         VisibilityTester() = default;
-        VisibilityTester(const Interaction& p0, const Interaction& p1) : _p0(p0), _p1(p1)
+        VisibilityTester(const Interaction &p0, const Interaction &p1) : _p0(p0), _p1(p1)
         {
         }
-        const Interaction& P0() const { return _p0; }
-        const Interaction& P1() const { return _p1; }
-        bool Unoccluded(const Scene& scene) const;
+        const Interaction &P0() const { return _p0; }
+        const Interaction &P1() const { return _p1; }
+        bool Unoccluded(const Scene &scene) const;
 
     private:
         Interaction _p0, _p1;

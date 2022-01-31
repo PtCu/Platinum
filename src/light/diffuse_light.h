@@ -38,9 +38,9 @@ namespace platinum
         }
 
         virtual Spectrum SampleLe(const glm::vec2 &u1, const glm::vec2 &u2, Ray &ray,
-                                  glm::vec3 &nLight, float &pdfPos, float &pdfDir) const = 0;
+                                  glm::vec3 &nLight, float &pdfPos, float &pdfDir) const ;
 
-        virtual void PdfLe(const Ray &, const glm::vec3 &, float &pdfPos, float &pdfDir) const = 0;
+        virtual void PdfLe(const Ray &, const glm::vec3 &, float &pdfPos, float &pdfDir) const ;
 
 
         virtual Spectrum SampleLi(const Interaction &inter, const glm::vec2 &u,

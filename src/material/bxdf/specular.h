@@ -1,11 +1,11 @@
 // Copyright 2022 ptcup
-// 
+//
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
-// 
+//
 //     http://www.apache.org/licenses/LICENSE-2.0
-// 
+//
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -14,16 +14,18 @@
 #ifndef MATERIAL_BXDF_SPECULAR_H_
 #define MATERIAL_BXDF_SPECULAR_H_
 
-#include <core/defines.h>
+#include <core/utilities.h>
 #include <core/bxdf.h>
 
-namespace platinum {
+namespace platinum
+{
     /**
     * @brief
     *  理想镜面反射
     */
 
-    class SpecularReflection :public BxDF {
+    class SpecularReflection : public BxDF
+    {
     public:
         SpecularReflection(const Spectrum &R, Fresnel *fresnel)
             : BxDF(BxDFType(static_cast<int>(BxDFType::BSDF_REFLECTION) | static_cast<int>(BxDFType::BSDF_DIFFUSE))),
@@ -39,12 +41,13 @@ namespace platinum {
 
         //给定入射方向ωi，我们可以很容易地求出相应的完美镜面反射方向ωo，
         virtual Spectrum SampleF(const glm::vec3 &wo, glm::vec3 &wi, const glm::vec2 &sample, float &pdf, BxDFType &sampleType) const override;
-        virtual float Pdf(const glm::vec3& wo, const glm::vec3& wi)const override { return 0.f; }
+        virtual float Pdf(const glm::vec3 &wo, const glm::vec3 &wi) const override { return 0.f; }
+
     private:
         //反照率(颜色方面)
         const Spectrum _R;
         //菲涅尔项
-        const Fresnel* _fresnel;
+        const Fresnel *_fresnel;
     };
 
 }

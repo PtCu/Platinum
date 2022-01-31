@@ -47,7 +47,7 @@ namespace platinum
     Spectrum TiledIntegrator::SpecularTransmit(const Ray &ray, const SurfaceInteraction &inter,
                                                const Scene &scene, Sampler &sampler, int depth) const
     {
-        return Spectrum(0);
+        return Spectrum(0.f);
     }
 
 

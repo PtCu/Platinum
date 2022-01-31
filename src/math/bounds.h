@@ -24,10 +24,10 @@
 #define CORE_AABB_H_
 
 #include <glm/glm.hpp>
-#include <core/defines.h>
+#include <core/utilities.h>
 namespace platinum
 {
-    template<typename T>
+    template <typename T>
     class Bounds3
     {
     public:
@@ -39,17 +39,16 @@ namespace platinum
             _p_max = glm::vec<3, T>(minNum, minNum, minNum);
         }
 
-        explicit Bounds3(const glm::vec<3, T>& p) : _p_min(p), _p_max(p) {}
+        explicit Bounds3(const glm::vec<3, T> &p) : _p_min(p), _p_max(p) {}
 
-        Bounds3(const glm::vec<3, T>& p1, const glm::vec<3, T>& p2) :
-            _p_min(glm::min(p1.x, p2.x), glm::min(p1.y, p2.y), glm::min(p1.z, p2.z)),
-            _p_max(glm::max(p1.x, p2.x), glm::max(p1.y, p2.y), glm::max(p1.z, p2.z)) {}
+        Bounds3(const glm::vec<3, T> &p1, const glm::vec<3, T> &p2) : _p_min(glm::min(p1.x, p2.x), glm::min(p1.y, p2.y), glm::min(p1.z, p2.z)),
+                                                                      _p_max(glm::max(p1.x, p2.x), glm::max(p1.y, p2.y), glm::max(p1.z, p2.z)) {}
 
-        glm::vec<3, T>& operator[](int i) { return (i == 0) ? _p_min : _p_max; }
-        const glm::vec<3, T>& operator[](int i) const { return (i == 0) ? _p_min : _p_max; }
+        glm::vec<3, T> &operator[](int i) { return (i == 0) ? _p_min : _p_max; }
+        const glm::vec<3, T> &operator[](int i) const { return (i == 0) ? _p_min : _p_max; }
 
-        bool operator==(const Bounds3<T>& b) const { return b._p_min == _p_min && b._p_max == _p_max; }
-        bool operator!=(const Bounds3<T>& b) const { return b._p_min != _p_min || b._p_max != _p_max; }
+        bool operator==(const Bounds3<T> &b) const { return b._p_min == _p_min && b._p_max == _p_max; }
+        bool operator!=(const Bounds3<T> &b) const { return b._p_min != _p_min || b._p_max != _p_max; }
 
         glm::vec<3, T> Corner(int cor) const
         {
@@ -82,7 +81,7 @@ namespace platinum
                 return 2;
         }
 
-        glm::vec<3, T> Lerp(const glm::vec3& t) const
+        glm::vec<3, T> Lerp(const glm::vec3 &t) const
         {
             return glm::vec<3, T>(
                 plainum::lerp(t.x, _p_min.x, _p_max.x),
@@ -90,12 +89,15 @@ namespace platinum
                 plainum::lerp(t.z, _p_min.z, _p_max.z));
         }
 
-        glm::vec<3, T> Offset(const glm::vec<3, T>& p) const
+        glm::vec<3, T> Offset(const glm::vec<3, T> &p) const
         {
             glm::vec<3, T> o = p - _p_min;
-            if (_p_max.x > _p_min.x) o.x /= _p_max.x - _p_min.x;
-            if (_p_max.y > _p_min.y) o.y /= _p_max.y - _p_min.y;
-            if (_p_max.z > _p_min.z) o.z /= _p_max.z - _p_min.z;
+            if (_p_max.x > _p_min.x)
+                o.x /= _p_max.x - _p_min.x;
+            if (_p_max.y > _p_min.y)
+                o.y /= _p_max.y - _p_min.y;
+            if (_p_max.z > _p_min.z)
+                o.z /= _p_max.z - _p_min.z;
             return o;
         }
 
@@ -105,10 +107,10 @@ namespace platinum
             return Bounds3<U>((glm::vec<3, U>)_p_min, (glm::vec<3, U>)_p_max);
         }
 
-        bool Hit(const Ray& ray, float& hitt0, float& hitt1) const;
-        inline bool Hit(const Ray& ray, const glm::vec3& invDir, const int dirIsNeg[3]) const;
+        bool Hit(const Ray &ray, float &hitt0, float &hitt1) const;
+        inline bool Hit(const Ray &ray, const glm::vec3 &invDir, const int dirIsNeg[3]) const;
 
-        friend std::ostream& operator<<(std::ostream& os, const Bounds3<T>& b)
+        friend std::ostream &operator<<(std::ostream &os, const Bounds3<T> &b)
         {
             os << "[ " << b._p_min << " - " << b._p_max << " ]";
             return os;
@@ -118,12 +120,10 @@ namespace platinum
         glm::vec<3, T> _p_min, _p_max;
     };
 
-
-    template<typename T>
+    template <typename T>
     class Bounds2
     {
     public:
-
         Bounds2()
         {
             T minNum = std::numeric_limits<T>::lowest();
@@ -132,9 +132,9 @@ namespace platinum
             _p_max = glm::vec<2, T>(minNum, minNum);
         }
 
-        explicit Bounds2(const glm::vec<2, T>& p) : _p_min(p), _p_max(p) {}
+        explicit Bounds2(const glm::vec<2, T> &p) : _p_min(p), _p_max(p) {}
 
-        Bounds2(const glm::vec<2, T>& p1, const glm::vec<2, T>& p2)
+        Bounds2(const glm::vec<2, T> &p1, const glm::vec<2, T> &p2)
         {
             _p_min = glm::vec<2, T>(glm::min(p1.x, p2.x), glm::min(p1.y, p2.y));
             _p_max = glm::vec<2, T>(glm::max(p1.x, p2.x), glm::max(p1.y, p2.y));
@@ -154,7 +154,8 @@ namespace platinum
             return (d.x * d.y);
         }
 
-        int MaximumExtent() const {
+        int MaximumExtent() const
+        {
             glm::vec<2, T> diag = diagonal();
             if (diag.x > diag.y)
                 return 0;
@@ -162,35 +163,37 @@ namespace platinum
                 return 1;
         }
 
-        inline glm::vec<2, T>& operator[](int i)
+        inline glm::vec<2, T> &operator[](int i)
         {
             DCHECK(i == 0 || i == 1);
             return (i == 0) ? _p_min : _p_max;
         }
 
-        inline const glm::vec<2, T>& operator[](int i) const
+        inline const glm::vec<2, T> &operator[](int i) const
         {
             DCHECK(i == 0 || i == 1);
             return (i == 0) ? _p_min : _p_max;
         }
 
-        bool operator==(const Bounds2<T>& b) const { return b._p_min == pMin && b._p_max == pMax; }
-        bool operator!=(const Bounds2<T>& b) const { return b._p_min != pMin || b._p_max != pMax; }
+        bool operator==(const Bounds2<T> &b) const { return b._p_min == pMin && b._p_max == pMax; }
+        bool operator!=(const Bounds2<T> &b) const { return b._p_min != pMin || b._p_max != pMax; }
 
-        glm::vec<2, T> Lerp(const glm::vec2& t) const
+        glm::vec<2, T> Lerp(const glm::vec2 &t) const
         {
             return glm::vec<2, T>(lerp(t.x, _p_min.x, _p_max.x), lerp(t.y, _p_min.y, _p_max.y));
         }
 
-        glm::vec<2, T> Offset(const glm::vec<2, T>& p) const
+        glm::vec<2, T> Offset(const glm::vec<2, T> &p) const
         {
             glm::vec<2, T> o = p - _p_min;
-            if (_p_max.x > _p_min.x) o.x /= _p_max.x - _p_min.x;
-            if (_p_max.y > _p_min.y) o.y /= _p_max.y - _p_min.y;
+            if (_p_max.x > _p_min.x)
+                o.x /= _p_max.x - _p_min.x;
+            if (_p_max.y > _p_min.y)
+                o.y /= _p_max.y - _p_min.y;
             return o;
         }
 
-        friend std::ostream& operator<<(std::ostream& os, const Bounds2<T>& b)
+        friend std::ostream &operator<<(std::ostream &os, const Bounds2<T> &b)
         {
             os << "[ " << b._p_min << " - " << b._p_max << " ]";
             return os;
@@ -198,9 +201,8 @@ namespace platinum
 
     public:
         glm::vec<2, T> _p_min, _p_max;
-
     };
-   
+
     typedef Bounds2<float> Bounds2f;
     typedef Bounds2<int> Bounds2i;
     typedef Bounds3<float> Bounds3f;
@@ -209,7 +211,7 @@ namespace platinum
     class Bounds2iIterator : public std::forward_iterator_tag
     {
     public:
-        Bounds2iIterator(const Bounds2i& b, const glm::ivec2& pt)
+        Bounds2iIterator(const Bounds2i &b, const glm::ivec2 &pt)
             : p(pt), bounds(&b) {}
 
         Bounds2iIterator operator++()
@@ -225,12 +227,12 @@ namespace platinum
             return old;
         }
 
-        bool operator==(const Bounds2iIterator& bi) const
+        bool operator==(const Bounds2iIterator &bi) const
         {
             return p == bi.p && bounds == bi.bounds;
         }
 
-        bool operator!=(const Bounds2iIterator& bi) const
+        bool operator!=(const Bounds2iIterator &bi) const
         {
             return p != bi.p || bounds != bi.bounds;
         }
@@ -249,15 +251,15 @@ namespace platinum
         }
 
         glm::ivec2 p;
-        const Bounds2i* bounds;
+        const Bounds2i *bounds;
     };
 
-    inline Bounds2iIterator begin(const Bounds2i& b)
+    inline Bounds2iIterator begin(const Bounds2i &b)
     {
         return Bounds2iIterator(b, b._p_min);
     }
 
-    inline Bounds2iIterator end(const Bounds2i& b)
+    inline Bounds2iIterator end(const Bounds2i &b)
     {
         // Normally, the ending point is at the minimum x value and one past
         // the last valid y value.
@@ -269,10 +271,9 @@ namespace platinum
             pEnd = b._p_min;
         return Bounds2iIterator(b, pEnd);
     }
- 
-    
+
     template <typename T>
-    inline Bounds3<T> UnionBounds(const Bounds3<T>& b, const glm::vec<3, T>& p)
+    inline Bounds3<T> UnionBounds(const Bounds3<T> &b, const glm::vec<3, T> &p)
     {
         Bounds3<T> ret;
         ret._p_min = glm::min(b._p_min, p);
@@ -281,7 +282,7 @@ namespace platinum
     }
 
     template <typename T>
-    inline Bounds3<T> UnionBounds(const Bounds3<T>& b1, const Bounds3<T>& b2)
+    inline Bounds3<T> UnionBounds(const Bounds3<T> &b1, const Bounds3<T> &b2)
     {
         Bounds3<T> ret;
         ret._p_min = glm::min(b1._p_min, b2._p_min);
@@ -290,7 +291,7 @@ namespace platinum
     }
 
     template <typename T>
-    inline Bounds3<T> Intersect(const Bounds3<T>& b1, const Bounds3<T>& b2)
+    inline Bounds3<T> Intersect(const Bounds3<T> &b1, const Bounds3<T> &b2)
     {
         // Important: assign to pMin/pMax directly and don't run the ABounds2()
         // constructor, since it takes min/max of the points passed to it.  In
@@ -303,7 +304,7 @@ namespace platinum
     }
 
     template <typename T>
-    inline bool Overlaps(const Bounds3<T>& b1, const Bounds3<T>& b2)
+    inline bool Overlaps(const Bounds3<T> &b1, const Bounds3<T> &b2)
     {
         bool x = (b1._p_max.x >= b2._p_min.x) && (b1._p_min.x <= b2._p_max.x);
         bool y = (b1._p_max.y >= b2._p_min.y) && (b1._p_min.y <= b2._p_max.y);
@@ -312,15 +313,14 @@ namespace platinum
     }
 
     template <typename T>
-    inline bool Inside(const glm::vec<3, T>& p, const Bounds3<T>& b)
+    inline bool Inside(const glm::vec<3, T> &p, const Bounds3<T> &b)
     {
         return (p.x >= b._p_min.x && p.x <= b._p_max.x && p.y >= b._p_min.y &&
-            p.y <= b._p_max.y && p.z >= b._p_min.z && p.z <= b._p_max.z);
+                p.y <= b._p_max.y && p.z >= b._p_min.z && p.z <= b._p_max.z);
     }
 
-    
     template <typename T>
-    inline Bounds2<T> UnionBounds(const Bounds2<T>& b, const glm::vec<2, T>& p)
+    inline Bounds2<T> UnionBounds(const Bounds2<T> &b, const glm::vec<2, T> &p)
     {
         Bounds2<T> ret;
         ret._p_min = min(b._p_min, p);
@@ -329,7 +329,7 @@ namespace platinum
     }
 
     template <typename T>
-    inline Bounds2<T> UnionBounds(const Bounds2<T>& b, const Bounds2<T>& b2)
+    inline Bounds2<T> UnionBounds(const Bounds2<T> &b, const Bounds2<T> &b2)
     {
         Bounds2<T> ret;
         ret._p_min = min(b._p_min, b2._p_min);
@@ -338,7 +338,7 @@ namespace platinum
     }
 
     template <typename T>
-    inline Bounds2<T> Intersect(const Bounds2<T>& b1, const Bounds2<T>& b2)
+    inline Bounds2<T> Intersect(const Bounds2<T> &b1, const Bounds2<T> &b2)
     {
         // Important: assign to pMin/pMax directly and don't run the Bounds2()
         // constructor, since it takes min/max of the points passed to it.  In
@@ -351,7 +351,7 @@ namespace platinum
     }
 
     template <typename T>
-    inline bool Overlaps(const Bounds2<T>& ba, const Bounds2<T>& bb)
+    inline bool Overlaps(const Bounds2<T> &ba, const Bounds2<T> &bb)
     {
         bool x = (ba._p_max.x >= bb._p_min.x) && (ba._p_min.x <= bb._p_max.x);
         bool y = (ba._p_max.y >= bb._p_min.y) && (ba._p_min.y <= bb._p_max.y);
@@ -359,84 +359,82 @@ namespace platinum
     }
 
     template <typename T>
-    inline bool Inside(const glm::vec<2, T>& pt, const Bounds2<T>& b)
+    inline bool Inside(const glm::vec<2, T> &pt, const Bounds2<T> &b)
     {
         return (pt.x >= b._p_min.x && pt.x <= b._p_max.x && pt.y >= b._p_min.y && pt.y <= b._p_max.y);
     }
 
     template <typename T>
-    bool InsideExclusive(const glm::vec<2, T>& pt, const Bounds2<T>& b)
+    bool InsideExclusive(const glm::vec<2, T> &pt, const Bounds2<T> &b)
     {
-        return (pt.x >= b._p_min.x && pt.x < b._p_max.x&& pt.y >= b._p_min.y && pt.y < b._p_max.y);
+        return (pt.x >= b._p_min.x && pt.x < b._p_max.x && pt.y >= b._p_min.y && pt.y < b._p_max.y);
     }
 
+    template <typename T>
+    inline bool Bounds3<T>::Hit(const Ray &ray, float &hitt0, float &hitt1) const
+    {
+        float t0 = 0, t1 = ray.m_tMax;
+        for (int i = 0; i < 3; ++i)
+        {
+            // Update interval for _i_th bounding box slab
+            float invRayDir = 1 / ray.m_dir[i];
+            float tNear = (_p_min[i] - ray.m_origin[i]) * invRayDir;
+            float tFar = (_p_max[i] - ray.m_origin[i]) * invRayDir;
 
-      template <typename T>
-	inline bool Bounds3<T>::Hit(const Ray &ray, float &hitt0, float &hitt1) const
-	{
-		float t0 = 0, t1 = ray.m_tMax;
-		for (int i = 0; i < 3; ++i)
-		{
-			// Update interval for _i_th bounding box slab
-			float invRayDir = 1 / ray.m_dir[i];
-			float tNear = (_p_min[i] - ray.m_origin[i]) * invRayDir;
-			float tFar = (_p_max[i] - ray.m_origin[i]) * invRayDir;
+            // Update parametric interval from slab intersection $t$ values
+            if (tNear > tFar)
+            {
+                std::swap(tNear, tFar);
+            }
 
-			// Update parametric interval from slab intersection $t$ values
-			if (tNear > tFar)
-			{
-				std::swap(tNear, tFar);
-			}
+            // Update _tFar_ to ensure robust ray--bounds intersection
+            tFar *= 1 + 2 * gamma(3);
+            t0 = tNear > t0 ? tNear : t0;
+            t1 = tFar < t1 ? tFar : t1;
+            if (t0 > t1)
+            {
+                return false;
+            }
+        }
+        hitt0 = t0;
+        hitt1 = t1;
+        return true;
+    }
 
-			// Update _tFar_ to ensure robust ray--bounds intersection
-			tFar *= 1 + 2 * gamma(3);
-			t0 = tNear > t0 ? tNear : t0;
-			t1 = tFar < t1 ? tFar : t1;
-			if (t0 > t1)
-			{
-				return false;
-			}
-		}
-		hitt0 = t0;
-		hitt1 = t1;
-		return true;
-	}
+    template <typename T>
+    inline bool Bounds3<T>::Hit(const Ray &ray, const glm::vec3 &invDir, const int dirIsNeg[3]) const
+    {
+        const ABounds3f &bounds = *this;
+        // Check for ray intersection against $x$ and $y$ slabs
+        float tMin = (bounds[dirIsNeg[0]].x - ray.m_origin.x) * invDir.x;
+        float tMax = (bounds[1 - dirIsNeg[0]].x - ray.m_origin.x) * invDir.x;
+        float tyMin = (bounds[dirIsNeg[1]].y - ray.m_origin.y) * invDir.y;
+        float tyMax = (bounds[1 - dirIsNeg[1]].y - ray.m_origin.y) * invDir.y;
 
-	template <typename T>
-	inline bool Bounds3<T>::Hit(const Ray &ray, const glm::vec3 &invDir, const int dirIsNeg[3]) const
-	{
-		const ABounds3f &bounds = *this;
-		// Check for ray intersection against $x$ and $y$ slabs
-		float tMin = (bounds[dirIsNeg[0]].x - ray.m_origin.x) * invDir.x;
-		float tMax = (bounds[1 - dirIsNeg[0]].x - ray.m_origin.x) * invDir.x;
-		float tyMin = (bounds[dirIsNeg[1]].y - ray.m_origin.y) * invDir.y;
-		float tyMax = (bounds[1 - dirIsNeg[1]].y - ray.m_origin.y) * invDir.y;
+        // Update _tMax_ and _tyMax_ to ensure robust bounds intersection
+        tMax *= 1 + 2 * gamma(3);
+        tyMax *= 1 + 2 * gamma(3);
+        if (tMin > tyMax || tyMin > tMax)
+            return false;
+        if (tyMin > tMin)
+            tMin = tyMin;
+        if (tyMax < tMax)
+            tMax = tyMax;
 
-		// Update _tMax_ and _tyMax_ to ensure robust bounds intersection
-		tMax *= 1 + 2 * gamma(3);
-		tyMax *= 1 + 2 * gamma(3);
-		if (tMin > tyMax || tyMin > tMax)
-			return false;
-		if (tyMin > tMin)
-			tMin = tyMin;
-		if (tyMax < tMax)
-			tMax = tyMax;
+        // Check for ray intersection against $z$ slab
+        float tzMin = (bounds[dirIsNeg[2]].z - ray.m_origin.z) * invDir.z;
+        float tzMax = (bounds[1 - dirIsNeg[2]].z - ray.om_origin.z) * invDir.z;
 
-		// Check for ray intersection against $z$ slab
-		float tzMin = (bounds[dirIsNeg[2]].z - ray.m_origin.z) * invDir.z;
-		float tzMax = (bounds[1 - dirIsNeg[2]].z - ray.om_origin.z) * invDir.z;
-
-		// Update _tzMax_ to ensure robust bounds intersection
-		tzMax *= 1 + 2 * gamma(3);
-		if (tMin > tzMax || tzMin > tMax)
-			return false;
-		if (tzMin > tMin)
-			tMin = tzMin;
-		if (tzMax < tMax)
-			tMax = tzMax;
-		return (tMin < ray.m_tMax) && (tMax > 0);
-	}
-
+        // Update _tzMax_ to ensure robust bounds intersection
+        tzMax *= 1 + 2 * gamma(3);
+        if (tMin > tzMax || tzMin > tMax)
+            return false;
+        if (tzMin > tMin)
+            tMin = tzMin;
+        if (tzMax < tMax)
+            tMax = tzMax;
+        return (tMin < ray.m_tMax) && (tMax > 0);
+    }
 
 }
 

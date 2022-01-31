@@ -1,11 +1,11 @@
 // Copyright 2022 ptcup
-// 
+//
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
-// 
+//
 //     http://www.apache.org/licenses/LICENSE-2.0
-// 
+//
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,8 +15,7 @@
 #ifndef CORE_PARRALLEL_H_
 #define CORE_PARRALLEL_H_
 
-
-#include <core/defines.h>
+#include <core/utilities.h>
 
 #include <mutex>
 #include <atomic>
@@ -26,28 +25,27 @@
 
 namespace platinum
 {
-	class AtomicFloat 
+	class AtomicFloat
 	{
 	public:
-
 		explicit AtomicFloat(float v = 0) { bits = floatToBits(v); }
 
 		operator float() const { return bitsToFloat(bits); }
-		
-		float operator=(float v) 
+
+		float operator=(float v)
 		{
 			bits = floatToBits(v);
 			return v;
 		}
 
-		void add(float v) 
+		void add(float v)
 		{
 #ifdef AURORA_DOUBLE_AS_FLOAT
 			uint64_t oldBits = bits, newBits;
 #else
 			uint32_t oldBits = bits, newBits;
 #endif
-			do 
+			do
 			{
 				newBits = floatToBits(bitsToFloat(oldBits) + v);
 			} while (!bits.compare_exchange_weak(oldBits, newBits));
@@ -69,7 +67,7 @@ namespace platinum
 	// all threads that use it are passed the shared_ptr. This ensures that
 	// memory for the Barrier won't be freed until all threads have
 	// successfully cleared it.
-	class Barrier 
+	class Barrier
 	{
 	public:
 		Barrier(int count) : m_count(count) { CHECK_GT(count, 0); }
@@ -83,17 +81,20 @@ namespace platinum
 	};
 
 	//Execution policy tag.
-	enum class ExecutionPolicy { SERIAL, PARALLEL };
+	enum class ExecutionPolicy
+	{
+		SERIAL,
+		PARALLEL
+	};
 
 	inline int numSystemCores() { return glm::max(1u, std::thread::hardware_concurrency()); }
 
 	class ParallelUtils
 	{
 	public:
-		
 		//Parallel loop for parallel tiling rendering
 		template <typename Function>
-		static void parallelFor(size_t start, size_t end, const Function& func, ExecutionPolicy policy)
+		static void parallelFor(size_t start, size_t end, const Function &func, ExecutionPolicy policy)
 		{
 			if (start > end)
 				return;
@@ -109,8 +110,7 @@ namespace platinum
 		}
 
 	private:
-
-		template<typename Callable>
+		template <typename Callable>
 		static void parallel_for(size_t start, size_t end, Callable function)
 		{
 			DCHECK(start < end);
@@ -126,8 +126,7 @@ namespace platinum
 			{
 				const int n_lacking_tasks_so_far = std::max(thread_index - n_threads + n_lacking_tasks, 0);
 				const int inclusive_start_index = thread_index * n_max_tasks_per_thread - n_lacking_tasks_so_far;
-				const int exclusive_end_index = inclusive_start_index + n_max_tasks_per_thread
-					- (thread_index - n_threads + n_lacking_tasks >= 0 ? 1 : 0);
+				const int exclusive_end_index = inclusive_start_index + n_max_tasks_per_thread - (thread_index - n_threads + n_lacking_tasks >= 0 ? 1 : 0);
 
 				for (int k = inclusive_start_index; k < exclusive_end_index; ++k)
 				{
@@ -137,19 +136,19 @@ namespace platinum
 			std::vector<std::thread> threads;
 			for (int j = 0; j < n_threads; ++j)
 			{
-				threads.push_back(std::thread(inner_loop, j)); 
+				threads.push_back(std::thread(inner_loop, j));
 			}
-			for (auto& t : threads) 
-			{ 
-				t.join(); 
+			for (auto &t : threads)
+			{
+				t.join();
 			}
 		}
 
-		template<typename Callable>
+		template <typename Callable>
 		static void parallel_for_seize(size_t start, size_t end, Callable func)
 		{
 			DCHECK(start < end);
-			//Note: this parallel_for assign the task to thread by atomic 
+			//Note: this parallel_for assign the task to thread by atomic
 			//      opertion over task index which is more efficient in general case
 
 			const int n_threads = numSystemCores();
@@ -169,12 +168,11 @@ namespace platinum
 			{
 				threads.push_back(std::thread(inner_loop, j));
 			}
-			for (auto& t : threads)
+			for (auto &t : threads)
 			{
 				t.join();
 			}
 		}
-
 	};
 
 }

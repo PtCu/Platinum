@@ -15,7 +15,7 @@
 #ifndef CORE_SAMPLER_H_
 #define CORE_SAMPLER_H_
 
-#include <core/defines.h>
+#include <core/utilities.h>
 #include <glm/glm.hpp>
 
 namespace platinum

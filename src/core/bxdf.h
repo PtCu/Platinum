@@ -1,11 +1,11 @@
 // Copyright 2022 ptcup
-// 
+//
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
-// 
+//
 //     http://www.apache.org/licenses/LICENSE-2.0
-// 
+//
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,11 +15,13 @@
 #ifndef CORE_BXDF_H_
 #define CORE_BXDF_H_
 
-#include <core/defines.h>
+#include <core/utilities.h>
 #include <core/interaction.h>
 
-namespace platinum {
-    enum class BxDFType {
+namespace platinum
+{
+    enum class BxDFType
+    {
 
         BSDF_REFLECTION = 1 << 0,
         BSDF_TRANSMISSION = 1 << 1,
@@ -28,9 +30,10 @@ namespace platinum {
         BSDF_SPECULAR = 1 << 4,
         BSDF_ALL = BSDF_DIFFUSE | BSDF_GLOSSY | BSDF_SPECULAR | BSDF_REFLECTION | BSDF_TRANSMISSION,
     };
-    class BxDF {
+    class BxDF
+    {
     public:
-        BxDF(BxDFType type);
+        BxDF(BxDFType type):_type(type){}
         virtual ~BxDF() = default;
 
         /**
@@ -50,8 +53,7 @@ namespace platinum {
          * @param  wi               入射方向
          * @return glm::vec3        radiance
          */
-        virtual Spectrum F(const glm::vec3& wo, const glm::vec3& wi)const = 0;
-
+        virtual Spectrum F(const glm::vec3 &wo, const glm::vec3 &wi) const = 0;
 
         /**
          * @brief   返回入射方向为wi，出射方向为wo的概率密度(立体角空间)
@@ -60,7 +62,7 @@ namespace platinum {
          * @param  wi               入射方向
          * @return float    概率密度值
          */
-        virtual float Pdf(const glm::vec3& wo, const glm::vec3& wi) const;
+        virtual float Pdf(const glm::vec3 &wo, const glm::vec3 &wi) const;
         /**
          * @brief   是F函数的简化，有时我们想仅仅输入出射方向，
          *          然后根据出射方向计算入射方向并返回相应的BxDF函数值。
@@ -76,15 +78,10 @@ namespace platinum {
         * @param  sampledType BxDF的类型
          * @return glm::vec3  radiance
          */
-        virtual Spectrum SampleF(const glm::vec3& wo, glm::vec3& wi, const glm::vec2& sample, float& pdf, BxDFType& sampleType)const;
-
+        virtual Spectrum SampleF(const glm::vec3 &wo, glm::vec3 &wi, const glm::vec2 &sample, float &pdf, BxDFType &sampleType) const;
 
         const BxDFType _type;
     };
-
-
-
-
 
     //   菲涅尔效应分2类材料讨论
     //   1.绝缘体，例如，水，空气，矿物油，玻璃等材质，通常这些材质折射率为1到3之间
@@ -94,7 +91,8 @@ namespace platinum {
     //       因此，只有非常非常薄的金属片，光才能穿透. 我们忽略这种现象，只计算反射分量
     //       与绝缘体不同的是，导体的折射率由复数表示 η' = η + i*k(k表示吸收系数)
 
-    class Fresnel {
+    class Fresnel
+    {
     public:
         virtual ~Fresnel() = default;
         /**
@@ -106,17 +104,20 @@ namespace platinum {
     };
 
     //菲涅尔项的Schlick近似
-    class FresnelSchlick :public Fresnel {
+    class FresnelSchlick : public Fresnel
+    {
     public:
         FresnelSchlick(const Spectrum F0) : _F0(F0) {}
-        FresnelSchlick(float etaI, float etaT) {
+        FresnelSchlick(float etaI, float etaT)
+        {
             float F0_1 = (etaI - etaT) / (etaI + etaT);
             float F0 = F0_1 * F0_1;
             _F0 = Spectrum{F0};
         }
         virtual Spectrum Evaluate(float cosTheta) const override
         {
-            auto pow5 = [](float i) {return (i * i) * (i * i) * i;};
+            auto pow5 = [](float i)
+            { return (i * i) * (i * i) * i; };
             return _F0 + (Spectrum(1.f) - _F0) * pow5(1 - cosTheta);
         }
 
@@ -126,9 +127,10 @@ namespace platinum {
     };
 
     //绝缘体的菲涅尔项
-    class FresnelDielectric :public Fresnel {
+    class FresnelDielectric : public Fresnel
+    {
     public:
-        FresnelDielectric(float etaI, float etaT) :_etaI(etaI), _etaT(etaT) {}
+        FresnelDielectric(float etaI, float etaT) : _etaI(etaI), _etaT(etaT) {}
         virtual Spectrum Evaluate(float cosThetaI) const override
         {
             return Spectrum(FrDielectric(cosThetaI, _etaI, _etaT));
@@ -136,11 +138,11 @@ namespace platinum {
 
     private:
         float _etaI, _etaT;
-        float FrDielectric(float cosThetaI, float etaI, float etaT)const;
-
+        float FrDielectric(float cosThetaI, float etaI, float etaT) const;
     };
 
-    class FresnelConductor :public Fresnel {
+    class FresnelConductor : public Fresnel
+    {
     public:
         FresnelConductor(const Spectrum &etaI, const Spectrum &etaT, const Spectrum &kt)
             : _etaI(etaI), _etaT(etaT), _kt(kt) {}

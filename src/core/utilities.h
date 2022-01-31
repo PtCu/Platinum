@@ -1,0 +1,306 @@
+// The MIT License (MIT)
+
+// Copyright (c) 2021 PtCu
+
+//  Permission is hereby granted, free of charge, to any person obtaining a
+//  copy of this software and associated documentation files (the "Software"),
+//  to deal in the Software without restriction, including without limitation
+//  the rights to use, copy, modify, merge, publish, distribute, sublicense,
+//  and/or sell copies of the Software, and to permit persons to whom the
+//  Software is furnished to do so, subject to the following conditions:
+//
+//  The above copyright notice and this permission notice shall be included in
+//  all copies or substantial portions of the Software.
+//
+//  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+//  OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+//  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+//  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+//  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+//  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+//  DEALINGS IN THE SOFTWARE.
+
+//core/
+// Global Include Files
+
+#ifndef CORE_DEFINES_H_
+#define CORE_DEFINES_H_
+
+#include <type_traits>
+#include <algorithm>
+#include <cinttypes>
+#include <cmath>
+#include <iostream>
+#include <limits>
+#include <memory>
+#include <string>
+#include <vector>
+#include <array>
+#include <stack>
+#include <assert.h>
+#include <string.h>
+#include <stdint.h>
+#include <float.h>
+#include <typeinfo>
+#include <thread>
+#include <mutex>
+
+#include <glm/glm.hpp>
+#include <glog/logging.h>
+namespace platinum
+{
+    // Platform-specific definitions
+#if defined(_WIN32) || defined(_WIN64)
+#define PLT_IS_WINDOWS
+#endif
+
+    static constexpr float ShadowEpsilon = 0.0001f;
+    static constexpr float Pi = 3.14159265358979323846f;
+    static constexpr float InvPi = 0.31830988618379067154f;
+    static constexpr float Inv2Pi = 0.15915494309189533577f;
+    static constexpr float Inv4Pi = 0.07957747154594766788f;
+    static constexpr float PiOver2 = 1.57079632679489661923f;
+    static constexpr float PiOver4 = 0.78539816339744830961f;
+    static constexpr float Sqrt2 = 1.41421356237309504880f;
+    static constexpr float EPSILON = 0.0005f;
+    static constexpr float OneMinusEpsilon = 0.99999994;
+    static constexpr float MaxFloat = std::numeric_limits<float>::max();
+    static constexpr float Infinity = std::numeric_limits<float>::infinity();
+    static constexpr float MachineEpsilon = std::numeric_limits<float>::epsilon() * 0.5f;
+
+    class Camera;
+    class Material;
+    class Scene;
+    class Ray;
+    class Texture;
+    class Integrator;
+    class TiledIntegrator;
+    class Film;
+    class BSDF;
+    class BxDF;
+    class VisibilityTester;
+    class Light;
+    class Sampler;
+    class Fresnel;
+    class Interaction;
+    class SurfaceInteraction;
+    struct CameraSample;
+    class Filter;
+    class Transform;
+    class AreaLight;
+    class Primitive;
+    class GeometricPrimitive;
+    class Aggregate;
+    class Shape;
+    struct FilmTilePixel;
+    class FilmTile;
+    class RGBSpectrum;
+
+    using Spectrum = RGBSpectrum;
+    using Byte = unsigned char;
+
+    template <typename T, typename U, typename V>
+    inline T clamp(T val, U low, V high)
+    {
+        if (val < low)
+            return low;
+        else if (val > high)
+            return high;
+        else
+            return val;
+    }
+
+    inline float lerp(float t, float v1, float v2) { return (1 - t) * v1 + t * v2; }
+
+    inline float gamma(int n) { return (n * MachineEpsilon) / (1 - n * MachineEpsilon); }
+
+    inline float gammaCorrect(float value)
+    {
+        if (value <= 0.0031308f)
+            return 12.92f * value;
+        return 1.055f * glm::pow(value, (float)(1.f / 2.4f)) - 0.055f;
+    }
+
+    inline float inverseGammaCorrect(float value)
+    {
+        if (value <= 0.04045f)
+            return value * 1.f / 12.92f;
+        return glm::pow((value + 0.055f) * 1.f / 1.055f, (float)2.4f);
+    }
+    inline float minComponent(const glm::vec3 &v) { return glm::min(v.x, glm::min(v.y, v.z)); }
+
+    inline float maxComponent(const glm::vec3 &v) { return glm::max(v.x, glm::max(v.y, v.z)); }
+
+    inline int maxDimension(const glm::vec3 &v) { return (v.x > v.y) ? ((v.x > v.z) ? 0 : 2) : ((v.y > v.z) ? 1 : 2); }
+
+    inline glm::vec3 permute(const glm::vec3 &v, int x, int y, int z) { return glm::vec3(v[x], v[y], v[z]); }
+
+    inline glm::vec3 faceforward(const glm::vec3 &n, const glm::vec3 &v) { return (glm::dot(n, v) < 0.f) ? -n : n; }
+
+    inline bool sameHemisphere(const glm::vec3 &w, const glm::vec3 &wp) { return w.z * wp.z > 0; }
+    //正交化，用于局部坐标
+    //v1必须已经被归一化过
+    inline void coordinateSystem(const glm::vec3 &v1, glm::vec3 &v2, glm::vec3 &v3)
+    {
+        if (glm::abs(v1.x) > glm::abs(v1.y))
+            v2 = glm::vec3(-v1.z, 0, v1.x) / glm::sqrt(v1.x * v1.x + v1.z * v1.z);
+        else
+            v2 = glm::vec3(0, v1.z, -v1.y) / glm::sqrt(v1.y * v1.y + v1.z * v1.z);
+        v3 = glm::cross(v1, v2);
+    }
+
+    inline uint32_t floatToBits(float f)
+    {
+        uint32_t ui;
+        memcpy(&ui, &f, sizeof(float));
+        return ui;
+    }
+
+    inline float bitsToFloat(uint32_t ui)
+    {
+        float f;
+        memcpy(&f, &ui, sizeof(uint32_t));
+        return f;
+    }
+
+    inline uint64_t floatToBits(double f)
+    {
+        uint64_t ui;
+        memcpy(&ui, &f, sizeof(double));
+        return ui;
+    }
+
+    inline double bitsToFloat(uint64_t ui)
+    {
+        double f;
+        memcpy(&f, &ui, sizeof(uint64_t));
+        return f;
+    }
+
+    inline void stringPrintfRecursive(std::string *s, const char *fmt)
+    {
+        const char *c = fmt;
+        // No args left; make sure there aren't any extra formatting
+        // specifiers.
+        while (*c)
+        {
+            if (*c == '%')
+            {
+                CHECK_EQ(c[1], '%');
+                ++c;
+            }
+            *s += *c++;
+        }
+    }
+
+    // 1. Copy from fmt to *s, up to the next formatting directive.
+    // 2. Advance fmt past the next formatting directive and return the
+    //    formatting directive as a string.
+    inline std::string copyToFormatString(const char **fmt_ptr, std::string *s)
+    {
+        const char *&fmt = *fmt_ptr;
+        while (*fmt)
+        {
+            if (*fmt != '%')
+            {
+                *s += *fmt;
+                ++fmt;
+            }
+            else if (fmt[1] == '%')
+            {
+                // "%%"; let it pass through
+                *s += '%';
+                *s += '%';
+                fmt += 2;
+            }
+            else
+                // fmt is at the start of a formatting directive.
+                break;
+        }
+
+        std::string nextFmt;
+        if (*fmt)
+        {
+            do
+            {
+                nextFmt += *fmt;
+                ++fmt;
+                // Incomplete (but good enough?) test for the end of the
+                // formatting directive: a new formatting directive starts, we
+                // hit whitespace, or we hit a comma.
+            } while (*fmt && *fmt != '%' && !isspace(*fmt) && *fmt != ',' &&
+                     *fmt != '[' && *fmt != ']' && *fmt != '(' && *fmt != ')');
+        }
+
+        return nextFmt;
+    }
+
+    template <typename T>
+    inline std::string formatOne(const char *fmt, T v)
+    {
+        // Figure out how much space we need to allocate; add an extra
+        // character for the '\0'.
+        size_t size = snprintf(nullptr, 0, fmt, v) + 1;
+        std::string str;
+        str.resize(size);
+        snprintf(&str[0], size, fmt, v);
+        str.pop_back(); // remove trailing NUL
+        return str;
+    }
+
+    // General-purpose version of stringPrintfRecursive; add the formatted
+    // output for a single StringPrintf() argument to the final result string
+    // in *s.
+    template <typename T, typename... Args>
+    inline void stringPrintfRecursive(std::string *s, const char *fmt, T v, Args... args)
+    {
+        std::string nextFmt = copyToFormatString(&fmt, s);
+        *s += formatOne(nextFmt.c_str(), v);
+        stringPrintfRecursive(s, fmt, args...);
+    }
+
+    // Special case of StringPrintRecursive for float-valued arguments.
+    template <typename... Args>
+    inline void stringPrintfRecursive(std::string *s, const char *fmt, float v, Args... args)
+    {
+        std::string nextFmt = copyToFormatString(&fmt, s);
+        if (nextFmt == "%f")
+            // Always use enough precision so that the printed value gives
+            // the exact floating-point value if it's used to initialize a
+            // float.
+            // https://randomascii.wordpress.com/2012/03/08/float-precisionfrom-zero-to-100-digits-2/
+            *s += formatOne("%.9g", v);
+        else
+            // If a specific formatting string other than "%f" was specified,
+            // just use that.
+            *s += formatOne(nextFmt.c_str(), v);
+
+        // Go forth and print the next arg.
+        stringPrintfRecursive(s, fmt, args...);
+    }
+
+    template <typename... Args>
+    inline std::string stringPrintf(const char *fmt, Args... args)
+    {
+        std::string ret;
+        stringPrintfRecursive(&ret, fmt, args...);
+        return ret;
+    }
+
+    template <typename T>
+    std::ostream &operator<<(std::ostream &os, const glm::vec<3, T> &v)
+    {
+        os << "[" << v.x << "," << v.y << "," << v.z << "]";
+        return os;
+    }
+
+    template <typename T>
+    std::ostream &operator<<(std::ostream &os, const glm::vec<2, T> &v)
+    {
+        os << "[" << v.x << "," << v.y << "]";
+        return os;
+    }
+
+
+} // namespace platinum
+#endif

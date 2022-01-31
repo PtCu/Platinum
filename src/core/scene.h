@@ -25,7 +25,7 @@
 
 #include <core/primitive.h>
 #include <glm/glm.hpp>
-#include <core/defines.h>
+#include <core/utilities.h>
 #include <core/ray.h>
 #include <core/interaction.h>
 #include <functional>
@@ -36,18 +36,17 @@ namespace platinum
     class Scene
     {
     public:
-        Scene(const std::shared_ptr< Aggregate>& aggre, const std::vector<std::shared_ptr<Light>>& light)
-            :_aggres(aggre), _lights(light) {
-
+        Scene(const std::shared_ptr<Aggregate> &aggre, const std::vector<std::shared_ptr<Light>> &light)
+            : _aggres(aggre), _lights(light)
+        {
         }
-        bool Hit(const Ray& ray, SurfaceInteraction& inter)const;
-        bool Hit(const Ray& ray)const;
+        bool Hit(const Ray &ray, SurfaceInteraction &inter) const;
+        bool Hit(const Ray &ray) const;
 
-        std::vector<std::shared_ptr<Light>>_lights;
+        std::vector<std::shared_ptr<Light>> _lights;
 
     private:
         std::shared_ptr<Aggregate> _aggres;
-
     };
 
 } // namespace platinum

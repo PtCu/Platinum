@@ -18,6 +18,6 @@ namespace platinum {
 
     Spectrum PathIntegrator::Li(const Scene &scene, const Ray &ray, Sampler &sampler, int depth) const
     {
-        return Spectrum(0);
+        return Spectrum(0.f);
     }
 }

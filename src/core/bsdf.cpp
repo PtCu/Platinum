@@ -59,7 +59,7 @@ namespace platinum {
             {
                 sampledType = BxDFType(0);
             }
-            return Spectrum(0);
+            return Spectrum(0.f);
         }
         // 根据随机变量u随机选择bxdf组件
         int comp = glm::min((int)glm::floor(u[0] * matchingComps), matchingComps - 1);

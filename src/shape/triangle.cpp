@@ -398,4 +398,46 @@ namespace platinum
 
         return true;
     }
+
+    float Triangle::SolidAngle(const glm::vec3 &p, int nSamples) const
+    {
+        // Project the vertices into the unit sphere around p.
+        const auto &p0 = _mesh->GetPositionAt(_indices[0]);
+        const auto &p1 = _mesh->GetPositionAt(_indices[1]);
+        const auto &p2 = _mesh->GetPositionAt(_indices[2]);
+        std::array<glm::vec3, 3> pSphere = {glm::normalize(p0 - p), glm::normalize(p1 - p), glm::normalize(p2 - p)};
+
+        // http://math.stackexchange.com/questions/9819/area-of-a-spherical-triangle
+        // Girard's theorem: surface area of a spherical triangle on a unit
+        // sphere is the 'excess angle' alpha+beta+gamma-pi, where
+        // alpha/beta/gamma are the interior angles at the vertices.
+        //
+        // Given three vertices on the sphere, a, b, c, then we can compute,
+        // for example, the angle c->a->b by
+        //
+        // cos theta =  Dot(Cross(c, a), Cross(b, a)) /
+        //              (Length(Cross(c, a)) * Length(Cross(b, a))).
+        //
+        glm::vec3 cross01 = (cross(pSphere[0], pSphere[1]));
+        glm::vec3 cross12 = (cross(pSphere[1], pSphere[2]));
+        glm::vec3 cross20 = (cross(pSphere[2], pSphere[0]));
+
+        // Some of these vectors may be degenerate. In this case, we don't want
+        // to glm::normalize them so that we don't hit an assert. This is fine,
+        // since the corresponding dot products below will be zero.
+        if (glm::length2(cross01) > 0)
+            cross01 = glm::normalize(cross01);
+        if (glm::length2(cross12) > 0)
+            cross12 = glm::normalize(cross12);
+        if (glm::length2(cross20) > 0)
+            cross20 = glm::normalize(cross20);
+
+        // We only need to do three cross products to evaluate the angles at
+        // all three vertices, though, since we can take advantage of the fact
+        // that Cross(a, b) = -Cross(b, a).
+        return glm::abs(
+            glm::acos(clamp(dot(cross01, -cross12), -1, 1)) +
+            glm::acos(clamp(dot(cross12, -cross20), -1, 1)) +
+            glm::acos(clamp(dot(cross20, -cross01), -1, 1)) - Pi);
+    }
 }

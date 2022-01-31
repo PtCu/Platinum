@@ -16,7 +16,7 @@
 #define CORE_LIGHT_CPP_
 
 #include <glm/glm.hpp>
-#include <core/defines.h>
+#include <core/utilities.h>
 #include <core/ray.h>
 #include <core/scene.h>
 #include <math/transform.h>
@@ -36,7 +36,11 @@ namespace platinum
     class Light
     {
     public:
-        Light() = default;
+        Light(int flags, const Transform &light2world, int n_samples)
+            : _flags(flags), _num_samples(glm::max(1, n_samples)), _light2World(light2world), _world2Light(Inverse(light2world))
+        {
+            //++numLights;
+        }
         virtual ~Light() = default;
         ;
 
@@ -74,7 +78,7 @@ namespace platinum
          * @return glm::vec3        辐射度
          */
         virtual Spectrum SampleLi(const Interaction &inter, const glm::vec2 &u,
-                                  glm::vec3 &wi, float &pdf, VisibilityTester &vis) const;
+                                  glm::vec3 &wi, float &pdf, VisibilityTester &vis) const = 0;
         /**
          * @brief   返回在inter处采样光源时，对应的pdf函数值
          *          用于估计直接光照时，采样bsdf时生成的wi方向，对应的pdf函数值
@@ -82,7 +86,7 @@ namespace platinum
          * @param  wi               My Param doc
          * @return float
          */
-        virtual float PdfLi(const Interaction &inter, const glm::vec3 &wi) const;
+        virtual float PdfLi(const Interaction &inter, const glm::vec3 &wi) const = 0;
 
         //return their total emitted power
         virtual Spectrum Power() const = 0;
@@ -94,13 +98,17 @@ namespace platinum
         virtual void Preprocess(const Scene &scene) {}
 
         int _flags;
-        int _nSamples;
+        int _num_samples;
+
+    protected:
+        Transform _light2World, _world2Light;
     };
 
     class AreaLight : public Light
     {
     public:
-        AreaLight(const Transform &light2world, int n_samples);
+        AreaLight(const Transform &light2world, int n_samples)
+            : Light(static_cast<int>(LightFlags::LightArea), light2world, n_samples) {}
 
         /**
          * @brief Given a point on the surface of the light represented by an Interaction and 

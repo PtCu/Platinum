@@ -16,7 +16,7 @@
 #define CORE_INTEGREATOR_H_
 
 #include <glm/glm.hpp>
-#include <core/defines.h>
+#include <core/utilities.h>
 #include <core/scene.h>
 #include <core/camera.h>
 #include <core/film.h>
@@ -27,7 +27,7 @@ namespace platinum
     {
     public:
         virtual ~Integrator() = default;
-        virtual void Render(const Scene& scene) = 0;
+        virtual void Render(const Scene &scene) = 0;
     };
     struct RenderTile
     {
@@ -69,7 +69,7 @@ namespace platinum
                 }
             }
         }
-        inline const RenderTile& GetTile(const int idx) const
+        inline const RenderTile &GetTile(const int idx) const
         {
             assert(idx < (int)_tiles.size());
             return _tiles[idx];
@@ -99,8 +99,7 @@ namespace platinum
     {
     public:
         TiledIntegrator(std::shared_ptr<Camera> camera, std::shared_ptr<Sampler> sampler, int max_depth = 10);
-        virtual void Render(const Scene& scene);
-
+        virtual void Render(const Scene &scene);
 
     protected:
         // Li() 方法计算有多少光照量沿着
@@ -109,7 +108,7 @@ namespace platinum
         Spectrum SpecularReflect(const Ray &ray, const SurfaceInteraction &inter, const Scene &scene, Sampler &sampler, int depth) const;
         Spectrum SpecularTransmit(const Ray &ray, const SurfaceInteraction &inter, const Scene &scene, Sampler &sampler, int depth) const;
         std::shared_ptr<Camera> _camera;
-        std::shared_ptr<Sampler>_sampler;
+        std::shared_ptr<Sampler> _sampler;
         std::mutex _mutex_ins;
         std::unique_ptr<TilesManager> _tiles_manager;
         int _max_depth;
