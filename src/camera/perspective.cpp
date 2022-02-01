@@ -23,6 +23,7 @@ namespace platinum
     }
     void PerspectiveCamera::Initialize()
     {
+        ProjectiveCamera::Initialize();
         
         auto res = _film->getResolution();
         auto p_min = _raster2camera.ExecOn(glm::vec3(0.f), 1.f);
@@ -31,7 +32,7 @@ namespace platinum
         p_max /= p_max.z;
         _area = glm::abs((p_max.x - p_min.x) * (p_max.y - p_min.y));
         
-        ProjectiveCamera::Initialize();
+        
         
     }
 
