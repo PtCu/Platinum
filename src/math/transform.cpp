@@ -28,11 +28,10 @@ namespace platinum
     glm::vec3 Transform::ExecOn(const glm::vec3 &p, float w) const
     {
         glm::vec4 ret = _trans * glm::vec4(p.x, p.y, p.z, w);
+
         //w==0 --> vector
-        if (w == 0.f)
-            return glm::vec3(ret.x, ret.y, ret.z);
         //w==1 --> point
-        if (ret.w == 1)
+        if (w == 0.f || w == 1.f)
             return glm::vec3(ret.x, ret.y, ret.z);
         else
             return glm::vec3(ret.x, ret.y, ret.z) / ret.w;
@@ -42,13 +41,13 @@ namespace platinum
         //每个顶点都进行转化，最后合并
         const auto &mat = *this;
         Bounds3f ret(mat.ExecOn(b._p_min, 1.f));
-        ret=UnionBounds(ret,mat.ExecOn(glm::vec3(b._p_max.x, b._p_min.y, b._p_min.z), 1.0f));
-        ret=UnionBounds(ret,mat.ExecOn(glm::vec3(b._p_min.x, b._p_max.y, b._p_min.z), 1.0f));
-        ret=UnionBounds(ret,mat.ExecOn(glm::vec3(b._p_min.x, b._p_min.y, b._p_max.z), 1.0f));
-        ret=UnionBounds(ret,mat.ExecOn(glm::vec3(b._p_min.x, b._p_max.y, b._p_max.z), 1.0f));
-        ret=UnionBounds(ret,mat.ExecOn(glm::vec3(b._p_max.x, b._p_max.y, b._p_min.z), 1.0f));
-        ret=UnionBounds(ret,mat.ExecOn(glm::vec3(b._p_max.x, b._p_min.y, b._p_max.z), 1.0f));
-        ret=UnionBounds(ret,mat.ExecOn(glm::vec3(b._p_max.x, b._p_max.y, b._p_max.z), 1.0f));
+        ret = UnionBounds(ret, mat.ExecOn(glm::vec3(b._p_max.x, b._p_min.y, b._p_min.z), 1.0f));
+        ret = UnionBounds(ret, mat.ExecOn(glm::vec3(b._p_min.x, b._p_max.y, b._p_min.z), 1.0f));
+        ret = UnionBounds(ret, mat.ExecOn(glm::vec3(b._p_min.x, b._p_min.y, b._p_max.z), 1.0f));
+        ret = UnionBounds(ret, mat.ExecOn(glm::vec3(b._p_min.x, b._p_max.y, b._p_max.z), 1.0f));
+        ret = UnionBounds(ret, mat.ExecOn(glm::vec3(b._p_max.x, b._p_max.y, b._p_min.z), 1.0f));
+        ret = UnionBounds(ret, mat.ExecOn(glm::vec3(b._p_max.x, b._p_min.y, b._p_max.z), 1.0f));
+        ret = UnionBounds(ret, mat.ExecOn(glm::vec3(b._p_max.x, b._p_max.y, b._p_max.z), 1.0f));
         return ret;
     }
 

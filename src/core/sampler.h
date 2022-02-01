@@ -136,14 +136,57 @@ namespace platinum
         size_t _array1DOffset;
         size_t _array2DOffset;
     };
-    glm::vec3 uniformSampleHemisphere(const glm::vec2 &u);
-    float uniformHemispherePdf();
-    glm::vec3 uniformSampleSphere(const glm::vec2 &u);
-    float uniformSpherePdf();
+    inline glm::vec3 UniformSampleHemisphere(const glm::vec2 &u)
+    {
+        float z = u[0];
+        float r = glm::sqrt(glm::max((float)0, (float)1. - z * z));
+        float phi = 2 * Pi * u[1];
+        return glm::vec3(r * glm::cos(phi), r * glm::sin(phi), z);
+    }
 
-    glm::vec2 ConcentricSampleDisk(const glm::vec2 &u);
+    inline float UniformHemispherePdf() { return Inv2Pi; }
 
-    glm::vec2 UniformSampleTriangle(const glm::vec2 &u);
+    inline glm::vec3 UniformSampleSphere(const glm::vec2 &u)
+    {
+        float z = 1 - 2 * u[0];
+        float r = glm::sqrt(glm::max((float)0, (float)1 - z * z));
+        float phi = 2 * Pi * u[1];
+        return glm::vec3(r * glm::cos(phi), r * glm::sin(phi), z);
+    }
+
+    inline glm::vec2 ConcentricSampleDisk(const glm::vec2 &u)
+    {
+        // Map uniform random numbers to $[-1,1]^2$
+        glm::vec2 uOffset = 2.f * u - glm::vec2(1, 1);
+
+        // Handle degeneracy at the origin
+        if (uOffset.x == 0 && uOffset.y == 0)
+            return glm::vec2(0, 0);
+
+        // Apply concentric mapping to point
+        float theta, r;
+        if (glm::abs(uOffset.x) > glm::abs(uOffset.y))
+        {
+            r = uOffset.x;
+            theta = PiOver4 * (uOffset.y / uOffset.x);
+        }
+        else
+        {
+            r = uOffset.y;
+            theta = PiOver2 - PiOver4 * (uOffset.x / uOffset.y);
+        }
+        return r * glm::vec2(glm::cos(theta), glm::sin(theta));
+    }
+
+    inline glm::vec2 UniformSampleTriangle(const glm::vec2 &u)
+    {
+        float su0 = glm::sqrt(u[0]);
+        return glm::vec2(1 - su0, u[1] * su0);
+    }
+
+    inline float UniformSpherePdf() { return Inv4Pi; }
+
+    inline float UniformConePdf(float cosThetaMax) { return 1 / (2 * Pi * (1 - cosThetaMax)); }
 
     inline glm::vec3 CosineSampleHemisphere(const glm::vec2 &u)
     {

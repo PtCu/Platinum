@@ -25,7 +25,7 @@ namespace platinum {
 
     glm::vec2 RandomSampler::Get2D()
     {
-        return Random::UniformDisk();
+        return glm::vec2(Random::UniformFloat(), Random::UniformFloat());
     }
 
     std::unique_ptr<Sampler> RandomSampler::Clone(int seed)

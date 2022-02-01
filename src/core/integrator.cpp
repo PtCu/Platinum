@@ -25,19 +25,22 @@ namespace platinum
     Spectrum TiledIntegrator::SpecularReflect(const Ray &ray, const SurfaceInteraction &inter,
                                               const Scene &scene, Sampler &sampler, int depth) const
     {
-        glm::vec3 wo = inter.wo;
-        glm::vec3 wi;
+        // Compute specular reflection direction _wi_ and BSDF value
+        glm::vec3 wo = inter.wo, wi;
         float pdf;
         BxDFType sampledType;
         BxDFType type = BxDFType(static_cast<int>(BxDFType::BSDF_REFLECTION) | static_cast<int>(BxDFType::BSDF_SPECULAR));
-        //采样得到入射光
+
         Spectrum f = inter.bsdf->SampleF(wo, wi, sampler.Get2D(), pdf, sampledType, type);
 
+        // Return contribution of specular reflection
         const glm::vec3 &ns = inter.n;
+
         if (pdf > 0.f && !f.isBlack() && glm::abs(glm::dot(wi, ns)) != 0.f)
         {
+            // Compute ray differential _rd_ for specular reflection
             Ray rd = inter.SpawnRay(wi);
-            return f * Li(scene, rd, sampler, depth + 1) * glm::abs(glm::dot(wi, ns));
+            return f * Li(scene, rd, sampler, depth + 1) * glm::abs(glm::dot(wi, ns)) / pdf;
         }
         else
         {
@@ -47,7 +50,24 @@ namespace platinum
     Spectrum TiledIntegrator::SpecularTransmit(const Ray &ray, const SurfaceInteraction &inter,
                                                const Scene &scene, Sampler &sampler, int depth) const
     {
-        return Spectrum(0.f);
+        glm::vec3 wo = inter.wo, wi;
+        float pdf;
+        const glm::vec3 &p = inter.p;
+        const BSDF &bsdf = *(inter.bsdf);
+        BxDFType type = BxDFType(static_cast<int>(BxDFType::BSDF_TRANSMISSION) | static_cast<int>(BxDFType::BSDF_SPECULAR));
+     
+        BxDFType sampledType;
+        Spectrum f = bsdf.SampleF(wo, wi, sampler.Get2D(), pdf, sampledType, type);
+        Spectrum L = Spectrum(0.f);
+        glm::vec3 ns = inter.n;
+
+        if (pdf > 0.f && !f.isBlack() && glm::abs(glm::dot(wi, ns)) != 0.f)
+        {
+            // Compute ray differential _rd_ for specular transmission
+            Ray rd = inter.SpawnRay(wi);
+            L = f * Li(scene, rd, sampler, depth + 1) * glm::abs(glm::dot(wi, ns)) / pdf;
+        }
+        return L;
     }
 
     void TiledIntegrator::Render(const Scene &scene)
@@ -136,17 +156,14 @@ namespace platinum
                                                // Add camera ray's contribution to image
                                                filmTile->addSample(cameraSample.p_film, L, rayWeight);
 
-                                              
-                                            
-
                                            } while (tileSampler->StartNextSample());
                                        }
                                        LOG(INFO) << "Finished image tile " << tileBounds;
 
                                        _camera->_film->mergeFilmTile(std::move(filmTile));
-                                    //    reporter.update();
+                                       //    reporter.update();
                                    },
-                                   ExecutionPolicy::PARALLEL);
+                                   ExecutionPolicy::SERIAL);
 
         // reporter.done();
 

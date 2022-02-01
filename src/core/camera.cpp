@@ -26,28 +26,29 @@ namespace platinum
 {
 
     void ProjectiveCamera::Initialize() {
+        Bounds2f screen;
         auto res = _film->getResolution();
-        glm::vec2 p_min, p_max;
-        float ratio = static_cast<float>(res.x) / res.y;
-        if (ratio > 1.f) {
-            p_min.x = -ratio;
-            p_min.y = -1.f;
-            p_max.x = ratio;
-            p_max.y = 1.f;
+        float frame = (float)(res.x) / res.y;
+        if (frame > 1.f)
+        {
+            screen._p_min.x = -frame;
+            screen._p_max.x = frame;
+            screen._p_min.y = -1.f;
+            screen._p_max.y = 1.f;
         }
-        else {
-            p_min.x = -1.f;
-            p_min.y = -1.f / ratio;
-            p_max.x = 1.f;
-            p_max.y = 1.f / ratio;
+        else
+        {
+            screen._p_min.x = -1.f;
+            screen._p_max.x = 1.f;
+            screen._p_min.y = -1.f / frame;
+            screen._p_max.y = 1.f / frame;
         }
-        // 屏幕空间(0,0)为胶片平面矩形的中点，范围由p_min和p_max两个点决定
-        // 自左向右乘：先将左下角平移至原点，再缩放到[0,1]x[0,1]，再缩放到[0,res.x]x[0,res.y]
+
         _screen2raster = Scale(res.x, res.y, 1) *
-            Scale(1 / (p_max.x - p_min.x),
-                1 / (p_min.y - p_max.y), 1) *
-            Translate(glm::vec3(-p_min.x, -p_max.y, 0));
+                           Scale(1 / (screen._p_max.x - screen._p_min.x),
+                                 1 / (screen._p_min.y - screen._p_max.y), 1) *
+                           Translate(glm::vec3(-screen._p_min.x, -screen._p_max.y, 0));
         _raster2screen = Inverse(_screen2raster);
-        _raster2camera = Inverse(_camera2sreen) * _raster2screen;
+        _raster2camera = Inverse(_camera2screen) * _raster2screen;
     }
 }

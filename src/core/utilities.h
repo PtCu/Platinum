@@ -135,6 +135,11 @@ namespace platinum
 
     inline glm::vec3 permute(const glm::vec3 &v, int x, int y, int z) { return glm::vec3(v[x], v[y], v[z]); }
 
+    template <typename T>
+    inline glm::vec<3,T> abs(const glm::vec<3,T> &p)
+    {
+        return glm::vec<3,T>(glm::abs(p.x), glm::abs(p.y), glm::abs(p.z));
+    }
     inline glm::vec3 faceforward(const glm::vec3 &n, const glm::vec3 &v) { return (glm::dot(n, v) < 0.f) ? -n : n; }
 
     inline bool sameHemisphere(const glm::vec3 &w, const glm::vec3 &wp) { return w.z * wp.z > 0; }
@@ -148,6 +153,18 @@ namespace platinum
             v2 = glm::vec3(0, v1.z, -v1.y) / glm::sqrt(v1.y * v1.y + v1.z * v1.z);
         v3 = glm::cross(v1, v2);
     }
+    inline glm::vec3 sphericalDirection(float sinTheta, float cosTheta, float phi)
+    {
+        return glm::vec3(sinTheta * glm::cos(phi), sinTheta * glm::sin(phi), cosTheta);
+    }
+
+    inline glm::vec3 sphericalDirection(float sinTheta, float cosTheta, float phi,
+                                        const glm::vec3 &x, const glm::vec3 &y, const glm::vec3 &z)
+    {
+        return sinTheta * glm::cos(phi) * x + sinTheta * glm::sin(phi) * y + cosTheta * z;
+    }
+
+   
 
     inline uint32_t floatToBits(float f)
     {

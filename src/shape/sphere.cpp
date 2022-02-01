@@ -25,10 +25,10 @@
 #include <math/transform.h>
 #include <glm/gtx/norm.hpp>
 #include <math/bounds.h>
+#include <core/sampler.h>
 
 namespace platinum
 {
-
 
     Bounds3f Sphere::ObjectBound() const
     {
@@ -40,20 +40,108 @@ namespace platinum
         return 4.f * Pi * _radius * _radius;
     }
 
-    Interaction Sphere::Sample(const glm::vec2& u, float& pdf) const
+    Interaction Sphere::Sample(const glm::vec2 &u, float &pdf) const
     {
-        return {};
+        glm::vec3 pObj = glm::vec3(0, 0, 0) + _radius * UniformSampleSphere(u);
+
+        Interaction it;
+        it.n = glm::normalize((*_object2world).ExecOn(pObj, 0.0f));
+
+        pObj *= _radius / distance(pObj, glm::vec3(0, 0, 0));
+        it.p = (*_object2world).ExecOn(pObj, 1.0f);
+
+        pdf = 1 / Area();
+        return it;
     }
-    Interaction Sphere::Sample(const Interaction& ref, const glm::vec2& u, float& pdf) const
+    Interaction Sphere::Sample(const Interaction &ref, const glm::vec2 &u, float &pdf) const
     {
-        return {};
+        {
+            glm::vec3 pCenter = (*_object2world).ExecOn(glm::vec3(0, 0, 0), 1.0f);
+
+            // Sample uniformly on sphere if $\pt{}$ is inside it
+            glm::vec3 pOrigin = ref.p;
+            if (glm::distance2(pOrigin, pCenter) <= _radius * _radius)
+            {
+                Interaction intr = Sample(u, pdf);
+                glm::vec3 wi = intr.p - ref.p;
+                if (dot(wi, wi) == 0)
+                {
+                    pdf = 0;
+                }
+                else
+                {
+                    // Convert from Area measure returned by Sample() call above to
+                    // solid angle measure.
+                    wi = normalize(wi);
+                    pdf *= distance2(ref.p, intr.p) / glm::abs(glm::dot(intr.n, -wi));
+                }
+                if (std::isinf(pdf))
+                    pdf = 0.f;
+                return intr;
+            }
+
+            // Sample sphere uniformly inside subtended cone
+
+            // Compute coordinate system for sphere sampling
+            float dc = distance(ref.p, pCenter);
+            float invDc = 1 / dc;
+            glm::vec3 wc = (pCenter - ref.p) * invDc;
+            glm::vec3 wcX, wcY;
+            coordinateSystem(wc, wcX, wcY);
+
+            // Compute $\theta$ and $\phi$ values for Sample in cone
+            float sinThetaMax = _radius * invDc;
+            float sinThetaMax2 = sinThetaMax * sinThetaMax;
+            float invSinThetaMax = 1 / sinThetaMax;
+            float cosThetaMax = glm::sqrt(glm::max((float)0.f, 1.0f - sinThetaMax2));
+
+            float cosTheta = (cosThetaMax - 1) * u[0] + 1;
+            float sinTheta2 = 1 - cosTheta * cosTheta;
+
+            if (sinThetaMax2 < 0.00068523f /* sin^2(1.5 deg) */)
+            {
+                /* Fall back to a Taylor series expansion for small angles, where
+			   the standard approach suffers from severe cancellation errors */
+                sinTheta2 = sinThetaMax2 * u[0];
+                cosTheta = glm::sqrt(1 - sinTheta2);
+            }
+
+            // Compute angle $\alpha$ from center of sphere to sampled point on surface
+            float cosAlpha = sinTheta2 * invSinThetaMax +
+                             cosTheta * glm::sqrt(glm::max((float)0.f, 1.f - sinTheta2 * invSinThetaMax * invSinThetaMax));
+            float sinAlpha = glm::sqrt(glm::max((float)0.f, 1.f - cosAlpha * cosAlpha));
+            float phi = u[1] * 2 * Pi;
+
+            // Compute surface normal and sampled point on sphere
+            glm::vec3 nWorld = sphericalDirection(sinAlpha, cosAlpha, phi, -wcX, -wcY, -wc);
+            glm::vec3 pWorld = pCenter + _radius * glm::vec3(nWorld.x, nWorld.y, nWorld.z);
+
+            // Return _Interaction_ for sampled point on sphere
+            Interaction it;
+            it.p = pWorld;
+            it.n = nWorld;
+
+            // Uniform cone PDF.
+            pdf = 1 / (2 * Pi * (1 - cosThetaMax));
+
+            return it;
+        }
     }
-    float Sphere::Pdf(const Interaction& ref, const glm::vec3& wi) const
+    float Sphere::Pdf(const Interaction &ref, const glm::vec3 &wi) const
     {
-        return 0.f;
+        glm::vec3 pCenter = (*_object2world).ExecOn(glm::vec3(0, 0, 0), 1.0f);
+        // Return uniform PDF if point is inside sphere
+        glm::vec3 pOrigin = ref.p;
+        if (distance2(pOrigin, pCenter) <= _radius * _radius)
+            return Shape::Pdf(ref, wi);
+
+        // Compute general sphere PDF
+        float sinThetaMax2 = _radius * _radius / distance2(ref.p, pCenter);
+        float cosThetaMax = glm::sqrt(glm::max((float)0, 1 - sinThetaMax2));
+        return UniformConePdf(cosThetaMax);
     }
 
-    bool Sphere::Hit(const Ray& r) const
+    bool Sphere::Hit(const Ray &r) const
     {
         //先变化光线到局部坐标中
         Ray ray = _world2object->ExecOn(r);
@@ -86,7 +174,7 @@ namespace platinum
         return true;
     }
 
-    bool Sphere::Hit(const Ray& r, float& t_hit, SurfaceInteraction& inter) const
+    bool Sphere::Hit(const Ray &r, float &t_hit, SurfaceInteraction &inter) const
     {
 
         //先变化光线到局部坐标中
@@ -154,5 +242,15 @@ namespace platinum
             inter.n = -inter.n;
         t_hit = t_shape_hit;
         return true;
+    }
+
+    float Sphere::SolidAngle(const glm::vec3 &p, int nSamples) const
+    {
+        glm::vec3 pCenter = (*_object2world).ExecOn(glm::vec3(0, 0, 0), 1.0f);
+        if (distance2(p, pCenter) <= _radius * _radius)
+            return 4 * Pi;
+        float sinTheta2 = _radius * _radius / distance2(p, pCenter);
+        float cosTheta = glm::sqrt(glm::max((float)0, 1 - sinTheta2));
+        return (2 * Pi * (1 - cosTheta));
     }
 } // namespace platinum

@@ -165,6 +165,7 @@ namespace platinum
         it.n = glm::normalize(glm::vec3(glm::cross(p1 - p0, p2 - p0)));
 
         pdf = 1.f / Area();
+     
         return it;
     }
 
@@ -257,9 +258,10 @@ namespace platinum
         const auto& p2 = _mesh->GetPositionAt(_indices[2]);
 
 
-        glm::vec3 p0t = p0 - glm::vec3(ray._origin);
-        glm::vec3 p1t = p1 - glm::vec3(ray._origin);
-        glm::vec3 p2t = p2 - glm::vec3(ray._origin);
+        glm::vec3 p0t = p0 - ray._origin;
+        glm::vec3 p1t = p1 - ray._origin;
+        glm::vec3 p2t = p2 - ray._origin;
+
         int kz = maxDimension(glm::abs(ray._direction));
         // int kx = kz + 1;
         // if (kx == 3) kx = 0;
@@ -269,8 +271,8 @@ namespace platinum
         int ky = (kx + 1) % 3;
         glm::vec3 d = permute(ray._direction, kx, ky, kz);
         p0t = permute(p0t, kx, ky, kz);
-        p1t = permute(p2t, kx, ky, kz);
-        p2t = permute(p1t, kx, ky, kz);
+        p1t = permute(p1t, kx, ky, kz);
+        p2t = permute(p2t, kx, ky, kz);
 
         float Sx = -d.x / d.z;
         float Sy = -d.y / d.z;

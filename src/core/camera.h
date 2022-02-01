@@ -70,17 +70,17 @@ namespace platinum
     public:
         ProjectiveCamera() = default;
         ProjectiveCamera(const Transform& cameraToWorld, const Transform& cameraToScreen, std::shared_ptr<Film> film)
-            : Camera(cameraToWorld, film), _camera2sreen(cameraToScreen) { }
+            : Camera(cameraToWorld, film), _camera2screen(cameraToScreen) { }
 
     protected:
         /**
          * @brief   初始化_screen2raster, _raster2screen,_raster2camera.
-         *          必须由基类初始化完_camera2sreen才能调用此函数
+         *          必须由基类初始化完_camera2screen才能调用此函数
          */
         virtual void Initialize();
 
     protected:
-        Transform _camera2sreen, _raster2camera;
+        Transform _camera2screen, _raster2camera;
         Transform _screen2raster, _raster2screen;
     };
 
