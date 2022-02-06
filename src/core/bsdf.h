@@ -24,8 +24,11 @@ namespace platinum
     class BSDF
     {
     public:
+        using ptr=std::shared_ptr<BSDF>;
+        
         BSDF(const SurfaceInteraction &s, float eta = 1)
             : _eta(eta), _ns(s.n), _ss(glm::normalize(s.dpdu)), _ts(glm::cross(_ns, _ss)) {}
+
         ~BSDF() = default;
 
         float Pdf(const glm::vec3 &wo, const glm::vec3 &wi, BxDFType type = BxDFType::BSDF_ALL) const;
@@ -35,9 +38,10 @@ namespace platinum
         Spectrum SampleF(const glm::vec3 &wo, glm::vec3 &wi, const glm::vec2 &u, float &pdf,
                          BxDFType &sampledType, BxDFType type = BxDFType::BSDF_ALL) const;
 
-        void Add(std::shared_ptr<BxDF> b)
+        void Add(BxDF *b)
         {
-            _BxDFs.push_back(b);
+            CHECK_LT(_BxDF_idx, _max_BxDF_num);
+            _BxDFs[_BxDF_idx++] = b;
         }
         int NumComponents(BxDFType flags = BxDFType::BSDF_ALL) const;
 
@@ -61,8 +65,9 @@ namespace platinum
     private:
         //局部坐标
         const glm::vec3 _ns, _ss, _ts;
-        static constexpr int NumMaxBxDFs = 8;
-        std::vector<std::shared_ptr<BxDF>> _BxDFs;
+        static constexpr int _max_BxDF_num{8};
+        int _BxDF_idx{0};
+        std::array<BxDF *, _max_BxDF_num> _BxDFs;
     };
 
 }

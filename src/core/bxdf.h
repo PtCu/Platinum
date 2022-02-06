@@ -33,7 +33,8 @@ namespace platinum
     class BxDF
     {
     public:
-        BxDF(BxDFType type):_type(type){}
+        BxDF(BxDFType type) : _type(type) {}
+
         virtual ~BxDF() = default;
 
         /**
@@ -44,8 +45,6 @@ namespace platinum
          */
         bool MatchTypes(BxDFType type) const { return (static_cast<int>(_type) & static_cast<int>(type)) == static_cast<int>(_type); }
 
-        //
-        //
         /**
          * @brief    指定光的入射方向wi，求从wi散射到wo方向的光分布量
          *           wi方向一般是通过光采样得到的方向
@@ -63,6 +62,7 @@ namespace platinum
          * @return float    概率密度值
          */
         virtual float Pdf(const glm::vec3 &wo, const glm::vec3 &wi) const;
+
         /**
          * @brief   是F函数的简化，有时我们想仅仅输入出射方向，
          *          然后根据出射方向计算入射方向并返回相应的BxDF函数值。
@@ -71,6 +71,7 @@ namespace platinum
          *          而是直接根据向量的反射特性获取入射方向（对于完美镜面反射，除了此方向其他方向上的贡献均为
          *          0，这时的BRDF是一个狄拉克函数），
          *          省去了很大部分的计算。
+         *          It is crucial that any BxDF implementation that overrides the BxDF::Sample_f() method also override the BxDF::Pdf() method so that the two return consistent results.
         * @param  wo          出射方向
         * @param  wi          需要返回的入射方向
         * @param  sample      用于计算出射方向的样本点
@@ -108,6 +109,7 @@ namespace platinum
     {
     public:
         FresnelSchlick(const Spectrum F0) : _F0(F0) {}
+
         FresnelSchlick(float etaI, float etaT)
         {
             float F0_1 = (etaI - etaT) / (etaI + etaT);
@@ -131,14 +133,11 @@ namespace platinum
     {
     public:
         FresnelDielectric(float etaI, float etaT) : _etaI(etaI), _etaT(etaT) {}
-        virtual Spectrum Evaluate(float cosThetaI) const override
-        {
-            return Spectrum(FrDielectric(cosThetaI, _etaI, _etaT));
-        }
+
+        virtual Spectrum Evaluate(float cosThetaI) const override;
 
     private:
         float _etaI, _etaT;
-        float FrDielectric(float cosThetaI, float etaI, float etaT) const;
     };
 
     class FresnelConductor : public Fresnel
@@ -146,13 +145,10 @@ namespace platinum
     public:
         FresnelConductor(const Spectrum &etaI, const Spectrum &etaT, const Spectrum &kt)
             : _etaI(etaI), _etaT(etaT), _kt(kt) {}
-        virtual Spectrum Evaluate(float cosThetaI) const override
-        {
-            return FrConductor(cosThetaI, _etaI, _etaT, _kt);
-        }
+
+        virtual Spectrum Evaluate(float cosThetaI) const override;
 
     private:
-        Spectrum FrConductor(float cosThetaI, const Spectrum &etaI, const Spectrum &etaT, const Spectrum &kt) const;
         Spectrum _etaI, _etaT, _kt;
     };
 }

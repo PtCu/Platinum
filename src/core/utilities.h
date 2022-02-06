@@ -142,7 +142,7 @@ namespace platinum
     }
     inline glm::vec3 faceforward(const glm::vec3 &n, const glm::vec3 &v) { return (glm::dot(n, v) < 0.f) ? -n : n; }
 
-    inline bool sameHemisphere(const glm::vec3 &w, const glm::vec3 &wp) { return w.z * wp.z > 0; }
+    inline bool SameHemisphere(const glm::vec3 &w, const glm::vec3 &wp) { return w.z * wp.z > 0; }
     //正交化，用于局部坐标
     //v1必须已经被归一化过
     inline void coordinateSystem(const glm::vec3 &v1, glm::vec3 &v2, glm::vec3 &v3)
