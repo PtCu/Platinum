@@ -74,9 +74,9 @@ namespace platinum
 
     protected:
         /**
-         * @brief   初始化_screen2raster, _raster2screen,_raster2camera.
-         *          必须由基类初始化完_camera2screen才能调用此函数
-         */
+         * @brief   用cameraToWorld和cameraToScreen初始化_screen2raster, _raster2screen,_raster2camera.
+         *                  
+         * */
         virtual void Initialize();
 
     protected:

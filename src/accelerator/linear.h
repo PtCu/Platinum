@@ -22,8 +22,11 @@ namespace platinum
     {
     public:
         LinearAggregate(const std::vector<Ptr<Primitive>> &hitables);
+
         virtual bool Hit(const Ray &ray) const override;
+
         virtual bool Hit(const Ray &ray, SurfaceInteraction &inter) const;
+        
         virtual Bounds3f WorldBound() const override { return _world_bounds; }
     };
 }

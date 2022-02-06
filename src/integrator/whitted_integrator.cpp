@@ -20,7 +20,8 @@ namespace platinum
     Spectrum WhittedIntegrator::Li(const Scene &scene, const Ray &ray, Sampler &sampler, int depth) const
     {
 
-        Spectrum L;
+        Spectrum L{0.f};
+
         SurfaceInteraction inter;
         if (!scene.Hit(ray, inter))
         {
@@ -50,8 +51,10 @@ namespace platinum
             Vector3f wi;
             VisibilityTester visibility_tester;
             Spectrum sampled_li = light->SampleLi(inter, sampler.Get2D(), wi, pdf, visibility_tester);
+
             if (sampled_li.isBlack() || pdf == 0)
                 continue;
+                
             Spectrum f = inter._bsdf->F(wo, wi);
 
             //如果所采样的光源上的光线没被遮挡

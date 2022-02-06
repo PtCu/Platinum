@@ -43,14 +43,14 @@ int main()
     Transform obj2world;
     Transform world2obj{obj2world.GetInverseMatrix()};
 
-    auto sphere = make_shared<Sphere>(&obj2world, &world2obj, 5.f);
+    auto sphere = make_shared<Sphere>(&obj2world, &world2obj,  5.f);
     shared_ptr<Light> area_light = make_shared<DiffuseAreaLight>(obj2world, Spectrum(5.f, 4.f, 0.f), 8, sphere.get());
 
     shared_ptr<Material> material = make_shared<Matte>((0.63f, 0.05f, 0.05f));
 
     primitives.push_back(std::make_shared<GeometricPrimitive>(sphere, material.get(), static_pointer_cast<AreaLight>(area_light)));
 
-    Vector3f eye{-25, -25, -25};
+    Vector3f eye{25, 25, 25};
 
     Vector3f focus{0, 0, 0};
 

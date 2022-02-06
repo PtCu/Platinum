@@ -110,7 +110,7 @@ namespace platinum
 
     Transform LookAt(const Vector3f &pos, const Vector3f &look, const Vector3f &up)
     {
-        glm::mat4 worldToCamera = glm::lookAt(pos, look, up);
+        glm::mat4 worldToCamera = glm::lookAtLH(pos, look, up);
         return Transform(worldToCamera, inverse(worldToCamera));
     }
 
