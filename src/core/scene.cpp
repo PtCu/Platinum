@@ -24,10 +24,12 @@
 
 namespace platinum
 {
-    bool Scene::Hit(const Ray& ray, SurfaceInteraction& inter)const {
+    bool Scene::Hit(const Ray &ray, SurfaceInteraction &inter) const
+    {
         return _aggres->Hit(ray, inter);
     }
-    bool Scene::Hit(const Ray& ray)const {
+    bool Scene::Hit(const Ray &ray) const
+    {
         return _aggres->Hit(ray);
     }
 } // namespace platinum

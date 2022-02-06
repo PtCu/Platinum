@@ -31,15 +31,9 @@ namespace platinum
          * @brief 对某个像素点开始采样
          * @param  p                像素点
          */
-        virtual void StartPixel(const glm::ivec2 &p);
+        virtual void StartPixel(const Vector2i &p);
 
-        /**
-         * @brief Set the Sample Number object
-         * @param  sampleNum        My Param doc
-         * @return true 
-         * @return false 
-         */
-        virtual bool SetSampleNumber(int64_t sampleNum);
+      
         /**
          * @brief 开始下一个样本，返回值为该像素是否采样完毕
          * @return true 没有完毕
@@ -61,7 +55,7 @@ namespace platinum
          */
         virtual Vector2f Get2D() = 0;
 
-        CameraSample GetCameraSample(const glm::ivec2 &p_raster, Filter *flter = nullptr);
+        CameraSample GetCameraSample(const Vector2i &p_raster, Filter *flter = nullptr);
 
         // 申请一个长度为n的一维随机变量数组
         void Request1DArray(int n);
@@ -91,7 +85,7 @@ namespace platinum
          * @param  n
          * @return   数组首地址
          */
-        const glm::ivec2 *Get2DArray(int n);
+        const Vector2i *Get2DArray(int n);
 
         /**
          * @brief   由于Sampler的实现类存储一些状态信息，
@@ -106,6 +100,14 @@ namespace platinum
          */
         virtual std::unique_ptr<Sampler> Clone(int seed) = 0;
 
+        /**
+         * @brief Set the Sample Number object
+         * @param  sampleNum        My Param doc
+         * @return true 
+         * @return false 
+         */
+        virtual bool SetSampleNumber(int64_t sampleNum);
+
         int64_t CurrentSampleIndex() const
         {
             return _currentPixelSampleIndex;
@@ -115,7 +117,7 @@ namespace platinum
 
     protected:
         // 当前处理的像素点
-        glm::ivec2 _currentPixel;
+        Vector2i _currentPixel;
 
         // 当前处理的像素样本索引
         int64_t _currentPixelSampleIndex;
@@ -130,7 +132,7 @@ namespace platinum
         std::vector<std::vector<float>> _sampleArray1D;
 
         // 用于存储二维样本的列表
-        std::vector<std::vector<glm::ivec2>> _sampleArray2D;
+        std::vector<std::vector<Vector2i>> _sampleArray2D;
 
     private:
         size_t _array1DOffset;
@@ -146,6 +148,9 @@ namespace platinum
 
     inline float UniformHemispherePdf() { return Inv2Pi; }
 
+   
+    inline float CosineHemispherePdf(float cosTheta) { return cosTheta * InvPi; }
+
     inline Vector3f UniformSampleSphere(const Vector2f &u)
     {
         float z = 1 - 2 * u[0];
@@ -153,6 +158,8 @@ namespace platinum
         float phi = 2 * Pi * u[1];
         return Vector3f(r * glm::cos(phi), r * glm::sin(phi), z);
     }
+
+    inline float UniformSpherePdf() { return Inv4Pi; }
 
     inline Vector2f ConcentricSampleDisk(const Vector2f &u)
     {
@@ -178,16 +185,6 @@ namespace platinum
         return r * Vector2f(glm::cos(theta), glm::sin(theta));
     }
 
-    inline Vector2f UniformSampleTriangle(const Vector2f &u)
-    {
-        float su0 = glm::sqrt(u[0]);
-        return Vector2f(1 - su0, u[1] * su0);
-    }
-
-    inline float UniformSpherePdf() { return Inv4Pi; }
-
-    inline float UniformConePdf(float cosThetaMax) { return 1 / (2 * Pi * (1 - cosThetaMax)); }
-
     inline Vector3f CosineSampleHemisphere(const Vector2f &u)
     {
         Vector2f d = ConcentricSampleDisk(u);
@@ -195,7 +192,17 @@ namespace platinum
         return Vector3f(d.x, d.y, z);
     }
 
-    inline float CosineHemispherePdf(float cosTheta) { return cosTheta * InvPi; }
+
+    inline Vector2f UniformSampleTriangle(const Vector2f &u)
+    {
+        float su0 = glm::sqrt(u[0]);
+        return Vector2f(1 - su0, u[1] * su0);
+    }
+
+
+
+    inline float UniformConePdf(float cosThetaMax) { return 1 / (2 * Pi * (1 - cosThetaMax)); }
+
 
     inline float BalanceHeuristic(int nf, float fPdf, int ng, float gPdf)
     {

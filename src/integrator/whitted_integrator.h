@@ -20,13 +20,17 @@
 namespace platinum
 {
 
-    class WhittedIntegrator : public TiledIntegrator
+    class WhittedIntegrator : public SamplerIntegrator
     {
     public:
-        WhittedIntegrator(std::shared_ptr<Camera> camera, std::shared_ptr<Sampler>sampler,  int max_depth) :TiledIntegrator(camera, sampler, max_depth) {}
+        WhittedIntegrator(Ptr<Camera> camera, Ptr<Sampler> sampler, int max_depth)
+            : SamplerIntegrator(camera, sampler), _max_depth(max_depth) {}
 
     protected:
         virtual Spectrum Li(const Scene &scene, const Ray &ray, Sampler &sampler, int depth) const override;
+
+    private:
+        const int _max_depth;
     };
 }
 

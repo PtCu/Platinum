@@ -24,15 +24,15 @@
 
 namespace platinum
 {
-    float Perlin::GenNoise(const Vector3f &p)
+    float Perlin::GenNoise(const glm::vec3 &p)
     {
         // pf 为小数部分
-        Vector3f pf = p - glm::floor(p);
+        glm::vec3 pf = p - glm::floor(p);
         // pi 为整数部分
         glm::ivec3 pi = glm::floor(p);
         // 8个位置的向量
         // 单位立方体8个顶点, 每个顶点一个随机向量
-        Vector3f c[2][2][2];
+        glm::vec3 c[2][2][2];
         for (int dx = 0; dx < 2; dx++)
         {
             for (int dy = 0; dy < 2; dy++)
@@ -46,7 +46,7 @@ namespace platinum
         }
         return PerlinInterp(c, pf.x, pf.y, pf.z);
     }
-    float Perlin::PerlinInterp(const Vector3f c[2][2][2], float u, float v, float w)
+    float Perlin::PerlinInterp(const glm::vec3 c[2][2][2], float u, float v, float w)
     {
         auto f = [](float t)
         { return t * t * t * (t * (6 * t - 15) + 10); };
@@ -61,7 +61,7 @@ namespace platinum
                 for (size_t k = 0; k < 2; k++)
                 {
                     // 顶点 到 插值点 的向量
-                    Vector3f weightVec(u - i, v - j, w - k);
+                    glm::vec3 weightVec(u - i, v - j, w - k);
                     // 权值 为 插值点 到 [顶点对角] 的 xyz轴向 的 距离(非负) 的乘积
                     //vec3 absWeightVec = abs(vec3(u-(1-i),v-(1-j),w-(1-k)));
                     //float weight = absWeightVec.x * absWeightVec.y * absWeightVec.z;
@@ -74,10 +74,10 @@ namespace platinum
         return sum;
     }
 
-    float Perlin::Turb(const Vector3f &p, size_t depth)
+    float Perlin::Turb(const glm::vec3 &p, size_t depth)
     {
         float sum = 0;
-        Vector3f curP = p;
+        glm::vec3 curP = p;
         float weight = 1.0;
         for (size_t i = 0; i < depth; i++)
         {
@@ -101,16 +101,16 @@ namespace platinum
         return rst;
     }
 
-    std::vector<Vector3f> Perlin::GenRandVec(size_t n)
+    std::vector<glm::vec3> Perlin::GenRandVec(size_t n)
     {
-        std::vector<Vector3f> rst(n);
+        std::vector<glm::vec3> rst(n);
         for (size_t i = 0; i < n; ++i)
-            rst[i] = Random::UniformSphere();
+            rst[i] = Rng::UniformSphere();
 
         return rst;
     }
 
-    std::vector<Vector3f> Perlin::rand_vec_ = Perlin::GenRandVec(256);
+    std::vector<glm::vec3> Perlin::rand_vec_ = Perlin::GenRandVec(256);
     std::vector<size_t> Perlin::perm_x_ = Perlin::GenPermute(256);
     std::vector<size_t> Perlin::perm_y_ = Perlin::GenPermute(256);
     std::vector<size_t> Perlin::perm_z_ = Perlin::GenPermute(256);

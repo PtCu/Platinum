@@ -12,7 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "light.h"
+#include <core/light.h>
+#include <core/scene.h>
 namespace platinum {
     bool VisibilityTester::Unoccluded(const Scene& scene)const {
         return scene.Hit(_p0.SpawnRayTo(_p1));

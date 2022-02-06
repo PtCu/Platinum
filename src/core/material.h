@@ -31,7 +31,9 @@ namespace platinum
     {
     public:
         Material() = default;
+        
         virtual ~Material() = default;
+
         virtual void ComputeScatteringFunctions(SurfaceInteraction& si)const = 0;
         
     };

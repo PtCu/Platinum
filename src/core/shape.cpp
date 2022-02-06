@@ -38,6 +38,7 @@ namespace platinum
     {
         return _object2world->ExecOn(this->ObjectBound());
     }
+
     Interaction Shape::Sample(const Interaction &ref, const Vector2f &u, float &pdf) const
     {
         Interaction inter = Sample(u, pdf);
@@ -72,7 +73,6 @@ namespace platinum
 
     float Shape::SolidAngle(const Vector3f &p, int nSamples) const
     {
-
         return 1.0f;
     }
 }

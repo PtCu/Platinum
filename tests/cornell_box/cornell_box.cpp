@@ -34,7 +34,7 @@ const static string root_path(ROOT_PATH);
 const static string assets_path = root_path + "/assets/models/cornellbox/";
 static const string file_name = "cornell_box.png";
 
-void AddMesh(vector<std::shared_ptr<Primitive>> &primitives, vector<shared_ptr<Light>> &lights, Transform *obj2world, Transform *world2obj, Material *material, TriangleMesh *mesh, bool isLight = false)
+void AddMesh(vector<Ptr<Primitive>> &primitives, vector<shared_ptr<Light>> &lights, Transform *obj2world, Transform *world2obj, Material *material, TriangleMesh *mesh, bool isLight = false)
 {
     const auto &meshIndices = mesh->GetIndices();
     for (size_t i = 0; i < meshIndices.size(); i += 3)
@@ -95,15 +95,15 @@ int main()
     Transform camera2world = Inverse(LookAt(eye, focus, up));
 
     unique_ptr<Filter> filter = make_unique<BoxFilter>(Vector2f{0.5f, 0.5f});
-    auto film = make_shared<Film>(glm::ivec2{666, 500}, Bounds2f{{0, 0}, {1, 1}}, std::move(filter), file_name);
+    auto film = make_shared<Film>(Vector2i{666, 500}, Bounds2f{{0, 0}, {1, 1}}, std::move(filter), file_name);
 
-    std::shared_ptr<Camera> camera = make_shared<PerspectiveCamera>(camera2world, 39, film);
+    Ptr<Camera> camera = make_shared<PerspectiveCamera>(camera2world, 39, film);
 
-    std::shared_ptr<Sampler> sampler = make_shared<RandomSampler>(4);
+    Ptr<Sampler> sampler = make_shared<RandomSampler>(4);
 
     unique_ptr<Integrator> integrator = make_unique<WhittedIntegrator>(camera, sampler, 10);
 
-    std::shared_ptr<Aggregate> aggre = make_shared<LinearAggregate>(primitives);
+    Ptr<Aggregate> aggre = make_shared<LinearAggregate>(primitives);
 
     auto scene = make_shared<Scene>(aggre, lights);
 

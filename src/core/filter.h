@@ -25,11 +25,11 @@ namespace platinum
         virtual ~Filter() = default;
 
         Filter(const Vector2f &radius)
-            : m_radius(radius), m_invRadius(Vector2f(1 / radius.x, 1 / radius.y)) {}
+            : _radius(radius), _invRadius(Vector2f(1 / radius.x, 1 / radius.y)) {}
 
         virtual float Evaluate(const Vector2f &p) const = 0;
 
-        const Vector2f m_radius, m_invRadius;
+        const Vector2f _radius, _invRadius;
     };
 }
 

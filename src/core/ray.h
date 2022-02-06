@@ -38,6 +38,7 @@ namespace platinum
             : _origin(o), _direction(normalize(d)), _t_max(tMax) {}
 
         const Vector3f &GetOrigin() const { return _origin; }
+        
         const Vector3f &GetDirection() const { return _direction; }
 
         Vector3f GetPointAt(float t) const { return _origin + _direction * t; }

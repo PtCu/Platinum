@@ -29,89 +29,38 @@ namespace platinum
         virtual ~Integrator() = default;
         virtual void Render(const Scene &scene) = 0;
     };
-    struct RenderTile
-    {
-        int min_x, min_y, max_x, max_y;
-        static constexpr int kTILE_SIZE = 16; // width = height = kTILE_SIZE
 
-        RenderTile(int minx, int miny, int maxx, int maxy)
-            : min_x(minx), min_y(miny), max_x(maxx), max_y(maxy) {}
-    };
-
-    class TilesManager
-    {
-    private:
-        int _width;
-        int _height;
-        std::vector<RenderTile> _tiles;
-        bool _is_abort;
-
-    public:
-        TilesManager(int x, int y) { init(x, y); }
-        void init(int x, int y)
-        {
-            _width = x;
-            _height = y;
-            _tiles.clear();
-            _is_abort = false;
-
-            //The size of every tile is less or equal to RenderTile::kTILE_SIZE*RenderTile::kTILE_SIZE.
-            for (int i = 0; i < x; i += RenderTile::kTILE_SIZE)
-            {
-                for (int j = 0; j < y; j += RenderTile::kTILE_SIZE)
-                {
-                    int min_x = i;
-                    int min_y = j;
-                    int max_x = std::min(min_x + RenderTile::kTILE_SIZE, x);
-                    int max_y = std::min(min_y + RenderTile::kTILE_SIZE, y);
-
-                    _tiles.emplace_back(min_x, min_y, max_x, max_y);
-                }
-            }
-        }
-        inline const RenderTile &GetTile(const int idx) const
-        {
-            assert(idx < (int)_tiles.size());
-            return _tiles[idx];
-        }
-        inline int GetTilesCount() const
-        {
-            return (int)_tiles.size();
-        }
-        inline int GetWidth() const
-        {
-            return _width;
-        }
-        inline int GetHeight() const
-        {
-            return _height;
-        }
-        inline void SetAbort(const bool ab)
-        {
-            _is_abort = ab;
-        }
-        inline const bool Aborted() const
-        {
-            return _is_abort;
-        }
-    };
-    class TiledIntegrator : public Integrator
+    class SamplerIntegrator : public Integrator
     {
     public:
-        TiledIntegrator(std::shared_ptr<Camera> camera, std::shared_ptr<Sampler> sampler, int max_depth = 10);
+        SamplerIntegrator(Ptr<Camera> camera, Ptr<Sampler> sampler)
+            : _camera(camera), _sampler(sampler) {}
+
         virtual void Render(const Scene &scene);
 
     protected:
-        // Li() 方法计算有多少光照量沿着
-        // 该 Ray 到达成像平面，并把光照量（radiance）保存在 Film 内
+
+        /**
+         * @brief  Li() 方法计算有多少光照量沿着该 Ray 到达成像平面，
+         *          并把光照量（radiance）保存在 Film 内
+         * 
+         * @param scene 
+         * @param ray 
+         * @param sampler 
+         * @param depth 
+         * @return Spectrum 
+         */
         virtual Spectrum Li(const Scene &scene, const Ray &ray, Sampler &sampler, int depth = 0) const = 0;
+
+        // 高光反射
         Spectrum SpecularReflect(const Ray &ray, const SurfaceInteraction &inter, const Scene &scene, Sampler &sampler, int depth) const;
+
+        // 高光透射
         Spectrum SpecularTransmit(const Ray &ray, const SurfaceInteraction &inter, const Scene &scene, Sampler &sampler, int depth) const;
-        std::shared_ptr<Camera> _camera;
-        std::shared_ptr<Sampler> _sampler;
-        std::mutex _mutex_ins;
-        std::unique_ptr<TilesManager> _tiles_manager;
-        int _max_depth;
+
+    protected:
+        Ptr<Camera> _camera;
+        Ptr<Sampler> _sampler;
     };
 
 }

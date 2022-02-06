@@ -20,13 +20,15 @@
 namespace platinum
 {
 
-    class PathIntegrator : public TiledIntegrator
+    class PathIntegrator : public SamplerIntegrator
     {
     public:
-        PathIntegrator(std::shared_ptr<Camera> camera, std::shared_ptr<Sampler>sampler, int max_depth,float rr_threshold = 0.8) :TiledIntegrator(camera, sampler,max_depth), _rr_threshold(rr_threshold) {}
+        PathIntegrator(Ptr<Camera> camera, Ptr<Sampler> sampler, int max_depth, float rr_threshold = 0.8) : SamplerIntegrator(camera, sampler),_max_depth(max_depth), _rr_threshold(rr_threshold) {}
+
     protected:
         virtual Spectrum Li(const Scene &scene, const Ray &ray, Sampler &sampler, int depth) const override;
         float _rr_threshold;
+        const int _max_depth;
     };
 }
 #endif

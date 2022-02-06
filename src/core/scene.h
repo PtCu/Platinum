@@ -23,30 +23,41 @@
 #ifndef CORE_WORLD_H_
 #define CORE_WORLD_H_
 
-#include <core/primitive.h>
-#include <glm/glm.hpp>
 #include <core/utilities.h>
-#include <core/ray.h>
-#include <core/interaction.h>
-#include <functional>
-#include <math/rand.h>
+#include <core/primitive.h>
 #include <core/light.h>
+#include <functional>
+
+
 namespace platinum
 {
     class Scene
     {
     public:
-        Scene(const std::shared_ptr<Aggregate> &aggre, const std::vector<std::shared_ptr<Light>> &light)
-            : _aggres(aggre), _lights(light)
+        Scene(const Ptr<Aggregate> &aggre, const std::vector<Ptr<Light>> &lights)
+            : _aggres(aggre), _lights(lights)
         {
+            _worldbound = _aggres->WorldBound();
+            for (const auto &light : _lights)
+            {
+                light->Preprocess(*this);
+                if (light->_flags & (int)LightFlags::LightInfinite)
+                    _infinite_lights.push_back(light);
+            }
         }
+
         bool Hit(const Ray &ray, SurfaceInteraction &inter) const;
+
         bool Hit(const Ray &ray) const;
 
-        std::vector<std::shared_ptr<Light>> _lights;
+        const Bounds3f &WorldBound() const { return _worldbound; }
+
+        std::vector<Ptr<Light>> _lights;
+        std::vector<Ptr<Light>> _infinite_lights;
 
     private:
-        std::shared_ptr<Aggregate> _aggres;
+        Ptr<Aggregate> _aggres;
+        Bounds3f _worldbound;
     };
 
 } // namespace platinum

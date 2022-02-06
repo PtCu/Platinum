@@ -29,24 +29,24 @@ namespace platinum
     class Film
     {
     public:
-        Film(const glm::ivec2 &resolution, const Bounds2f &cropWindow,
+        Film(const Vector2i &resolution, const Bounds2f &cropWindow,
              std::unique_ptr<Filter> filter, const std::string &filename, float diagonal = 35.f,
              float scale = 1.f, float maxSampleLuminance = Infinity);
 
-        Bounds2i getSampleBounds() const;
-        const glm::ivec2 getResolution() const { return m_resolution; }
+        Bounds2i GetSampleBounds() const;
+        const Vector2i GetResolution() const { return _resolution; }
 
-        std::unique_ptr<FilmTile> getFilmTile(const Bounds2i &sampleBounds);
-        void mergeFilmTile(std::unique_ptr<FilmTile> tile);
+        std::unique_ptr<FilmTile> GetFilmTile(const Bounds2i &sampleBounds);
+        void MergeFilmTile(std::unique_ptr<FilmTile> tile);
 
-        void writeImageToFile(float splatScale = 1);
+        void WriteImageToFile(float splatScale = 1);
 
-        void setImage(const Spectrum *img) const;
-        void addSplat(const Vector2f &p, Spectrum v);
+        void SetImage(const Spectrum *img) const;
+        void AddSplat(const Vector2f &p, Spectrum v);
 
-        void clear();
+        void Clear();
 
-        void initialize();
+        void Initialize();
 
     private:
         //Note: XYZ is a display independent representation of color,
@@ -55,38 +55,38 @@ namespace platinum
         {
             Pixel()
             {
-                m_xyz[0] = m_xyz[1] = m_xyz[2] = m_filterWeightSum = 0;
+                _xyz[0] = _xyz[1] = _xyz[2] = _filter_weight_sum = 0;
             }
 
-            float m_xyz[3];            //xyz color of the pixel
-            float m_filterWeightSum;   //the sum of filter weight values
-            AtomicFloat m_splatXYZ[3]; //unweighted sum of samples splats
-            float m_pad;               //unused, ensure sizeof(Pixel) -> 32 bytes
+            float _xyz[3];            //xyz color of the pixel
+            float _filter_weight_sum;   //the sum of filter weight values
+            AtomicFloat _splatXYZ[3]; //unweighted sum of samples splats
+            float _pad;               //unused, ensure sizeof(Pixel) -> 32 bytes
         };
 
-        glm::ivec2 m_resolution; //(width, height)
-        std::string m_filename;
-        std::unique_ptr<Pixel[]> m_pixels;
+        Vector2i _resolution; //(width, height)
+        std::string _filename;
+        std::unique_ptr<Pixel[]> _pixels;
 
-        float m_diagonal;
-        Bounds2i m_croppedPixelBounds; //actual rendering window
+        float _diagonal;
+        Bounds2i _cropped_pixel_bounds; //actual rendering window
 
-        std::unique_ptr<Filter> m_filter;
-        std::mutex m_mutex;
+        std::unique_ptr<Filter> _filter;
+        std::mutex _mutex;
 
         //Note: precomputed filter weights table
-        static constexpr int filterTableWidth = 16;
-        float m_filterTable[filterTableWidth * filterTableWidth];
+        static constexpr int filter_table_width = 16;
+        float _filter_table[filter_table_width * filter_table_width];
 
-        float m_scale;
-        float m_maxSampleLuminance;
+        float _scale;
+        float _max_sample_luminance;
 
-        Pixel &getPixel(const glm::ivec2 &p)
+        Pixel &GetPixel(const Vector2i &p)
         {
-            CHECK(InsideExclusive(p, m_croppedPixelBounds));
-            int width = m_croppedPixelBounds._p_max.x - m_croppedPixelBounds._p_min.x;
-            int index = (p.x - m_croppedPixelBounds._p_min.x) + (p.y - m_croppedPixelBounds._p_min.y) * width;
-            return m_pixels[index];
+            CHECK(InsideExclusive(p, _cropped_pixel_bounds));
+            int width = _cropped_pixel_bounds._p_max.x - _cropped_pixel_bounds._p_min.x;
+            int index = (p.x - _cropped_pixel_bounds._p_min.x) + (p.y - _cropped_pixel_bounds._p_min.y) * width;
+            return _pixels[index];
         }
     };
 
@@ -117,8 +117,8 @@ namespace platinum
 
             // Compute sample's raster bounds
             Vector2f pFilmDiscrete = pFilm - Vector2f(0.5f, 0.5f);
-            glm::ivec2 p0 = (glm::ivec2)ceil(pFilmDiscrete - m_filterRadius);
-            glm::ivec2 p1 = (glm::ivec2)floor(pFilmDiscrete + m_filterRadius) + glm::ivec2(1, 1);
+            Vector2i p0 = (Vector2i)ceil(pFilmDiscrete - m_filterRadius);
+            Vector2i p1 = (Vector2i)floor(pFilmDiscrete + m_filterRadius) + Vector2i(1, 1);
             p0 = glm::max(p0, m_pixelBounds._p_min);
             p1 = glm::min(p1, m_pixelBounds._p_max);
 
@@ -148,7 +148,7 @@ namespace platinum
                     float filterWeight = m_filterTable[offset];
 
                     // Update pixel values with filtered sample contribution
-                    FilmTilePixel &pixel = getPixel(glm::ivec2(x, y));
+                    FilmTilePixel &pixel = getPixel(Vector2i(x, y));
                     pixel.m_contribSum += L * sampleWeight * filterWeight;
                     pixel.m_filterWeightSum += filterWeight;
                 }
@@ -159,7 +159,7 @@ namespace platinum
             ify = nullptr;
         }
 
-        FilmTilePixel &getPixel(const glm::ivec2 &p)
+        FilmTilePixel &getPixel(const Vector2i &p)
         {
             CHECK(InsideExclusive(p, m_pixelBounds));
             int width = m_pixelBounds._p_max.x - m_pixelBounds._p_min.x;
@@ -167,7 +167,7 @@ namespace platinum
             return m_pixels[index];
         }
 
-        const FilmTilePixel &getPixel(const glm::ivec2 &p) const
+        const FilmTilePixel &getPixel(const Vector2i &p) const
         {
             CHECK(InsideExclusive(p, m_pixelBounds));
             int width = m_pixelBounds._p_max.x - m_pixelBounds._p_min.x;

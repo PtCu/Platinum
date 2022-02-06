@@ -211,7 +211,7 @@ namespace platinum
     class Bounds2iIterator : public std::forward_iterator_tag
     {
     public:
-        Bounds2iIterator(const Bounds2i &b, const glm::ivec2 &pt)
+        Bounds2iIterator(const Bounds2i &b, const Vector2i &pt)
             : p(pt), bounds(&b) {}
 
         Bounds2iIterator operator++()
@@ -237,7 +237,7 @@ namespace platinum
             return p != bi.p || bounds != bi.bounds;
         }
 
-        glm::ivec2 operator*() const { return p; }
+        Vector2i operator*() const { return p; }
 
     private:
         void Advance()
@@ -250,7 +250,7 @@ namespace platinum
             }
         }
 
-        glm::ivec2 p;
+        Vector2i p;
         const Bounds2i *bounds;
     };
 
@@ -263,7 +263,7 @@ namespace platinum
     {
         // Normally, the ending point is at the minimum x value and one past
         // the last valid y value.
-        glm::ivec2 pEnd(b._p_min.x, b._p_max.y);
+        Vector2i pEnd(b._p_min.x, b._p_max.y);
         // However, if the bounds are degenerate, override the end point to
         // equal the start point so that any attempt to iterate over the bounds
         // exits out immediately.

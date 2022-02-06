@@ -21,12 +21,12 @@ namespace platinum
 
     float RandomSampler::Get1D()
     {
-        return Random::UniformFloat();
+        return Rng::UniformFloat();
     }
 
     Vector2f RandomSampler::Get2D()
     {
-        return Vector2f(Random::UniformFloat(), Random::UniformFloat());
+        return Vector2f(Rng::UniformFloat(), Rng::UniformFloat());
     }
 
     std::unique_ptr<Sampler> RandomSampler::Clone(int seed)
@@ -34,15 +34,15 @@ namespace platinum
         return std::unique_ptr<Sampler>(new RandomSampler(*this));
     }
 
-    void RandomSampler::StartPixel(const glm::ivec2 &p)
+    void RandomSampler::StartPixel(const Vector2i &p)
     {
         for (size_t i = 0; i < _sampleArray1D.size(); ++i)
             for (size_t j = 0; j < _sampleArray1D[i].size(); ++j)
-                _sampleArray1D[i][j] = Random::UniformFloat();
+                _sampleArray1D[i][j] = Rng::UniformFloat();
 
         for (size_t i = 0; i < _sampleArray2D.size(); ++i)
             for (size_t j = 0; j < _sampleArray2D[i].size(); ++j)
-                _sampleArray2D[i][j] = Random::UniformDisk();
+                _sampleArray2D[i][j] = Rng::UniformDisk();
 
         Sampler::StartPixel(p);
     }

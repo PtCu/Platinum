@@ -26,9 +26,10 @@
 #include <random>
 #include <glm/glm.hpp>
 
+
 namespace platinum
 {
-    class Random
+    class Rng
     {
     public:
         static float UniformFloat()
@@ -38,21 +39,21 @@ namespace platinum
             static std::uniform_real_distribution<> dist(0.f, 1.f);
             return static_cast<float>(dist(engine));
         }
-        static Vector2f UniformDisk()
+        static glm::vec2 UniformDisk()
         {
-            Vector2f p;
+            glm::vec2 p;
             do
             {
-                p = 2.0f * Vector2f(UniformFloat(), UniformFloat()) - Vector2f(1, 1);
+                p = 2.0f * glm::vec2(UniformFloat(), UniformFloat()) - glm::vec2(1, 1);
             } while (glm::dot(p, p) >= 1.0);
             return p;
         }
-        static Vector3f UniformSphere()
+        static glm::vec3 UniformSphere()
         {
-            Vector3f p;
+            glm::vec3 p;
             do
             {
-                p = 2.0f * Vector3f(UniformFloat(), UniformFloat(), UniformFloat()) - Vector3f(1, 1, 1);
+                p = 2.0f * glm::vec3(UniformFloat(), UniformFloat(), UniformFloat()) - glm::vec3(1, 1, 1);
             } while (glm::dot(p, p) >= 1.0);
             return p;
         }

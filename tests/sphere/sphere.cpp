@@ -59,15 +59,15 @@ int main()
     Transform camera2world = Inverse(LookAt(eye, focus, up));
 
     unique_ptr<Filter> filter = make_unique<BoxFilter>(Vector2f{0.5f, 0.5f});
-    auto film = make_shared<Film>(glm::ivec2{600, 500}, Bounds2f{{0, 0}, {1, 1}}, std::move(filter), file_name);
+    auto film = make_shared<Film>(Vector2i{600, 500}, Bounds2f{{0, 0}, {1, 1}}, std::move(filter), file_name);
 
-    std::shared_ptr<Camera> camera = make_shared<PerspectiveCamera>(camera2world, 45, film);
+    Ptr<Camera> camera = make_shared<PerspectiveCamera>(camera2world, 45, film);
 
-    std::shared_ptr<Sampler> sampler = make_shared<RandomSampler>(4);
+    Ptr<Sampler> sampler = make_shared<RandomSampler>(4);
 
     unique_ptr<Integrator> integrator = make_unique<WhittedIntegrator>(camera, sampler, 10);
 
-    std::shared_ptr<Aggregate> aggre = make_shared<LinearAggregate>(primitives);
+    Ptr<Aggregate> aggre = make_shared<LinearAggregate>(primitives);
 
     auto scene = make_shared<Scene>(aggre, lights);
 

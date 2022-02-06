@@ -15,13 +15,10 @@
 #ifndef CORE_LIGHT_CPP_
 #define CORE_LIGHT_CPP_
 
-#include <glm/glm.hpp>
 #include <core/utilities.h>
-#include <core/ray.h>
-#include <core/scene.h>
-#include <math/transform.h>
 #include <core/interaction.h>
 #include <core/spectrum.h>
+#include <math/transform.h>
 
 namespace platinum
 {
@@ -33,16 +30,19 @@ namespace platinum
         LightArea = 4,
         LightInfinite = 8
     };
+
+    inline bool IsDeltaLight(int flags)
+    {
+        return flags & (int)LightFlags::LightDeltaPosition || flags & (int)LightFlags::LightDeltaDirection;
+    }
+
     class Light
     {
     public:
-        Light(int flags, const Transform &light2world, int n_samples)
-            : _flags(flags), _num_samples(glm::max(1, n_samples)), _light2World(light2world), _world2Light(Inverse(light2world))
-        {
-            //++numLights;
-        }
+        Light(int flags, const Transform &light2world, int n_samples = 1)
+            : _flags(flags), _num_samples(glm::max(1, n_samples)), _light2World(light2world), _world2Light(Inverse(light2world)){}
+
         virtual ~Light() = default;
-        ;
 
         /**
          * @brief  环境光
@@ -88,13 +88,22 @@ namespace platinum
          */
         virtual float PdfLi(const Interaction &inter, const Vector3f &wi) const = 0;
 
-        //return their total emitted power
+        /**
+         * @brief Return their total emitted power
+         * 
+         * @return Spectrum 
+         */
         virtual Spectrum Power() const = 0;
 
-        //invoked prior to rendering
-        // It includes the Scene as an argument so that the light source can determine
-        //characteristics of the scene before rendering starts. The default implementation is empty,
-        // but some implementations (e.g., DistantLight) use it to record a bound of the scene extent.
+
+        /**
+         * @brief   Invoked prior to rendering.
+         *          It includes the Scene as an argument so that the light source can determine
+         *          characteristics of the scene before rendering starts. The default implementation is empty,
+         *          but some implementations (e.g., DistantLight) use it to record a bound of the scene extent.
+         * 
+         * @param scene 
+         */
         virtual void Preprocess(const Scene &scene) {}
 
         int _flags;
@@ -121,6 +130,23 @@ namespace platinum
         virtual Spectrum L(const Interaction &inter, const Vector3f &w) const = 0;
     };
 
+    class VisibilityTester final
+    {
+    public:
+        VisibilityTester() = default;
+
+        VisibilityTester(const Interaction &p0, const Interaction &p1)
+            : _p0(p0), _p1(p1) {}
+
+        const Interaction &P0() const { return _p0; }
+
+        const Interaction &P1() const { return _p1; }
+
+        bool Unoccluded(const Scene &scene) const;
+
+    private:
+        Interaction _p0, _p1;
+    };
 }
 
 #endif

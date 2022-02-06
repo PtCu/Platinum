@@ -17,14 +17,14 @@
 namespace platinum
 {
 
-    CameraSample Sampler::GetCameraSample(const glm::ivec2 &p_raster, Filter *flter)
+    CameraSample Sampler::GetCameraSample(const Vector2i &p_raster, Filter *flter)
     {
         CameraSample cs;
         cs.p_film = (Vector2f)p_raster + Get2D();
         return cs;
     }
 
-    void Sampler::StartPixel(const glm::ivec2 &p)
+    void Sampler::StartPixel(const Vector2i &p)
     {
         _currentPixel = p;
         _currentPixelSampleIndex = 0;
@@ -58,7 +58,7 @@ namespace platinum
     {
         CHECK_EQ(RoundCount(n), n);
         _samples2DArraySizes.push_back(n);
-        _sampleArray2D.push_back(std::vector<glm::ivec2>(n * _samplesPerPixel));
+        _sampleArray2D.push_back(std::vector<Vector2i>(n * _samplesPerPixel));
     }
 
     const float *Sampler::Get1DArray(int n)
@@ -70,7 +70,7 @@ namespace platinum
         return &_sampleArray1D[_array1DOffset++][_currentPixelSampleIndex * n];
     }
 
-    const glm::ivec2 *Sampler::Get2DArray(int n)
+    const Vector2i *Sampler::Get2DArray(int n)
     {
         if (_array2DOffset == _sampleArray2D.size())
             return nullptr;

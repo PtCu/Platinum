@@ -74,7 +74,7 @@ namespace platinum
     class Ray;
     class Texture;
     class Integrator;
-    class TiledIntegrator;
+    class SamplerIntegrator;
     class Film;
     class BSDF;
     class BxDF;
@@ -115,7 +115,7 @@ namespace platinum
     using Ptr = std::shared_ptr<T>;
 
     template <typename T>
-    using PtrC = Ptr<const T>;
+    using PtrC = std::shared_ptr<const T>;
 
     template <typename T>
     using WPtr = std::weak_ptr<T>;

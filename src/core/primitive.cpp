@@ -23,7 +23,7 @@ namespace platinum
         if (!_shape->Hit(ray, t, inter))
             return false;
         ray._t_max = t;
-        inter.hitable = this;
+        inter._hitable = this;
         return true;
     }
 

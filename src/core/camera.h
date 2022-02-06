@@ -43,7 +43,7 @@ namespace platinum
     public:
         Camera() = default;
 
-        Camera(const Transform &camera2world, std::shared_ptr<Film> film)
+        Camera(const Transform &camera2world, Ptr<Film> film)
             : _camera2world(camera2world), _film(film) {}
 
         virtual ~Camera() = default;
@@ -58,7 +58,7 @@ namespace platinum
         virtual float CastingRay(const CameraSample &sample, Ray &ray) const = 0;
 
         Transform _camera2world;
-        std::shared_ptr<Film> _film;
+        Ptr<Film> _film;
     };
 
     /**

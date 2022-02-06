@@ -17,7 +17,7 @@
 
 #include <core/utilities.h>
 #include <core/interaction.h>
-
+#include <core/spectrum.h>
 namespace platinum
 {
     enum class BxDFType

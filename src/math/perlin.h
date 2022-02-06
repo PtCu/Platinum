@@ -32,15 +32,15 @@ namespace platinum
     class Perlin
     {
     public:
-        static float Turb(const Vector3f &p, size_t depth = 7);
+        static float Turb(const glm::vec3 &p, size_t depth = 7);
 
     private:
-        static float GenNoise(const Vector3f &p);
-        static float PerlinInterp(const Vector3f c[2][2][2], float u, float v, float w);
+        static float GenNoise(const glm::vec3 &p);
+        static float PerlinInterp(const glm::vec3 c[2][2][2], float u, float v, float w);
         static std::vector<size_t> GenPermute(size_t n);
-        static std::vector<Vector3f> GenRandVec(size_t n);
+        static std::vector<glm::vec3> GenRandVec(size_t n);
 
-        static std::vector<Vector3f> rand_vec_;
+        static std::vector<glm::vec3> rand_vec_;
 
         // 0, 1, ... , 255 变更顺序后的序列
         static std::vector<size_t> perm_x_;

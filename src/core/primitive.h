@@ -23,7 +23,6 @@
 #ifndef CORE_OBJECT_H_
 #define CORE_OBJECT_H_
 
-#include <glm/glm.hpp>
 #include <core/utilities.h>
 #include <core/material.h>
 #include <core/shape.h>
@@ -36,16 +35,18 @@ namespace platinum
     class Primitive
     {
     public:
-        typedef std::shared_ptr<Primitive> ptr;
+        typedef Ptr<Primitive> ptr;
 
         virtual ~Primitive() = default;
 
         virtual bool Hit(const Ray &ray) const = 0;
+
         virtual bool Hit(const Ray &ray, SurfaceInteraction &iset) const = 0;
 
         virtual Bounds3f WorldBound() const = 0;
 
         virtual const AreaLight *GetAreaLight() const = 0;
+
         virtual const Material *GetMaterial() const = 0;
 
         virtual void ComputeScatteringFunctions(SurfaceInteraction &isect) const = 0;
@@ -54,25 +55,29 @@ namespace platinum
     class GeometricPrimitive : public Primitive
     {
     public:
-        GeometricPrimitive(const std::shared_ptr<Shape> &shape, const Material *material,
-                           const std::shared_ptr<AreaLight> &area_light)
+        GeometricPrimitive(const Ptr<Shape> &shape, const Material *material,
+                           const Ptr<AreaLight> &area_light)
             : _shape(shape), _material(material), _area_light(area_light) {}
 
         virtual bool Hit(const Ray &ray) const override { return _shape->Hit(ray); }
+
         virtual bool Hit(const Ray &ray, SurfaceInteraction &iset) const override;
 
         virtual Bounds3f WorldBound() const override { return _shape->WorldBound(); }
 
         Shape *GetShape() const { return _shape.get(); }
-        std::shared_ptr<AreaLight> GetAreaLightPtr() const { return _area_light; }
+
+        Ptr<AreaLight> GetAreaLightPtr() const { return _area_light; }
+
         virtual const AreaLight *GetAreaLight() const override { return _area_light.get(); }
+
         virtual const Material *GetMaterial() const override { return _material; }
 
         virtual void ComputeScatteringFunctions(SurfaceInteraction &isect) const override;
 
     private:
-        std::shared_ptr<Shape> _shape;
-        std::shared_ptr<AreaLight> _area_light;
+        Ptr<Shape> _shape;
+        Ptr<AreaLight> _area_light;
 
         const Material *_material;
     };
@@ -80,15 +85,17 @@ namespace platinum
     class Aggregate : public Primitive
     {
     public:
-        Aggregate(const std::vector<std::shared_ptr<Primitive>> &hitables)
-            : _hitables(hitables) {}
+        Aggregate(const std::vector<Ptr<Primitive>> &primitives)
+            : _primitives(primitives) {}
+
         virtual const AreaLight *GetAreaLight() const override { return nullptr; }
+
         virtual const Material *GetMaterial() const override { return nullptr; }
 
-        virtual void ComputeScatteringFunctions(SurfaceInteraction &isect) const override{}
+        virtual void ComputeScatteringFunctions(SurfaceInteraction &isect) const override {}
 
     protected:
-        std::vector<std::shared_ptr<Primitive>> _hitables;
+        std::vector<Ptr<Primitive>> _primitives;
         Bounds3f _world_bounds;
     };
 

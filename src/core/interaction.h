@@ -23,12 +23,9 @@
 #ifndef CORE_INTERSECTION_H_
 #define CORE_INTERSECTION_H_
 
-#include <glm/glm.hpp>
 #include <core/utilities.h>
-#include <core/material.h>
 #include <core/ray.h>
-#include <core/shape.h>
-#include <core/primitive.h>
+
 namespace platinum
 {
 
@@ -37,15 +34,18 @@ namespace platinum
     {
     public:
         Interaction() = default;
+
         explicit Interaction(const Vector3f &p) : p(p) {}
-        Interaction(const Vector3f &p, const Vector3f &wo) : p(p), wo(normalize(wo)) {}
+
+        Interaction(const Vector3f &p, const Vector3f &wo) : p(p), wo(glm::normalize(wo)) {}
+
         Interaction(const Vector3f &p, const Vector3f &n, const Vector3f &wo)
             : p(p), wo(glm::normalize(wo)), n(n) {}
 
         inline Ray SpawnRay(const Vector3f &d) const
         {
             Vector3f o = p;
-            return Ray(o, d, std::numeric_limits<float>::max());
+            return Ray(o, d, Infinity);
         }
 
         inline Ray SpawnRayTo(const Vector3f &p2) const
@@ -75,41 +75,33 @@ namespace platinum
     {
     public:
         SurfaceInteraction() = default;
+
         SurfaceInteraction(const Vector3f &p, const Vector2f &uv, const Vector3f &wo,
                            const Vector3f &dpdu, const Vector3f &dpdv, const Shape *sh);
 
-        //compute the emitted radiance at a surface point intersected by a ray.
+        /**
+         * @brief Compute the emitted radiance at a surface point intersected by a ray.
+         * 
+         * @param w 
+         * @return Spectrum 
+         */
         Spectrum Le(const Vector3f &w) const;
 
         void ComputeScatteringFunctions(const Ray &ray);
 
     public:
-        std::shared_ptr<BSDF> bsdf{nullptr};
-        const Shape *shape{nullptr};
-        const Primitive *hitable{nullptr};
+        Ptr<BSDF> _bsdf{nullptr};
+        const Shape *_shape{nullptr};
+        const Primitive *_hitable{nullptr};
 
         /**
          * @brief   (u,v)是p点参数化后的表面坐标（如纹理坐标）
          *          dpdu和dpdv是p在u,v方向的微分。二者不必正交
-         *
          */
-        Vector2f uv;
-        Vector3f dpdu, dpdv;
+        Vector2f _uv;
+        Vector3f _dpdu, _dpdv;
     };
 
-    class VisibilityTester final
-    {
-    public:
-        VisibilityTester() = default;
-        VisibilityTester(const Interaction &p0, const Interaction &p1) : _p0(p0), _p1(p1)
-        {
-        }
-        const Interaction &P0() const { return _p0; }
-        const Interaction &P1() const { return _p1; }
-        bool Unoccluded(const Scene &scene) const;
-
-    private:
-        Interaction _p0, _p1;
-    };
+   
 }
 #endif

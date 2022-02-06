@@ -16,9 +16,8 @@
 #define LIGHT_AREA_LIGHT_H_
 
 #include <core/light.h>
-#include <math/transform.h>
-#include <core/interaction.h>
-#include <core/spectrum.h>
+#include <core/shape.h>
+
 namespace platinum
 {
     class DiffuseAreaLight : public AreaLight

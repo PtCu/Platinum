@@ -25,7 +25,7 @@ namespace platinum
     {
     public:
         BSDF(const SurfaceInteraction &s, float eta = 1)
-            : _eta(eta), _ns(s.n), _ss(glm::normalize(s.dpdu)), _ts(glm::cross(_ns, _ss)) {}
+            : _eta(eta), _ns(s.n), _ss(glm::normalize(s._dpdu)), _ts(glm::cross(_ns, _ss)) {}
 
         ~BSDF() = default;
 

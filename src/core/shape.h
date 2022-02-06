@@ -24,7 +24,9 @@ namespace platinum
     public:
         Shape(Transform *object2world, Transform *world2object)
             : _object2world(object2world), _world2object(world2object) {}
+
         virtual ~Shape() = default;
+
         void SetTransform(Transform *objectToWorld, Transform *worldToObject);
 
         virtual Bounds3f ObjectBound() const = 0;
@@ -60,11 +62,13 @@ namespace platinum
         // Sample a point on the surface of the shape and return the PDF with
         // respect to area on the surface.
         virtual Interaction Sample(const Vector2f &u, float &pdf) const = 0;
-        virtual float Pdf(const Interaction &) const { return 1 / Area(); }
+
+        virtual float Pdf(const Interaction &) const { return 1.f / Area(); }
 
         // Sample a point on the shape given a reference point |ref| and
         // return the PDF with respect to solid angle from |ref|.
         virtual Interaction Sample(const Interaction &ref, const Vector2f &u, float &pdf) const;
+
         virtual float Pdf(const Interaction &ref, const Vector3f &wi) const;
 
         // Returns the solid angle subtended by the shape w.r.t. the reference

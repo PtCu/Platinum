@@ -28,7 +28,7 @@ namespace platinum
     void ProjectiveCamera::Initialize()
     {
         Bounds2f screen;
-        auto res = _film->getResolution();
+        auto res = _film->GetResolution();
         float frame = (float)(res.x) / res.y;
         if (frame > 1.f)
         {

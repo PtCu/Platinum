@@ -16,15 +16,21 @@
 #define MATERIAL_MATTE_H_
 
 #include <core/material.h>
-
-
+#include <material/bxdf/lambertian.h>
+#include <core/bsdf.h>
+#include <core/spectrum.h>
 namespace platinum {
     class Matte final : public Material {
     public:
-        Matte(const Spectrum &r) : _Kr(r) {}
+        Matte(const Spectrum &r) : _Kr(r) {
+            _ref = std::make_shared<LambertianReflection>(_Kr);
+        }
+
         virtual void ComputeScatteringFunctions(SurfaceInteraction& si)const override;
+
     private:
         Spectrum _Kr;
+        Ptr<LambertianReflection> _ref;
     };
 }
 

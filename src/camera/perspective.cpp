@@ -17,7 +17,7 @@
 namespace platinum
 {
 
-    PerspectiveCamera::PerspectiveCamera(const Transform &camera2world, float fov, std::shared_ptr<Film> film) : ProjectiveCamera(camera2world, Perspective(fov, 1e-2f, 1000.f), film)
+    PerspectiveCamera::PerspectiveCamera(const Transform &camera2world, float fov, Ptr<Film> film) : ProjectiveCamera(camera2world, Perspective(fov, 1e-2f, 1000.f), film)
     {
         Initialize();
     }
@@ -25,7 +25,7 @@ namespace platinum
     {
         ProjectiveCamera::Initialize();
 
-        auto res = _film->getResolution();
+        auto res = _film->GetResolution();
         auto p_min = _raster2camera.ExecOn(Vector3f(0.f), 1.f);
         auto p_max = _raster2camera.ExecOn(Vector3f(res.x, res.y, 0.f), 1.f);
         p_min /= p_min.z;

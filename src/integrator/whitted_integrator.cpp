@@ -35,7 +35,7 @@ namespace platinum
 
         inter.ComputeScatteringFunctions(ray);
         // 没有bsdf
-        if (!inter.bsdf)
+        if (!inter._bsdf)
         {
             return Li(scene, inter.SpawnRay(ray.GetDirection()), sampler, depth);
         }
@@ -52,7 +52,7 @@ namespace platinum
             Spectrum sampled_li = light->SampleLi(inter, sampler.Get2D(), wi, pdf, visibility_tester);
             if (sampled_li.isBlack() || pdf == 0)
                 continue;
-            Spectrum f = inter.bsdf->F(wo, wi);
+            Spectrum f = inter._bsdf->F(wo, wi);
 
             //如果所采样的光源上的光线没被遮挡
             if (!f.isBlack() && visibility_tester.Unoccluded(scene))

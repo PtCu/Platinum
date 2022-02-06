@@ -23,7 +23,7 @@ namespace platinum
     {
     public:
         RandomSampler(int ns);
-        virtual void StartPixel(const glm::ivec2 &) override;
+        virtual void StartPixel(const Vector2i &) override;
 
         virtual float Get1D() override;
         virtual Vector2f Get2D() override;

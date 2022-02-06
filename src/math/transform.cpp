@@ -59,11 +59,11 @@ namespace platinum
 
         inter.n = glm::normalize(this->ExecOn(si.n, 0.f));
         inter.wo = glm::normalize(this->ExecOn(si.wo, 0.f));
-        inter.uv = si.uv;
-        inter.shape = si.shape;
-        inter.dpdu = this->ExecOn(si.dpdu, 0.f);
-        inter.dpdv = this->ExecOn(si.dpdv, 0.f);
-        inter.hitable = si.hitable;
+        inter._uv = si._uv;
+        inter._shape = si._shape;
+        inter._dpdu = this->ExecOn(si._dpdu, 0.f);
+        inter._dpdv = this->ExecOn(si._dpdv, 0.f);
+        inter._hitable = si._hitable;
         return inter;
     }
     Transform Translate(const Vector3f &delta)
