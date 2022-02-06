@@ -29,24 +29,24 @@ namespace platinum
             : AreaLight(light2world, n_samples), _Lemit(Lemit), _shape(shape),
               _two_sided(two_sided), _area(shape->Area()) {}
 
-        virtual Spectrum L(const Interaction &inter, const glm::vec3 &w) const override
+        virtual Spectrum L(const Interaction &inter, const Vector3f &w) const override
         {
             return (_two_sided || glm::dot(inter.n, w) > 0) ? _Lemit : Spectrum(0.f);
         }
-        virtual Spectrum Power() const{
+        virtual Spectrum Power() const
+        {
             return (_two_sided ? 2 : 1) * _Lemit * _area * Pi;
         }
 
-        virtual Spectrum SampleLe(const glm::vec2 &u1, const glm::vec2 &u2, Ray &ray,
-                                  glm::vec3 &nLight, float &pdfPos, float &pdfDir) const ;
+        virtual Spectrum SampleLe(const Vector2f &u1, const Vector2f &u2, Ray &ray,
+                                  Vector3f &nLight, float &pdfPos, float &pdfDir) const;
 
-        virtual void PdfLe(const Ray &, const glm::vec3 &, float &pdfPos, float &pdfDir) const ;
+        virtual void PdfLe(const Ray &, const Vector3f &, float &pdfPos, float &pdfDir) const;
 
+        virtual Spectrum SampleLi(const Interaction &inter, const Vector2f &u,
+                                  Vector3f &wi, float &pdf, VisibilityTester &vis) const;
 
-        virtual Spectrum SampleLi(const Interaction &inter, const glm::vec2 &u,
-                                  glm::vec3 &wi, float &pdf, VisibilityTester &vis) const;
-     
-        virtual float PdfLi(const Interaction &inter, const glm::vec3 &wi) const;
+        virtual float PdfLi(const Interaction &inter, const Vector3f &wi) const;
 
     private:
         Spectrum _Lemit;

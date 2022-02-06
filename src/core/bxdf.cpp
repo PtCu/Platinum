@@ -17,12 +17,12 @@
 namespace platinum
 {
 
-    float BxDF::Pdf(const glm::vec3 &wo, const glm::vec3 &wi) const
+    float BxDF::Pdf(const Vector3f &wo, const Vector3f &wi) const
     {
         return SameHemisphere(wo, wi) ? glm::abs(wi.z) * InvPi : 0.f;
     }
 
-    Spectrum BxDF::SampleF(const glm::vec3 &wo, glm::vec3 &wi, const glm::vec2 &sample, float &pdf, BxDFType &sampleType) const
+    Spectrum BxDF::SampleF(const Vector3f &wo, Vector3f &wi, const Vector2f &sample, float &pdf, BxDFType &sampleType) const
     {
         wi = CosineSampleHemisphere(sample);
         if (wo.z < 0)

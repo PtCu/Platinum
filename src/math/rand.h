@@ -38,21 +38,21 @@ namespace platinum
             static std::uniform_real_distribution<> dist(0.f, 1.f);
             return static_cast<float>(dist(engine));
         }
-        static glm::vec2 UniformDisk()
+        static Vector2f UniformDisk()
         {
-            glm::vec2 p;
+            Vector2f p;
             do
             {
-                p = 2.0f * glm::vec2(UniformFloat(), UniformFloat()) - glm::vec2(1, 1);
+                p = 2.0f * Vector2f(UniformFloat(), UniformFloat()) - Vector2f(1, 1);
             } while (glm::dot(p, p) >= 1.0);
             return p;
         }
-        static glm::vec3 UniformSphere()
+        static Vector3f UniformSphere()
         {
-            glm::vec3 p;
+            Vector3f p;
             do
             {
-                p = 2.0f * glm::vec3(UniformFloat(), UniformFloat(), UniformFloat()) - glm::vec3(1, 1, 1);
+                p = 2.0f * Vector3f(UniformFloat(), UniformFloat(), UniformFloat()) - Vector3f(1, 1, 1);
             } while (glm::dot(p, p) >= 1.0);
             return p;
         }

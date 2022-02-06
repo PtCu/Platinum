@@ -30,7 +30,7 @@ namespace platinum
 {
     struct CameraSample
     {
-        glm::vec2 p_film;
+        Vector2f p_film;
     };
 
     inline std::ostream &operator<<(std::ostream &os, const CameraSample &cs)
@@ -42,24 +42,23 @@ namespace platinum
     {
     public:
         Camera() = default;
-        Camera(const Transform& camera2world, std::shared_ptr<Film> film)
-            :_camera2world(camera2world), _film(film) {}
-        virtual ~Camera()=default;
+
+        Camera(const Transform &camera2world, std::shared_ptr<Film> film)
+            : _camera2world(camera2world), _film(film) {}
+
+        virtual ~Camera() = default;
+
         /**
-         * @brief 
-         * @param  sample           My Param doc
-         * @param  ray              My Param doc
-         * @return float            radiance
+         * @brief 按照相机上的采样生成一束光线
+         * 
+         * @param sample 
+         * @param ray 
+         * @return float  How much the radiance arriving at the film plane along the generated ray will contribute to the final image.
          */
-
-        void SetFilm(std::shared_ptr<Film> film) { _film = film; }
-        std::shared_ptr<Film> GetFilm() { return _film; }
-
-        virtual float CastingRay(const CameraSample& sample, Ray& ray)const = 0;
+        virtual float CastingRay(const CameraSample &sample, Ray &ray) const = 0;
 
         Transform _camera2world;
         std::shared_ptr<Film> _film;
-
     };
 
     /**
@@ -69,8 +68,9 @@ namespace platinum
     {
     public:
         ProjectiveCamera() = default;
-        ProjectiveCamera(const Transform& cameraToWorld, const Transform& cameraToScreen, std::shared_ptr<Film> film)
-            : Camera(cameraToWorld, film), _camera2screen(cameraToScreen) { }
+
+        ProjectiveCamera(const Transform &cameraToWorld, const Transform &cameraToScreen, Ptr<Film> film)
+            : Camera(cameraToWorld, film), _camera2screen(cameraToScreen) {}
 
     protected:
         /**

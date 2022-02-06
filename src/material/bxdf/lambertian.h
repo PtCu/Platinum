@@ -32,7 +32,7 @@ namespace platinum
             : BxDF(BxDFType(static_cast<int>(BxDFType::BSDF_REFLECTION) | static_cast<int>(BxDFType::BSDF_DIFFUSE))),
               _R(R) {}
 
-        virtual Spectrum F(const glm::vec3 &wo, const glm::vec3 &wi) const override
+        virtual Spectrum F(const Vector3f &wo, const Vector3f &wi) const override
         {
             return _R * InvPi;
         }

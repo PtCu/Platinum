@@ -1,11 +1,11 @@
 // Copyright 2022 ptcup
-// 
+//
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
-// 
+//
 //     http://www.apache.org/licenses/LICENSE-2.0
-// 
+//
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -18,30 +18,30 @@
 #include <glm/gtx/norm.hpp>
 #include <math/bounds.h>
 
-namespace platinum {
+namespace platinum
+{
 
-
-
-    bool Shape::Hit(const Ray& ray) const
+    bool Shape::Hit(const Ray &ray) const
     {
         float t_hit = ray._t_max;
         SurfaceInteraction inter;
         return Hit(ray, t_hit, inter);
     }
 
-    void Shape::SetTransform(Transform* object2world, Transform* world2object)
+    void Shape::SetTransform(Transform *object2world, Transform *world2object)
     {
         _object2world = object2world;
         _world2object = world2object;
     }
 
-    Bounds3f Shape::WorldBound()const {
+    Bounds3f Shape::WorldBound() const
+    {
         return _object2world->ExecOn(this->ObjectBound());
     }
-    Interaction Shape::Sample(const Interaction& ref, const glm::vec2& u, float& pdf) const
+    Interaction Shape::Sample(const Interaction &ref, const Vector2f &u, float &pdf) const
     {
         Interaction inter = Sample(u, pdf);
-        glm::vec3 wi = inter.p - ref.p;
+        Vector3f wi = inter.p - ref.p;
         if (glm::dot(wi, wi) == 0)
         {
             pdf = 0;
@@ -55,10 +55,9 @@ namespace platinum {
         }
 
         return inter;
-
     }
 
-    float Shape::Pdf(const Interaction& ref, const glm::vec3& wi) const
+    float Shape::Pdf(const Interaction &ref, const Vector3f &wi) const
     {
         Ray ray = ref.SpawnRay(wi);
         float t_hit;
@@ -71,7 +70,7 @@ namespace platinum {
         return 1.f;
     }
 
-    float Shape::SolidAngle(const glm::vec3& p, int nSamples) const
+    float Shape::SolidAngle(const Vector3f &p, int nSamples) const
     {
 
         return 1.0f;

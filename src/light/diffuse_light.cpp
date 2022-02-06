@@ -17,19 +17,19 @@
 namespace platinum
 {
 
-    Spectrum DiffuseAreaLight::SampleLe(const glm::vec2 &u1, const glm::vec2 &u2, Ray &ray,
-                                        glm::vec3 &nLight, float &pdfPos, float &pdfDir) const
+    Spectrum DiffuseAreaLight::SampleLe(const Vector2f &u1, const Vector2f &u2, Ray &ray,
+                                        Vector3f &nLight, float &pdfPos, float &pdfDir) const
     {
         //TODO::
         return Spectrum(0.f);
     }
 
-    void DiffuseAreaLight::PdfLe(const Ray &, const glm::vec3 &, float &pdfPos, float &pdfDir) const
+    void DiffuseAreaLight::PdfLe(const Ray &, const Vector3f &, float &pdfPos, float &pdfDir) const
     {
     }
 
-    Spectrum DiffuseAreaLight::SampleLi(const Interaction &inter, const glm::vec2 &u,
-                                        glm::vec3 &wi, float &pdf, VisibilityTester &vis) const
+    Spectrum DiffuseAreaLight::SampleLi(const Interaction &inter, const Vector2f &u,
+                                        Vector3f &wi, float &pdf, VisibilityTester &vis) const
     {
         Interaction p_shape = _shape->Sample(inter, u, pdf);
 
@@ -43,7 +43,7 @@ namespace platinum
         return L(p_shape, -wi);
     }
 
-    float DiffuseAreaLight::PdfLi(const Interaction &inter, const glm::vec3 &wi) const
+    float DiffuseAreaLight::PdfLi(const Interaction &inter, const Vector3f &wi) const
     {
         return _shape->Pdf(inter, wi);
     }

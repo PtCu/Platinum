@@ -61,9 +61,9 @@ namespace platinum
          * @brief 作用于向量或点，返回转变后的新向量或点
          * @param  p                待转变的包围盒
          * @param  w                齐次坐标的第四维，最后要除以w
-         * @return glm::vec3        转变后的向量或点
+         * @return Vector3f        转变后的向量或点
          */
-        glm::vec3 ExecOn(const glm::vec3 &p, float w) const;
+        Vector3f ExecOn(const Vector3f &p, float w) const;
         /**
          * @brief  作用于包围盒，返回转变后的新包围盒
          * @param  b        待转变的包围盒
@@ -91,13 +91,13 @@ namespace platinum
         glm::mat4 _trans, _trans_inv;
     };
 
-    Transform Translate(const glm::vec3 &delta);
+    Transform Translate(const Vector3f &delta);
     Transform Scale(float x, float y, float z);
     Transform RotateX(float theta);
     Transform RotateY(float theta);
     Transform RotateZ(float theta);
-    Transform Rotate(float theta, const glm::vec3 &axis);
-    Transform LookAt(const glm::vec3 &pos, const glm::vec3 &look, const glm::vec3 &up);
+    Transform Rotate(float theta, const Vector3f &axis);
+    Transform LookAt(const Vector3f &pos, const Vector3f &look, const Vector3f &up);
     Transform Orthographic(float znear, float zfar);
     Transform Perspective(float fov, float znear, float zfar);
 

@@ -1,11 +1,11 @@
 // Copyright 2022 ptcup
-// 
+//
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
-// 
+//
 //     http://www.apache.org/licenses/LICENSE-2.0
-// 
+//
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -14,16 +14,17 @@
 
 #include <core/sampler.h>
 #include <core/camera.h>
-namespace platinum {
+namespace platinum
+{
 
-    CameraSample Sampler::GetCameraSample(const glm::ivec2& p_raster,Filter* flter)
+    CameraSample Sampler::GetCameraSample(const glm::ivec2 &p_raster, Filter *flter)
     {
         CameraSample cs;
-        cs.p_film = (glm::vec2)p_raster + Get2D();
+        cs.p_film = (Vector2f)p_raster + Get2D();
         return cs;
     }
 
-    void Sampler::StartPixel(const glm::ivec2& p)
+    void Sampler::StartPixel(const glm::ivec2 &p)
     {
         _currentPixel = p;
         _currentPixelSampleIndex = 0;
@@ -60,7 +61,7 @@ namespace platinum {
         _sampleArray2D.push_back(std::vector<glm::ivec2>(n * _samplesPerPixel));
     }
 
-    const float* Sampler::Get1DArray(int n)
+    const float *Sampler::Get1DArray(int n)
     {
         if (_array1DOffset == _sampleArray1D.size())
             return nullptr;
@@ -69,7 +70,7 @@ namespace platinum {
         return &_sampleArray1D[_array1DOffset++][_currentPixelSampleIndex * n];
     }
 
-    const glm::ivec2* Sampler::Get2DArray(int n)
+    const glm::ivec2 *Sampler::Get2DArray(int n)
     {
         if (_array2DOffset == _sampleArray2D.size())
             return nullptr;
@@ -78,5 +79,4 @@ namespace platinum {
         return &_sampleArray2D[_array2DOffset++][_currentPixelSampleIndex * n];
     }
 
-    
 }

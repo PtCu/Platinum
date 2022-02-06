@@ -34,13 +34,13 @@ namespace platinum
     public:
         Ray() : _t_max(Infinity) {}
 
-        Ray(const glm::vec3 &o, const glm::vec3 &d, float tMax = Infinity)
+        Ray(const Vector3f &o, const Vector3f &d, float tMax = Infinity)
             : _origin(o), _direction(normalize(d)), _t_max(tMax) {}
 
-        const glm::vec3 &GetOrigin() const { return _origin; }
-        const glm::vec3 &GetDirection() const { return _direction; }
+        const Vector3f &GetOrigin() const { return _origin; }
+        const Vector3f &GetDirection() const { return _direction; }
 
-        glm::vec3 GetPointAt(float t) const { return _origin + _direction * t; }
+        Vector3f GetPointAt(float t) const { return _origin + _direction * t; }
 
         friend std::ostream &operator<<(std::ostream &os, const Ray &r)
         {
@@ -49,12 +49,11 @@ namespace platinum
         }
 
     public:
-        glm::vec3 _origin;
-        glm::vec3 _direction;
+        Vector3f _origin;
+        Vector3f _direction;
         mutable float _t_max;
     };
 
-  
 } // namespace platinum
 
 #endif

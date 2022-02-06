@@ -32,7 +32,7 @@ namespace platinum
     class Texture
     {
     public:
-        virtual glm::vec3 GetValue(float u, float v, const glm::vec3 &p) const = 0;
+        virtual Vector3f GetValue(float u, float v, const Vector3f &p) const = 0;
         virtual ~Texture() = default;
     };
 }

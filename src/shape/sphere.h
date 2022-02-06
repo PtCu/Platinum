@@ -31,7 +31,7 @@
 #include <core/shape.h>
 
 namespace platinum
-{    /**
+{ /**
      * @brief
      *      所有球体对象的object坐标系都是以球心为原点
      *      以z坐标的范围跟φ来裁剪球体，
@@ -50,20 +50,20 @@ namespace platinum
     class Sphere : public Shape
     {
     public:
-        Sphere(Transform* object2world, Transform* world2object, const float radius)
+        Sphere(Transform *object2world, Transform *world2object, const float radius)
             : Shape(object2world, world2object), _radius(radius) {}
         virtual ~Sphere() = default;
         virtual float Area() const override;
-        virtual Interaction Sample(const glm::vec2& u, float& pdf) const override;
-        virtual Interaction Sample(const Interaction& ref, const glm::vec2& u, float& pdf) const override;
-        virtual float Pdf(const Interaction& ref, const glm::vec3& wi) const override;
+        virtual Interaction Sample(const Vector2f &u, float &pdf) const override;
+        virtual Interaction Sample(const Interaction &ref, const Vector2f &u, float &pdf) const override;
+        virtual float Pdf(const Interaction &ref, const Vector3f &wi) const override;
 
         virtual Bounds3f ObjectBound() const override;
 
-        virtual bool Hit(const Ray& ray) const override;
-        virtual bool Hit(const Ray& ray, float& t_hit, SurfaceInteraction& inter) const override;
+        virtual bool Hit(const Ray &ray) const override;
+        virtual bool Hit(const Ray &ray, float &t_hit, SurfaceInteraction &inter) const override;
 
-        virtual float SolidAngle(const glm::vec3& p, int nSamples = 512) const override;
+        virtual float SolidAngle(const Vector3f &p, int nSamples = 512) const override;
 
     private:
         float _radius;

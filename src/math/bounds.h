@@ -81,7 +81,7 @@ namespace platinum
                 return 2;
         }
 
-        glm::vec<3, T> Lerp(const glm::vec3 &t) const
+        glm::vec<3, T> Lerp(const Vector3f &t) const
         {
             return glm::vec<3, T>(
                 plainum::lerp(t.x, _p_min.x, _p_max.x),
@@ -108,7 +108,7 @@ namespace platinum
         }
 
         bool Hit(const Ray &ray, float &hitt0, float &hitt1) const;
-        inline bool Hit(const Ray &ray, const glm::vec3 &invDir, const int dirIsNeg[3]) const;
+        inline bool Hit(const Ray &ray, const Vector3f &invDir, const int dirIsNeg[3]) const;
 
         friend std::ostream &operator<<(std::ostream &os, const Bounds3<T> &b)
         {
@@ -178,7 +178,7 @@ namespace platinum
         bool operator==(const Bounds2<T> &b) const { return b._p_min == pMin && b._p_max == pMax; }
         bool operator!=(const Bounds2<T> &b) const { return b._p_min != pMin || b._p_max != pMax; }
 
-        glm::vec<2, T> Lerp(const glm::vec2 &t) const
+        glm::vec<2, T> Lerp(const Vector2f &t) const
         {
             return glm::vec<2, T>(lerp(t.x, _p_min.x, _p_max.x), lerp(t.y, _p_min.y, _p_max.y));
         }
@@ -402,7 +402,7 @@ namespace platinum
     }
 
     template <typename T>
-    inline bool Bounds3<T>::Hit(const Ray &ray, const glm::vec3 &invDir, const int dirIsNeg[3]) const
+    inline bool Bounds3<T>::Hit(const Ray &ray, const Vector3f &invDir, const int dirIsNeg[3]) const
     {
         const ABounds3f &bounds = *this;
         // Check for ray intersection against $x$ and $y$ slabs

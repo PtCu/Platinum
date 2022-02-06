@@ -25,7 +25,8 @@
 namespace platinum
 {
 
-    void ProjectiveCamera::Initialize() {
+    void ProjectiveCamera::Initialize()
+    {
         Bounds2f screen;
         auto res = _film->getResolution();
         float frame = (float)(res.x) / res.y;
@@ -45,9 +46,9 @@ namespace platinum
         }
 
         _screen2raster = Scale(res.x, res.y, 1) *
-                           Scale(1 / (screen._p_max.x - screen._p_min.x),
-                                 1 / (screen._p_min.y - screen._p_max.y), 1) *
-                           Translate(glm::vec3(-screen._p_min.x, -screen._p_max.y, 0));
+                         Scale(1 / (screen._p_max.x - screen._p_min.x),
+                               1 / (screen._p_min.y - screen._p_max.y), 1) *
+                         Translate(Vector3f(-screen._p_min.x, -screen._p_max.y, 0));
         _raster2screen = Inverse(_screen2raster);
         _raster2camera = Inverse(_camera2screen) * _raster2screen;
     }

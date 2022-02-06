@@ -49,7 +49,7 @@ namespace platinum
         {
             for (int x = 0; x < filterTableWidth; ++x, ++offset)
             {
-                glm::vec2 p;
+                Vector2f p;
                 p.x = (x + 0.5f) * m_filter->m_radius.x / filterTableWidth;
                 p.y = (y + 0.5f) * m_filter->m_radius.y / filterTableWidth;
                 m_filterTable[offset] = m_filter->Evaluate(p);
@@ -60,15 +60,15 @@ namespace platinum
     Bounds2i Film::getSampleBounds() const
     {
         Bounds2f floatBounds(
-            floor(glm::vec2(m_croppedPixelBounds._p_min) + glm::vec2(0.5f, 0.5f) - m_filter->m_radius),
-            ceil(glm::vec2(m_croppedPixelBounds._p_max) - glm::vec2(0.5f, 0.5f) + m_filter->m_radius));
+            floor(Vector2f(m_croppedPixelBounds._p_min) + Vector2f(0.5f, 0.5f) - m_filter->m_radius),
+            ceil(Vector2f(m_croppedPixelBounds._p_max) - Vector2f(0.5f, 0.5f) + m_filter->m_radius));
         return (Bounds2i)floatBounds;
     }
 
     std::unique_ptr<FilmTile> Film::getFilmTile(const Bounds2i &sampleBounds)
     {
         // Bound image pixels that samples in _sampleBounds_ contribute to
-        glm::vec2 halfPixel = glm::vec2(0.5f, 0.5f);
+        Vector2f halfPixel = Vector2f(0.5f, 0.5f);
         Bounds2f floatBounds = (Bounds2f)sampleBounds;
         glm::ivec2 p0 = (glm::ivec2)ceil(floatBounds._p_min - halfPixel - m_filter->m_radius);
         glm::ivec2 p1 = (glm::ivec2)floor(floatBounds._p_max - halfPixel + m_filter->m_radius) + glm::ivec2(1, 1);
@@ -160,7 +160,7 @@ namespace platinum
         }
     }
 
-    void Film::addSplat(const glm::vec2 &p, Spectrum v)
+    void Film::addSplat(const Vector2f &p, Spectrum v)
     {
         //Note:Rather than computing the final pixel value as a weighted
         //     average of contributing splats, splats are simply summed.

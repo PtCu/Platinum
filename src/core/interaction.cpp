@@ -17,13 +17,13 @@
 namespace platinum
 {
 
-    SurfaceInteraction::SurfaceInteraction(const glm::vec3 &p, const glm::vec2 &uv, const glm::vec3 &wo,
-                                           const glm::vec3 &dpdu, const glm::vec3 &dpdv, const Shape *sh)
+    SurfaceInteraction::SurfaceInteraction(const Vector3f &p, const Vector2f &uv, const Vector3f &wo,
+                                           const Vector3f &dpdu, const Vector3f &dpdv, const Shape *sh)
         : Interaction(p, glm::normalize(glm::cross(dpdu, dpdv)), wo), uv(uv), dpdu(dpdu), dpdv(dpdv), shape(sh)
     {
     }
 
-    Spectrum SurfaceInteraction::Le(const glm::vec3 &w) const
+    Spectrum SurfaceInteraction::Le(const Vector3f &w) const
     {
         const AreaLight *area = hitable->GetAreaLight();
         if (area)

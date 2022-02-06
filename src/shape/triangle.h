@@ -32,18 +32,19 @@ namespace platinum
     class TriangleMesh final
     {
     public:
-        TriangleMesh(Transform* object2world, const std::string& filename);
-        const glm::vec3& GetPositionAt(int index) const { return _position[index]; }
-        const glm::vec3& GetNormalAt(int index) const { return _normal[index]; }
-        const glm::vec2& GetUVAt(int index) const { return _uv[index]; }
-        const std::vector<int>& GetIndices() const { return _indices; }
+        TriangleMesh(Transform *object2world, const std::string &filename);
+        const Vector3f &GetPositionAt(int index) const { return _position[index]; }
+        const Vector3f &GetNormalAt(int index) const { return _normal[index]; }
+        const Vector2f &GetUVAt(int index) const { return _uv[index]; }
+        const std::vector<int> &GetIndices() const { return _indices; }
 
         bool HasUV() const { return _uv != nullptr; }
         bool HasNormal() const { return _normal != nullptr; }
+
     private:
-        std::unique_ptr<glm::vec3[]> _position{ nullptr };
-        std::unique_ptr<glm::vec3[]> _normal{ nullptr };
-        std::unique_ptr<glm::vec2[]> _uv{ nullptr };
+        std::unique_ptr<Vector3f[]> _position{nullptr};
+        std::unique_ptr<Vector3f[]> _normal{nullptr};
+        std::unique_ptr<Vector2f[]> _uv{nullptr};
         std::vector<int> _indices;
         int _num_vertices;
     };
@@ -51,22 +52,22 @@ namespace platinum
     class Triangle final : public Shape
     {
     public:
-        Triangle(Transform* object2world, Transform* wordl2object, std::array<int, 3> indices, TriangleMesh* mesh)
+        Triangle(Transform *object2world, Transform *wordl2object, std::array<int, 3> indices, TriangleMesh *mesh)
             : Shape(object2world, wordl2object), _indices(indices), _mesh(mesh) {}
         virtual ~Triangle() = default;
         virtual float Area() const override;
-        virtual Interaction Sample(const glm::vec2& u, float& pdf) const override;
+        virtual Interaction Sample(const Vector2f &u, float &pdf) const override;
 
         virtual Bounds3f ObjectBound() const override;
         virtual Bounds3f WorldBound() const override;
 
-        virtual bool Hit(const Ray& ray) const override;
-        virtual bool Hit(const Ray& ray, float& tHit, SurfaceInteraction& isect) const override;
+        virtual bool Hit(const Ray &ray) const override;
+        virtual bool Hit(const Ray &ray, float &tHit, SurfaceInteraction &isect) const override;
 
-        virtual float SolidAngle(const glm::vec3& p, int nSamples = 512) const override;
+        virtual float SolidAngle(const Vector3f &p, int nSamples = 512) const override;
 
     private:
-        TriangleMesh* _mesh;
+        TriangleMesh *_mesh;
         std::array<int, 3> _indices;
     };
 }

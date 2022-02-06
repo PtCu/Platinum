@@ -50,9 +50,9 @@ namespace platinum
          *           wi方向一般是通过光采样得到的方向
          * @param  wo               出射方向
          * @param  wi               入射方向
-         * @return glm::vec3        radiance
+         * @return Vector3f        radiance
          */
-        virtual Spectrum F(const glm::vec3 &wo, const glm::vec3 &wi) const = 0;
+        virtual Spectrum F(const Vector3f &wo, const Vector3f &wi) const = 0;
 
         /**
          * @brief   返回入射方向为wi，出射方向为wo的概率密度(立体角空间)
@@ -61,7 +61,7 @@ namespace platinum
          * @param  wi               入射方向
          * @return float    概率密度值
          */
-        virtual float Pdf(const glm::vec3 &wo, const glm::vec3 &wi) const;
+        virtual float Pdf(const Vector3f &wo, const Vector3f &wi) const;
 
         /**
          * @brief   是F函数的简化，有时我们想仅仅输入出射方向，
@@ -77,9 +77,9 @@ namespace platinum
         * @param  sample      用于计算出射方向的样本点
         * @param  pdf         返回的对应方向上的概率密度函数
         * @param  sampledType BxDF的类型
-         * @return glm::vec3  radiance
+         * @return Vector3f  radiance
          */
-        virtual Spectrum SampleF(const glm::vec3 &wo, glm::vec3 &wi, const glm::vec2 &sample, float &pdf, BxDFType &sampleType) const;
+        virtual Spectrum SampleF(const Vector3f &wo, Vector3f &wi, const Vector2f &sample, float &pdf, BxDFType &sampleType) const;
 
         const BxDFType _type;
     };

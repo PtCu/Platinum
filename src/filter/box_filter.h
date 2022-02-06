@@ -8,9 +8,9 @@ namespace platinum
     class BoxFilter final : public Filter
     {
     public:
-        BoxFilter(const glm::vec2 &radius) : Filter(radius) {}
+        BoxFilter(const Vector2f &radius) : Filter(radius) {}
 
-        virtual float Evaluate(const glm::vec2 &p) const override
+        virtual float Evaluate(const Vector2f &p) const override
         {
             return 1.f;
         }

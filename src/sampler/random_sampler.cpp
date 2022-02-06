@@ -1,11 +1,11 @@
 // Copyright 2022 ptcup
-// 
+//
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
-// 
+//
 //     http://www.apache.org/licenses/LICENSE-2.0
-// 
+//
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -14,7 +14,8 @@
 
 #include <sampler/random_sampler.h>
 
-namespace platinum {
+namespace platinum
+{
 
     RandomSampler::RandomSampler(int ns) : Sampler(ns) {}
 
@@ -23,9 +24,9 @@ namespace platinum {
         return Random::UniformFloat();
     }
 
-    glm::vec2 RandomSampler::Get2D()
+    Vector2f RandomSampler::Get2D()
     {
-        return glm::vec2(Random::UniformFloat(), Random::UniformFloat());
+        return Vector2f(Random::UniformFloat(), Random::UniformFloat());
     }
 
     std::unique_ptr<Sampler> RandomSampler::Clone(int seed)
@@ -33,7 +34,7 @@ namespace platinum {
         return std::unique_ptr<Sampler>(new RandomSampler(*this));
     }
 
-    void RandomSampler::StartPixel(const glm::ivec2& p)
+    void RandomSampler::StartPixel(const glm::ivec2 &p)
     {
         for (size_t i = 0; i < _sampleArray1D.size(); ++i)
             for (size_t j = 0; j < _sampleArray1D[i].size(); ++j)

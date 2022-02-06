@@ -97,7 +97,37 @@ namespace platinum
     class RGBSpectrum;
 
     using Spectrum = RGBSpectrum;
+
     using Byte = unsigned char;
+
+    template <typename T>
+    using Vector3 = glm::vec<3, T>;
+
+    template <typename T>
+    using Vector2 = glm::vec<2, T>;
+
+    using Vector3f = Vector3<float>;
+    using Vector3i = Vector3<int>;
+    using Vector2f = Vector2<float>;
+    using Vector2i = Vector2<int>;
+
+    template <typename T>
+    using Ptr = std::shared_ptr<T>;
+
+    template <typename T>
+    using PtrC = Ptr<const T>;
+
+    template <typename T>
+    using WPtr = std::weak_ptr<T>;
+
+    template <typename T>
+    bool operator<(const WPtr<T> &lhs, const WPtr<T> &rhs)
+    {
+        return lhs.lock() < rhs.lock();
+    }
+
+    template <typename T>
+    using WPtrC = WPtr<const T>;
 
     template <typename T, typename U, typename V>
     inline T clamp(T val, U low, V high)
@@ -127,44 +157,42 @@ namespace platinum
             return value * 1.f / 12.92f;
         return glm::pow((value + 0.055f) * 1.f / 1.055f, (float)2.4f);
     }
-    inline float minComponent(const glm::vec3 &v) { return glm::min(v.x, glm::min(v.y, v.z)); }
+    inline float minComponent(const Vector3f &v) { return glm::min(v.x, glm::min(v.y, v.z)); }
 
-    inline float maxComponent(const glm::vec3 &v) { return glm::max(v.x, glm::max(v.y, v.z)); }
+    inline float maxComponent(const Vector3f &v) { return glm::max(v.x, glm::max(v.y, v.z)); }
 
-    inline int maxDimension(const glm::vec3 &v) { return (v.x > v.y) ? ((v.x > v.z) ? 0 : 2) : ((v.y > v.z) ? 1 : 2); }
+    inline int maxDimension(const Vector3f &v) { return (v.x > v.y) ? ((v.x > v.z) ? 0 : 2) : ((v.y > v.z) ? 1 : 2); }
 
-    inline glm::vec3 permute(const glm::vec3 &v, int x, int y, int z) { return glm::vec3(v[x], v[y], v[z]); }
+    inline Vector3f permute(const Vector3f &v, int x, int y, int z) { return Vector3f(v[x], v[y], v[z]); }
 
     template <typename T>
-    inline glm::vec<3,T> abs(const glm::vec<3,T> &p)
+    inline glm::vec<3, T> abs(const glm::vec<3, T> &p)
     {
-        return glm::vec<3,T>(glm::abs(p.x), glm::abs(p.y), glm::abs(p.z));
+        return glm::vec<3, T>(glm::abs(p.x), glm::abs(p.y), glm::abs(p.z));
     }
-    inline glm::vec3 faceforward(const glm::vec3 &n, const glm::vec3 &v) { return (glm::dot(n, v) < 0.f) ? -n : n; }
+    inline Vector3f faceforward(const Vector3f &n, const Vector3f &v) { return (glm::dot(n, v) < 0.f) ? -n : n; }
 
-    inline bool SameHemisphere(const glm::vec3 &w, const glm::vec3 &wp) { return w.z * wp.z > 0; }
+    inline bool SameHemisphere(const Vector3f &w, const Vector3f &wp) { return w.z * wp.z > 0; }
     //正交化，用于局部坐标
     //v1必须已经被归一化过
-    inline void coordinateSystem(const glm::vec3 &v1, glm::vec3 &v2, glm::vec3 &v3)
+    inline void coordinateSystem(const Vector3f &v1, Vector3f &v2, Vector3f &v3)
     {
         if (glm::abs(v1.x) > glm::abs(v1.y))
-            v2 = glm::vec3(-v1.z, 0, v1.x) / glm::sqrt(v1.x * v1.x + v1.z * v1.z);
+            v2 = Vector3f(-v1.z, 0, v1.x) / glm::sqrt(v1.x * v1.x + v1.z * v1.z);
         else
-            v2 = glm::vec3(0, v1.z, -v1.y) / glm::sqrt(v1.y * v1.y + v1.z * v1.z);
+            v2 = Vector3f(0, v1.z, -v1.y) / glm::sqrt(v1.y * v1.y + v1.z * v1.z);
         v3 = glm::cross(v1, v2);
     }
-    inline glm::vec3 sphericalDirection(float sinTheta, float cosTheta, float phi)
+    inline Vector3f sphericalDirection(float sinTheta, float cosTheta, float phi)
     {
-        return glm::vec3(sinTheta * glm::cos(phi), sinTheta * glm::sin(phi), cosTheta);
+        return Vector3f(sinTheta * glm::cos(phi), sinTheta * glm::sin(phi), cosTheta);
     }
 
-    inline glm::vec3 sphericalDirection(float sinTheta, float cosTheta, float phi,
-                                        const glm::vec3 &x, const glm::vec3 &y, const glm::vec3 &z)
+    inline Vector3f sphericalDirection(float sinTheta, float cosTheta, float phi,
+                                       const Vector3f &x, const Vector3f &y, const Vector3f &z)
     {
         return sinTheta * glm::cos(phi) * x + sinTheta * glm::sin(phi) * y + cosTheta * z;
     }
-
-   
 
     inline uint32_t floatToBits(float f)
     {
@@ -317,7 +345,6 @@ namespace platinum
         os << "[" << v.x << "," << v.y << "]";
         return os;
     }
-
 
 } // namespace platinum
 #endif

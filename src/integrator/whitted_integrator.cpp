@@ -29,9 +29,9 @@ namespace platinum
                 L += light->Le(ray);
             return L;
         }
-        
-        const glm::vec3 &n = inter.n;
-        glm::vec3 wo = inter.wo;
+
+        const Vector3f &n = inter.n;
+        Vector3f wo = inter.wo;
 
         inter.ComputeScatteringFunctions(ray);
         // 没有bsdf
@@ -40,7 +40,6 @@ namespace platinum
             return Li(scene, inter.SpawnRay(ray.GetDirection()), sampler, depth);
         }
 
-        
         // 如果光线打到光源，计算其发光值 -> Le (emission term)
         L += inter.Le(wo);
 
@@ -48,7 +47,7 @@ namespace platinum
         for (const auto &light : scene._lights)
         {
             float pdf;
-            glm::vec3 wi;
+            Vector3f wi;
             VisibilityTester visibility_tester;
             Spectrum sampled_li = light->SampleLi(inter, sampler.Get2D(), wi, pdf, visibility_tester);
             if (sampled_li.isBlack() || pdf == 0)

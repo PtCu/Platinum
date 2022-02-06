@@ -32,7 +32,7 @@ namespace platinum
 
     Bounds3f Sphere::ObjectBound() const
     {
-        return Bounds3f(-glm::vec3(_radius, _radius, _radius), glm::vec3(_radius, _radius, _radius));
+        return Bounds3f(-Vector3f(_radius, _radius, _radius), Vector3f(_radius, _radius, _radius));
     }
 
     float Sphere::Area() const
@@ -40,30 +40,30 @@ namespace platinum
         return 4.f * Pi * _radius * _radius;
     }
 
-    Interaction Sphere::Sample(const glm::vec2 &u, float &pdf) const
+    Interaction Sphere::Sample(const Vector2f &u, float &pdf) const
     {
-        glm::vec3 pObj = glm::vec3(0, 0, 0) + _radius * UniformSampleSphere(u);
+        Vector3f pObj = Vector3f(0, 0, 0) + _radius * UniformSampleSphere(u);
 
         Interaction it;
         it.n = glm::normalize((*_object2world).ExecOn(pObj, 0.0f));
 
-        pObj *= _radius / distance(pObj, glm::vec3(0, 0, 0));
+        pObj *= _radius / distance(pObj, Vector3f(0, 0, 0));
         it.p = (*_object2world).ExecOn(pObj, 1.0f);
 
         pdf = 1 / Area();
         return it;
     }
-    Interaction Sphere::Sample(const Interaction &ref, const glm::vec2 &u, float &pdf) const
+    Interaction Sphere::Sample(const Interaction &ref, const Vector2f &u, float &pdf) const
     {
         {
-            glm::vec3 pCenter = (*_object2world).ExecOn(glm::vec3(0, 0, 0), 1.0f);
+            Vector3f pCenter = (*_object2world).ExecOn(Vector3f(0, 0, 0), 1.0f);
 
             // Sample uniformly on sphere if $\pt{}$ is inside it
-            glm::vec3 pOrigin = ref.p;
+            Vector3f pOrigin = ref.p;
             if (glm::distance2(pOrigin, pCenter) <= _radius * _radius)
             {
                 Interaction intr = Sample(u, pdf);
-                glm::vec3 wi = intr.p - ref.p;
+                Vector3f wi = intr.p - ref.p;
                 if (dot(wi, wi) == 0)
                 {
                     pdf = 0;
@@ -85,8 +85,8 @@ namespace platinum
             // Compute coordinate system for sphere sampling
             float dc = distance(ref.p, pCenter);
             float invDc = 1 / dc;
-            glm::vec3 wc = (pCenter - ref.p) * invDc;
-            glm::vec3 wcX, wcY;
+            Vector3f wc = (pCenter - ref.p) * invDc;
+            Vector3f wcX, wcY;
             coordinateSystem(wc, wcX, wcY);
 
             // Compute $\theta$ and $\phi$ values for Sample in cone
@@ -113,8 +113,8 @@ namespace platinum
             float phi = u[1] * 2 * Pi;
 
             // Compute surface normal and sampled point on sphere
-            glm::vec3 nWorld = sphericalDirection(sinAlpha, cosAlpha, phi, -wcX, -wcY, -wc);
-            glm::vec3 pWorld = pCenter + _radius * glm::vec3(nWorld.x, nWorld.y, nWorld.z);
+            Vector3f nWorld = sphericalDirection(sinAlpha, cosAlpha, phi, -wcX, -wcY, -wc);
+            Vector3f pWorld = pCenter + _radius * Vector3f(nWorld.x, nWorld.y, nWorld.z);
 
             // Return _Interaction_ for sampled point on sphere
             Interaction it;
@@ -127,11 +127,11 @@ namespace platinum
             return it;
         }
     }
-    float Sphere::Pdf(const Interaction &ref, const glm::vec3 &wi) const
+    float Sphere::Pdf(const Interaction &ref, const Vector3f &wi) const
     {
-        glm::vec3 pCenter = (*_object2world).ExecOn(glm::vec3(0, 0, 0), 1.0f);
+        Vector3f pCenter = (*_object2world).ExecOn(Vector3f(0, 0, 0), 1.0f);
         // Return uniform PDF if point is inside sphere
-        glm::vec3 pOrigin = ref.p;
+        Vector3f pOrigin = ref.p;
         if (distance2(pOrigin, pCenter) <= _radius * _radius)
             return Shape::Pdf(ref, wi);
 
@@ -206,7 +206,7 @@ namespace platinum
                 return false;
         }
 
-        glm::vec3 p_hit = ray.GetPointAt(t_shape_hit);
+        Vector3f p_hit = ray.GetPointAt(t_shape_hit);
 
         // Refine sphere intersection point
         p_hit *= _radius / glm::l2Norm(p_hit);
@@ -232,11 +232,11 @@ namespace platinum
         float cosPhi = p_hit.x * inv_z_radius;
         float sinPhi = p_hit.y * inv_z_radius;
 
-        glm::vec3 dpdu(-2 * Pi * p_hit.y, 2 * Pi * p_hit.x, 0);
-        glm::vec3 dpdv(p_hit.z * cosPhi, p_hit.z * sinPhi, -_radius * glm::sin(theta));
+        Vector3f dpdu(-2 * Pi * p_hit.y, 2 * Pi * p_hit.x, 0);
+        Vector3f dpdv(p_hit.z * cosPhi, p_hit.z * sinPhi, -_radius * glm::sin(theta));
         dpdv *= 2 * Pi;
 
-        inter = _object2world->ExecOn(SurfaceInteraction(p_hit, glm::vec2(u, v), -ray._direction, dpdu, dpdv, this));
+        inter = _object2world->ExecOn(SurfaceInteraction(p_hit, Vector2f(u, v), -ray._direction, dpdu, dpdv, this));
 
         if (glm::dot(inter.n, inter.wo) < 0)
             inter.n = -inter.n;
@@ -244,9 +244,9 @@ namespace platinum
         return true;
     }
 
-    float Sphere::SolidAngle(const glm::vec3 &p, int nSamples) const
+    float Sphere::SolidAngle(const Vector3f &p, int nSamples) const
     {
-        glm::vec3 pCenter = (*_object2world).ExecOn(glm::vec3(0, 0, 0), 1.0f);
+        Vector3f pCenter = (*_object2world).ExecOn(Vector3f(0, 0, 0), 1.0f);
         if (distance2(p, pCenter) <= _radius * _radius)
             return 4 * Pi;
         float sinTheta2 = _radius * _radius / distance2(p, pCenter);

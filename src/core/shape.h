@@ -59,20 +59,20 @@ namespace platinum
 
         // Sample a point on the surface of the shape and return the PDF with
         // respect to area on the surface.
-        virtual Interaction Sample(const glm::vec2 &u, float &pdf) const = 0;
+        virtual Interaction Sample(const Vector2f &u, float &pdf) const = 0;
         virtual float Pdf(const Interaction &) const { return 1 / Area(); }
 
         // Sample a point on the shape given a reference point |ref| and
         // return the PDF with respect to solid angle from |ref|.
-        virtual Interaction Sample(const Interaction &ref, const glm::vec2 &u, float &pdf) const;
-        virtual float Pdf(const Interaction &ref, const glm::vec3 &wi) const;
+        virtual Interaction Sample(const Interaction &ref, const Vector2f &u, float &pdf) const;
+        virtual float Pdf(const Interaction &ref, const Vector3f &wi) const;
 
         // Returns the solid angle subtended by the shape w.r.t. the reference
         // point p, given in world space. Some shapes compute this value in
         // closed-form, while the default implementation uses Monte Carlo
         // integration; the nSamples parameter determines how many samples are
         // used in this case.
-        virtual float SolidAngle(const glm::vec3 &p, int nSamples = 512) const;
+        virtual float SolidAngle(const Vector3f &p, int nSamples = 512) const;
 
         Transform *_object2world = nullptr, *_world2object = nullptr;
     };

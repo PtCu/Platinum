@@ -59,7 +59,7 @@ namespace platinum
          * 下次调用时，获取下个维度的随机变量
          * @return   二维随机变量
          */
-        virtual glm::vec2 Get2D() = 0;
+        virtual Vector2f Get2D() = 0;
 
         CameraSample GetCameraSample(const glm::ivec2 &p_raster, Filter *flter = nullptr);
 
@@ -136,32 +136,32 @@ namespace platinum
         size_t _array1DOffset;
         size_t _array2DOffset;
     };
-    inline glm::vec3 UniformSampleHemisphere(const glm::vec2 &u)
+    inline Vector3f UniformSampleHemisphere(const Vector2f &u)
     {
         float z = u[0];
         float r = glm::sqrt(glm::max((float)0, (float)1. - z * z));
         float phi = 2 * Pi * u[1];
-        return glm::vec3(r * glm::cos(phi), r * glm::sin(phi), z);
+        return Vector3f(r * glm::cos(phi), r * glm::sin(phi), z);
     }
 
     inline float UniformHemispherePdf() { return Inv2Pi; }
 
-    inline glm::vec3 UniformSampleSphere(const glm::vec2 &u)
+    inline Vector3f UniformSampleSphere(const Vector2f &u)
     {
         float z = 1 - 2 * u[0];
         float r = glm::sqrt(glm::max((float)0, (float)1 - z * z));
         float phi = 2 * Pi * u[1];
-        return glm::vec3(r * glm::cos(phi), r * glm::sin(phi), z);
+        return Vector3f(r * glm::cos(phi), r * glm::sin(phi), z);
     }
 
-    inline glm::vec2 ConcentricSampleDisk(const glm::vec2 &u)
+    inline Vector2f ConcentricSampleDisk(const Vector2f &u)
     {
         // Map uniform random numbers to $[-1,1]^2$
-        glm::vec2 uOffset = 2.f * u - glm::vec2(1, 1);
+        Vector2f uOffset = 2.f * u - Vector2f(1, 1);
 
         // Handle degeneracy at the origin
         if (uOffset.x == 0 && uOffset.y == 0)
-            return glm::vec2(0, 0);
+            return Vector2f(0, 0);
 
         // Apply concentric mapping to point
         float theta, r;
@@ -175,24 +175,24 @@ namespace platinum
             r = uOffset.y;
             theta = PiOver2 - PiOver4 * (uOffset.x / uOffset.y);
         }
-        return r * glm::vec2(glm::cos(theta), glm::sin(theta));
+        return r * Vector2f(glm::cos(theta), glm::sin(theta));
     }
 
-    inline glm::vec2 UniformSampleTriangle(const glm::vec2 &u)
+    inline Vector2f UniformSampleTriangle(const Vector2f &u)
     {
         float su0 = glm::sqrt(u[0]);
-        return glm::vec2(1 - su0, u[1] * su0);
+        return Vector2f(1 - su0, u[1] * su0);
     }
 
     inline float UniformSpherePdf() { return Inv4Pi; }
 
     inline float UniformConePdf(float cosThetaMax) { return 1 / (2 * Pi * (1 - cosThetaMax)); }
 
-    inline glm::vec3 CosineSampleHemisphere(const glm::vec2 &u)
+    inline Vector3f CosineSampleHemisphere(const Vector2f &u)
     {
-        glm::vec2 d = ConcentricSampleDisk(u);
+        Vector2f d = ConcentricSampleDisk(u);
         float z = std::sqrt(glm::max((float)0, 1 - d.x * d.x - d.y * d.y));
-        return glm::vec3(d.x, d.y, z);
+        return Vector3f(d.x, d.y, z);
     }
 
     inline float CosineHemispherePdf(float cosTheta) { return cosTheta * InvPi; }

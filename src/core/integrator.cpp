@@ -26,7 +26,7 @@ namespace platinum
                                               const Scene &scene, Sampler &sampler, int depth) const
     {
         // Compute specular reflection direction _wi_ and BSDF value
-        glm::vec3 wo = inter.wo, wi;
+        Vector3f wo = inter.wo, wi;
         float pdf;
         BxDFType sampledType;
         BxDFType type = BxDFType(static_cast<int>(BxDFType::BSDF_REFLECTION) | static_cast<int>(BxDFType::BSDF_SPECULAR));
@@ -34,7 +34,7 @@ namespace platinum
         Spectrum f = inter.bsdf->SampleF(wo, wi, sampler.Get2D(), pdf, sampledType, type);
 
         // Return contribution of specular reflection
-        const glm::vec3 &ns = inter.n;
+        const Vector3f &ns = inter.n;
 
         if (pdf > 0.f && !f.isBlack() && glm::abs(glm::dot(wi, ns)) != 0.f)
         {
@@ -50,16 +50,16 @@ namespace platinum
     Spectrum TiledIntegrator::SpecularTransmit(const Ray &ray, const SurfaceInteraction &inter,
                                                const Scene &scene, Sampler &sampler, int depth) const
     {
-        glm::vec3 wo = inter.wo, wi;
+        Vector3f wo = inter.wo, wi;
         float pdf;
-        const glm::vec3 &p = inter.p;
+        const Vector3f &p = inter.p;
         const BSDF &bsdf = *(inter.bsdf);
         BxDFType type = BxDFType(static_cast<int>(BxDFType::BSDF_TRANSMISSION) | static_cast<int>(BxDFType::BSDF_SPECULAR));
-     
+
         BxDFType sampledType;
         Spectrum f = bsdf.SampleF(wo, wi, sampler.Get2D(), pdf, sampledType, type);
         Spectrum L = Spectrum(0.f);
-        glm::vec3 ns = inter.n;
+        Vector3f ns = inter.n;
 
         if (pdf > 0.f && !f.isBlack() && glm::abs(glm::dot(wi, ns)) != 0.f)
         {

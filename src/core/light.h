@@ -63,10 +63,10 @@ namespace platinum
          * @param  pdfDir 方向PDF
          * @return        [description]
          */
-        virtual Spectrum SampleLe(const glm::vec2 &u1, const glm::vec2 &u2, Ray &ray,
-                                  glm::vec3 &nLight, float &pdfPos, float &pdfDir) const = 0;
+        virtual Spectrum SampleLe(const Vector2f &u1, const Vector2f &u2, Ray &ray,
+                                  Vector3f &nLight, float &pdfPos, float &pdfDir) const = 0;
 
-        virtual void PdfLe(const Ray &, const glm::vec3 &, float &pdfPos, float &pdfDir) const = 0;
+        virtual void PdfLe(const Ray &, const Vector3f &, float &pdfPos, float &pdfDir) const = 0;
 
         /**
          * @brief 返回从指定位置inter随机采样光源表面的点得到的辐射度
@@ -75,10 +75,10 @@ namespace platinum
          * @param  wi               返回光线入射方向
          * @param  pdf              返回对应随机变量的pdf值
          * @param  vis              可见测试器
-         * @return glm::vec3        辐射度
+         * @return Vector3f        辐射度
          */
-        virtual Spectrum SampleLi(const Interaction &inter, const glm::vec2 &u,
-                                  glm::vec3 &wi, float &pdf, VisibilityTester &vis) const = 0;
+        virtual Spectrum SampleLi(const Interaction &inter, const Vector2f &u,
+                                  Vector3f &wi, float &pdf, VisibilityTester &vis) const = 0;
         /**
          * @brief   返回在inter处采样光源时，对应的pdf函数值
          *          用于估计直接光照时，采样bsdf时生成的wi方向，对应的pdf函数值
@@ -86,7 +86,7 @@ namespace platinum
          * @param  wi               My Param doc
          * @return float
          */
-        virtual float PdfLi(const Interaction &inter, const glm::vec3 &wi) const = 0;
+        virtual float PdfLi(const Interaction &inter, const Vector3f &wi) const = 0;
 
         //return their total emitted power
         virtual Spectrum Power() const = 0;
@@ -116,9 +116,9 @@ namespace platinum
          * 
          * @param inter 
          * @param w 
-         * @return glm::vec3 
+         * @return Vector3f 
          */
-        virtual Spectrum L(const Interaction &inter, const glm::vec3 &w) const = 0;
+        virtual Spectrum L(const Interaction &inter, const Vector3f &w) const = 0;
     };
 
 }

@@ -42,7 +42,7 @@ namespace platinum
         void writeImageToFile(float splatScale = 1);
 
         void setImage(const Spectrum *img) const;
-        void addSplat(const glm::vec2 &p, Spectrum v);
+        void addSplat(const Vector2f &p, Spectrum v);
 
         void clear();
 
@@ -100,7 +100,7 @@ namespace platinum
     {
     public:
         // FilmTile Public Methods
-        FilmTile(const Bounds2i &pixelBounds, const glm::vec2 &filterRadius, const float *filterTable,
+        FilmTile(const Bounds2i &pixelBounds, const Vector2f &filterRadius, const float *filterTable,
                  int filterTableSize, float maxSampleLuminance)
             : m_pixelBounds(pixelBounds), m_filterRadius(filterRadius),
               m_invFilterRadius(1 / filterRadius.x, 1 / filterRadius.y),
@@ -110,13 +110,13 @@ namespace platinum
             m_pixels = std::vector<FilmTilePixel>(glm::max(0, pixelBounds.Area()));
         }
 
-        void addSample(const glm::vec2 &pFilm, Spectrum L, float sampleWeight = 1.f)
+        void addSample(const Vector2f &pFilm, Spectrum L, float sampleWeight = 1.f)
         {
             if (L.y() > m_maxSampleLuminance)
                 L *= m_maxSampleLuminance / L.y();
 
             // Compute sample's raster bounds
-            glm::vec2 pFilmDiscrete = pFilm - glm::vec2(0.5f, 0.5f);
+            Vector2f pFilmDiscrete = pFilm - Vector2f(0.5f, 0.5f);
             glm::ivec2 p0 = (glm::ivec2)ceil(pFilmDiscrete - m_filterRadius);
             glm::ivec2 p1 = (glm::ivec2)floor(pFilmDiscrete + m_filterRadius) + glm::ivec2(1, 1);
             p0 = glm::max(p0, m_pixelBounds._p_min);
@@ -179,7 +179,7 @@ namespace platinum
 
     private:
         const Bounds2i m_pixelBounds;
-        const glm::vec2 m_filterRadius, m_invFilterRadius;
+        const Vector2f m_filterRadius, m_invFilterRadius;
         const float *m_filterTable;
         const int m_filterTableSize;
         std::vector<FilmTilePixel> m_pixels;

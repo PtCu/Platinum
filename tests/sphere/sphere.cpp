@@ -50,15 +50,15 @@ int main()
 
     primitives.push_back(std::make_shared<GeometricPrimitive>(sphere, material.get(), static_pointer_cast<AreaLight>(area_light)));
 
-    glm::vec3 eye{-25, -25, -25};
+    Vector3f eye{-25, -25, -25};
 
-    glm::vec3 focus{0,0,0};
+    Vector3f focus{0, 0, 0};
 
-    glm::vec3 up{0, -1, 0};
+    Vector3f up{0, -1, 0};
 
     Transform camera2world = Inverse(LookAt(eye, focus, up));
 
-    unique_ptr<Filter> filter = make_unique<BoxFilter>(glm::vec2{0.5f, 0.5f});
+    unique_ptr<Filter> filter = make_unique<BoxFilter>(Vector2f{0.5f, 0.5f});
     auto film = make_shared<Film>(glm::ivec2{600, 500}, Bounds2f{{0, 0}, {1, 1}}, std::move(filter), file_name);
 
     std::shared_ptr<Camera> camera = make_shared<PerspectiveCamera>(camera2world, 45, film);

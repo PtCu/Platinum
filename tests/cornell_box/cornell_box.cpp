@@ -64,7 +64,7 @@ int main()
     auto floor = make_unique<TriangleMesh>(&obj2world, assets_path + "cbox_floor.obj");
     auto ceiling = make_unique<TriangleMesh>(&obj2world, assets_path + "cbox_ceiling.obj");
     auto back = make_unique<TriangleMesh>(&obj2world, assets_path + "cbox_back.obj");
-    auto greenwall= make_unique<TriangleMesh>(&obj2world, assets_path + "cbox_greenwall.obj");
+    auto greenwall = make_unique<TriangleMesh>(&obj2world, assets_path + "cbox_greenwall.obj");
     auto redwall = make_unique<TriangleMesh>(&obj2world, assets_path + "cbox_redwall.obj");
     auto smallbox = make_unique<TriangleMesh>(&obj2world, assets_path + "cbox_smallbox.obj");
     auto largebox = make_unique<TriangleMesh>(&obj2world, assets_path + "cbox_largebox.obj");
@@ -88,16 +88,16 @@ int main()
 
     AddMesh(primitives, lights, &obj2world, &world2obj, gray.get(), light.get(), true);
 
-    glm::vec3 eye{278,273,-799};
-    glm::vec3 focus{278, 273, -800};
-    glm::vec3 up{0, 1, 0};
+    Vector3f eye{278, 273, -799};
+    Vector3f focus{278, 273, -800};
+    Vector3f up{0, 1, 0};
 
     Transform camera2world = Inverse(LookAt(eye, focus, up));
 
-    unique_ptr<Filter> filter = make_unique<BoxFilter>(glm::vec2{0.5f, 0.5f});
+    unique_ptr<Filter> filter = make_unique<BoxFilter>(Vector2f{0.5f, 0.5f});
     auto film = make_shared<Film>(glm::ivec2{666, 500}, Bounds2f{{0, 0}, {1, 1}}, std::move(filter), file_name);
 
-    std::shared_ptr<Camera> camera = make_shared<PerspectiveCamera>(camera2world,39,film);
+    std::shared_ptr<Camera> camera = make_shared<PerspectiveCamera>(camera2world, 39, film);
 
     std::shared_ptr<Sampler> sampler = make_shared<RandomSampler>(4);
 
@@ -108,5 +108,4 @@ int main()
     auto scene = make_shared<Scene>(aggre, lights);
 
     integrator->Render(*scene);
-
 }

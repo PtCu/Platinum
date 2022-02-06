@@ -37,34 +37,34 @@ namespace platinum
     {
     public:
         Interaction() = default;
-        explicit Interaction(const glm::vec3 &p) : p(p) {}
-        Interaction(const glm::vec3 &p, const glm::vec3 &wo) : p(p), wo(normalize(wo)) {}
-        Interaction(const glm::vec3 &p, const glm::vec3 &n, const glm::vec3 &wo)
+        explicit Interaction(const Vector3f &p) : p(p) {}
+        Interaction(const Vector3f &p, const Vector3f &wo) : p(p), wo(normalize(wo)) {}
+        Interaction(const Vector3f &p, const Vector3f &n, const Vector3f &wo)
             : p(p), wo(glm::normalize(wo)), n(n) {}
 
-        inline Ray SpawnRay(const glm::vec3 &d) const
+        inline Ray SpawnRay(const Vector3f &d) const
         {
-            glm::vec3 o = p;
+            Vector3f o = p;
             return Ray(o, d, std::numeric_limits<float>::max());
         }
 
-        inline Ray SpawnRayTo(const glm::vec3 &p2) const
+        inline Ray SpawnRayTo(const Vector3f &p2) const
         {
-            glm::vec3 origin = p;
+            Vector3f origin = p;
             return Ray(origin, p2 - p, 1.f - ShadowEpsilon);
         }
 
         inline Ray SpawnRayTo(const Interaction &it) const
         {
-            glm::vec3 origin = p;
-            glm::vec3 target = it.p;
-            glm::vec3 d = target - origin;
+            Vector3f origin = p;
+            Vector3f target = it.p;
+            Vector3f d = target - origin;
             return Ray(origin, d, 1.f - ShadowEpsilon);
         }
 
-        glm::vec3 p;  //surface point
-        glm::vec3 wo; //outgoing direction
-        glm::vec3 n;  //normal vector
+        Vector3f p;  //surface point
+        Vector3f wo; //outgoing direction
+        Vector3f n;  //normal vector
     };
 
     /**
@@ -75,11 +75,11 @@ namespace platinum
     {
     public:
         SurfaceInteraction() = default;
-        SurfaceInteraction(const glm::vec3 &p, const glm::vec2 &uv, const glm::vec3 &wo,
-                           const glm::vec3 &dpdu, const glm::vec3 &dpdv, const Shape *sh);
+        SurfaceInteraction(const Vector3f &p, const Vector2f &uv, const Vector3f &wo,
+                           const Vector3f &dpdu, const Vector3f &dpdv, const Shape *sh);
 
         //compute the emitted radiance at a surface point intersected by a ray.
-        Spectrum Le(const glm::vec3 &w) const;
+        Spectrum Le(const Vector3f &w) const;
 
         void ComputeScatteringFunctions(const Ray &ray);
 
@@ -93,8 +93,8 @@ namespace platinum
          *          dpdu和dpdv是p在u,v方向的微分。二者不必正交
          *
          */
-        glm::vec2 uv;
-        glm::vec3 dpdu, dpdv;
+        Vector2f uv;
+        Vector3f dpdu, dpdv;
     };
 
     class VisibilityTester final

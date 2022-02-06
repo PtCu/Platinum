@@ -33,27 +33,27 @@
 namespace platinum
 {
 
-    TriangleMesh::TriangleMesh(Transform* object2world, const std::string& filename)
+    TriangleMesh::TriangleMesh(Transform *object2world, const std::string &filename)
     {
-        std::vector<glm::vec3> position_total;
-        std::vector<glm::vec3> normal_total;
-        std::vector<glm::vec2> uv_total;
+        std::vector<Vector3f> position_total;
+        std::vector<Vector3f> normal_total;
+        std::vector<Vector2f> uv_total;
         std::vector<int> indices_total;
 
-        auto process_mesh = [&](aiMesh* mesh, const aiScene* scene) -> void
+        auto process_mesh = [&](aiMesh *mesh, const aiScene *scene) -> void
         {
-            std::vector<glm::vec3> position;
-            std::vector<glm::vec3> normal;
-            std::vector<glm::vec2> uv;
+            std::vector<Vector3f> position;
+            std::vector<Vector3f> normal;
+            std::vector<Vector2f> uv;
             std::vector<int> indices;
 
             for (unsigned int i = 0; i < mesh->mNumVertices; ++i)
             {
-                position.push_back(glm::vec3(mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z));
-                normal.push_back(glm::vec3(mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z));
+                position.push_back(Vector3f(mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z));
+                normal.push_back(Vector3f(mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z));
                 if (mesh->mTextureCoords[0])
                 {
-                    uv.push_back(glm::vec2(mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y));
+                    uv.push_back(Vector2f(mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y));
                 }
             }
 
@@ -73,15 +73,15 @@ namespace platinum
             indices_total.insert(indices_total.end(), indices.begin(), indices.end());
         };
 
-        std::function<void(aiNode* node, const aiScene* scene)> process_node;
-        process_node = [&](aiNode* node, const aiScene* scene) -> void
+        std::function<void(aiNode * node, const aiScene *scene)> process_node;
+        process_node = [&](aiNode *node, const aiScene *scene) -> void
         {
             // Process each mesh located at the current node
             for (unsigned int i = 0; i < node->mNumMeshes; ++i)
             {
                 // The node object only contains indices to index the actual objects in the scene.
                 // The scene contains all the data, node is just to keep stuff organized (like relations between nodes).
-                aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
+                aiMesh *mesh = scene->mMeshes[node->mMeshes[i]];
                 process_mesh(mesh, scene);
             }
             for (unsigned int i = 0; i < node->mNumChildren; ++i)
@@ -91,8 +91,8 @@ namespace platinum
         };
 
         Assimp::Importer importer;
-        const aiScene* scene = importer.ReadFile(filename, aiProcess_Triangulate | aiProcess_GenSmoothNormals |
-            aiProcess_FlipUVs | aiProcess_FixInfacingNormals | aiProcess_OptimizeMeshes);
+        const aiScene *scene = importer.ReadFile(filename, aiProcess_Triangulate | aiProcess_GenSmoothNormals |
+                                                               aiProcess_FlipUVs | aiProcess_FixInfacingNormals | aiProcess_OptimizeMeshes);
 
         if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
         {
@@ -103,14 +103,14 @@ namespace platinum
         process_node(scene->mRootNode, scene);
 
         _num_vertices = position_total.size();
-        _position.reset(new glm::vec3[_num_vertices]);
+        _position.reset(new Vector3f[_num_vertices]);
         if (!normal_total.empty())
         {
-            _normal.reset(new glm::vec3[_num_vertices]);
+            _normal.reset(new Vector3f[_num_vertices]);
         }
         if (!uv_total.empty())
         {
-            _uv.reset(new glm::vec2[_num_vertices]);
+            _uv.reset(new Vector2f[_num_vertices]);
         }
 
         for (unsigned int i = 0; i < _num_vertices; ++i)
@@ -131,53 +131,54 @@ namespace platinum
 
     Bounds3f Triangle::ObjectBound() const
     {
-        const auto& p0 = _mesh->GetPositionAt(_indices[0]);
-        const auto& p1 = _mesh->GetPositionAt(_indices[1]);
-        const auto& p2 = _mesh->GetPositionAt(_indices[2]);
+        const auto &p0 = _mesh->GetPositionAt(_indices[0]);
+        const auto &p1 = _mesh->GetPositionAt(_indices[1]);
+        const auto &p2 = _mesh->GetPositionAt(_indices[2]);
         return UnionBounds(Bounds3f(_world2object->ExecOn(p0, 1.f), _world2object->ExecOn(p1, 1.f)), _world2object->ExecOn(p2, 1.f));
     }
 
     Bounds3f Triangle::WorldBound() const
     {
-        const auto& p0 = _mesh->GetPositionAt(_indices[0]);
-        const auto& p1 = _mesh->GetPositionAt(_indices[1]);
-        const auto& p2 = _mesh->GetPositionAt(_indices[2]);
+        const auto &p0 = _mesh->GetPositionAt(_indices[0]);
+        const auto &p1 = _mesh->GetPositionAt(_indices[1]);
+        const auto &p2 = _mesh->GetPositionAt(_indices[2]);
         return UnionBounds(Bounds3f(p0, p1), p2);
     }
-    float Triangle::Area()const {
-        const auto& p0 = _mesh->GetPositionAt(_indices[0]);
-        const auto& p1 = _mesh->GetPositionAt(_indices[1]);
-        const auto& p2 = _mesh->GetPositionAt(_indices[2]);
+    float Triangle::Area() const
+    {
+        const auto &p0 = _mesh->GetPositionAt(_indices[0]);
+        const auto &p1 = _mesh->GetPositionAt(_indices[1]);
+        const auto &p2 = _mesh->GetPositionAt(_indices[2]);
         return 0.5f * glm::length(glm::cross(p1 - p0, p2 - p0));
     }
 
-    Interaction Triangle::Sample(const glm::vec2& u, float& pdf) const
+    Interaction Triangle::Sample(const Vector2f &u, float &pdf) const
     {
         //重心坐标
-        glm::vec2 b = UniformSampleTriangle(u);
+        Vector2f b = UniformSampleTriangle(u);
         // Get triangle vertices in _p0_, _p1_, and _p2_
-        const auto& p0 = _mesh->GetPositionAt(_indices[0]);
-        const auto& p1 = _mesh->GetPositionAt(_indices[1]);
-        const auto& p2 = _mesh->GetPositionAt(_indices[2]);
+        const auto &p0 = _mesh->GetPositionAt(_indices[0]);
+        const auto &p1 = _mesh->GetPositionAt(_indices[1]);
+        const auto &p2 = _mesh->GetPositionAt(_indices[2]);
         Interaction it;
         it.p = b[0] * p0 + b[1] * p1 + (1 - b[0] - b[1]) * p2;
         // Compute surface normal for sampled point on triangle
-        it.n = glm::normalize(glm::vec3(glm::cross(p1 - p0, p2 - p0)));
+        it.n = glm::normalize(Vector3f(glm::cross(p1 - p0, p2 - p0)));
 
         pdf = 1.f / Area();
-     
+
         return it;
     }
 
-    bool Triangle::Hit(const Ray& ray) const {
-        const auto& p0 = _mesh->GetPositionAt(_indices[0]);
-        const auto& p1 = _mesh->GetPositionAt(_indices[1]);
-        const auto& p2 = _mesh->GetPositionAt(_indices[2]);
+    bool Triangle::Hit(const Ray &ray) const
+    {
+        const auto &p0 = _mesh->GetPositionAt(_indices[0]);
+        const auto &p1 = _mesh->GetPositionAt(_indices[1]);
+        const auto &p2 = _mesh->GetPositionAt(_indices[2]);
 
-
-        glm::vec3 p0t = p0 - glm::vec3(ray._origin);
-        glm::vec3 p1t = p1 - glm::vec3(ray._origin);
-        glm::vec3 p2t = p2 - glm::vec3(ray._origin);
+        Vector3f p0t = p0 - Vector3f(ray._origin);
+        Vector3f p1t = p1 - Vector3f(ray._origin);
+        Vector3f p2t = p2 - Vector3f(ray._origin);
         int kz = maxDimension(glm::abs(ray._direction));
         // int kx = kz + 1;
         // if (kx == 3) kx = 0;
@@ -185,7 +186,7 @@ namespace platinum
         // if (ky == 3) ky = 0;
         int kx = (kz + 1) % 3;
         int ky = (kx + 1) % 3;
-        glm::vec3 d = permute(ray._direction, kx, ky, kz);
+        Vector3f d = permute(ray._direction, kx, ky, kz);
         p0t = permute(p0t, kx, ky, kz);
         p1t = permute(p2t, kx, ky, kz);
         p2t = permute(p1t, kx, ky, kz);
@@ -231,12 +232,12 @@ namespace platinum
         float t = t_scaled * invDet;
 
         // Compute $\delta_z$ term for triangle $t$ error bounds
-        float maxZt = maxComponent(glm::abs(glm::vec3(p0t.z, p1t.z, p2t.z)));
+        float maxZt = maxComponent(glm::abs(Vector3f(p0t.z, p1t.z, p2t.z)));
         float deltaZ = gamma(3) * maxZt;
 
         // Compute $\delta_x$ and $\delta_y$ terms for triangle $t$ error bounds
-        float maxXt = maxComponent(glm::abs(glm::vec3(p0t.x, p1t.x, p2t.x)));
-        float maxYt = maxComponent(glm::abs(glm::vec3(p0t.y, p1t.y, p2t.y)));
+        float maxXt = maxComponent(glm::abs(Vector3f(p0t.x, p1t.x, p2t.x)));
+        float maxYt = maxComponent(glm::abs(Vector3f(p0t.y, p1t.y, p2t.y)));
         float deltaX = gamma(5) * (maxXt + maxZt);
         float deltaY = gamma(5) * (maxYt + maxZt);
 
@@ -244,23 +245,22 @@ namespace platinum
         float deltaE = 2 * (gamma(2) * maxXt * maxYt + deltaY * maxXt + deltaX * maxYt);
 
         // Compute $\delta_t$ term for triangle $t$ error bounds and check _t_
-        float maxE = maxComponent(glm::abs(glm::vec3(e0, e1, e2)));
+        float maxE = maxComponent(glm::abs(Vector3f(e0, e1, e2)));
         float deltaT = 3 * (gamma(3) * maxE * maxZt + deltaE * maxZt + deltaZ * maxE) * glm::abs(invDet);
         if (t <= deltaT)
             return false;
 
         return true;
-
     }
-    bool Triangle::Hit(const Ray& ray, float& tHit, SurfaceInteraction& inter) const {
-        const auto& p0 = _mesh->GetPositionAt(_indices[0]);
-        const auto& p1 = _mesh->GetPositionAt(_indices[1]);
-        const auto& p2 = _mesh->GetPositionAt(_indices[2]);
+    bool Triangle::Hit(const Ray &ray, float &tHit, SurfaceInteraction &inter) const
+    {
+        const auto &p0 = _mesh->GetPositionAt(_indices[0]);
+        const auto &p1 = _mesh->GetPositionAt(_indices[1]);
+        const auto &p2 = _mesh->GetPositionAt(_indices[2]);
 
-
-        glm::vec3 p0t = p0 - ray._origin;
-        glm::vec3 p1t = p1 - ray._origin;
-        glm::vec3 p2t = p2 - ray._origin;
+        Vector3f p0t = p0 - ray._origin;
+        Vector3f p1t = p1 - ray._origin;
+        Vector3f p2t = p2 - ray._origin;
 
         int kz = maxDimension(glm::abs(ray._direction));
         // int kx = kz + 1;
@@ -269,7 +269,7 @@ namespace platinum
         // if (ky == 3) ky = 0;
         int kx = (kz + 1) % 3;
         int ky = (kx + 1) % 3;
-        glm::vec3 d = permute(ray._direction, kx, ky, kz);
+        Vector3f d = permute(ray._direction, kx, ky, kz);
         p0t = permute(p0t, kx, ky, kz);
         p1t = permute(p1t, kx, ky, kz);
         p2t = permute(p2t, kx, ky, kz);
@@ -315,12 +315,12 @@ namespace platinum
         float t = t_scaled * invDet;
 
         // Compute $\delta_z$ term for triangle $t$ error bounds
-        float maxZt = maxComponent(glm::abs(glm::vec3(p0t.z, p1t.z, p2t.z)));
+        float maxZt = maxComponent(glm::abs(Vector3f(p0t.z, p1t.z, p2t.z)));
         float deltaZ = gamma(3) * maxZt;
 
         // Compute $\delta_x$ and $\delta_y$ terms for triangle $t$ error bounds
-        float maxXt = maxComponent(glm::abs(glm::vec3(p0t.x, p1t.x, p2t.x)));
-        float maxYt = maxComponent(glm::abs(glm::vec3(p0t.y, p1t.y, p2t.y)));
+        float maxXt = maxComponent(glm::abs(Vector3f(p0t.x, p1t.x, p2t.x)));
+        float maxYt = maxComponent(glm::abs(Vector3f(p0t.y, p1t.y, p2t.y)));
         float deltaX = gamma(5) * (maxXt + maxZt);
         float deltaY = gamma(5) * (maxYt + maxZt);
 
@@ -328,14 +328,14 @@ namespace platinum
         float deltaE = 2 * (gamma(2) * maxXt * maxYt + deltaY * maxXt + deltaX * maxYt);
 
         // Compute $\delta_t$ term for triangle $t$ error bounds and check _t_
-        float maxE = maxComponent(glm::abs(glm::vec3(e0, e1, e2)));
+        float maxE = maxComponent(glm::abs(Vector3f(e0, e1, e2)));
         float deltaT = 3 * (gamma(3) * maxE * maxZt + deltaE * maxZt + deltaZ * maxE) * glm::abs(invDet);
         if (t <= deltaT)
             return false;
 
         // Compute triangle partial derivatives
-        glm::vec3 dpdu, dpdv;
-        glm::vec2 uv[3];
+        Vector3f dpdu, dpdv;
+        Vector2f uv[3];
         if (_mesh->HasUV())
         {
             uv[0] = _mesh->GetUVAt(_indices[0]);
@@ -344,14 +344,14 @@ namespace platinum
         }
         else
         {
-            uv[0] = glm::vec2(0, 0);
-            uv[1] = glm::vec2(1, 0);
-            uv[2] = glm::vec2(1, 1);
+            uv[0] = Vector2f(0, 0);
+            uv[1] = Vector2f(1, 0);
+            uv[2] = Vector2f(1, 1);
         }
 
         // Compute deltas for triangle partial derivatives
-        glm::vec2 duv02 = uv[0] - uv[2], duv12 = uv[1] - uv[2];
-        glm::vec3 dp02 = p0 - p2, dp12 = p1 - p2;
+        Vector2f duv02 = uv[0] - uv[2], duv12 = uv[1] - uv[2];
+        Vector3f dp02 = p0 - p2, dp12 = p1 - p2;
         float determinant = duv02[0] * duv12[1] - duv02[1] * duv12[0];
         bool degenerateUV = glm::abs(determinant) < 1e-8;
         if (!degenerateUV)
@@ -363,7 +363,7 @@ namespace platinum
         if (degenerateUV || glm::length2(glm::cross(dpdu, dpdv)) == 0)
         {
             // Handle zero determinant for triangle partial derivative matrix
-            glm::vec3 ng = glm::cross(p2 - p0, p1 - p0);
+            Vector3f ng = glm::cross(p2 - p0, p1 - p0);
             // The triangle is actually degenerate; the intersection is bogus.
             if (glm::length2(ng) == 0)
                 return false;
@@ -372,21 +372,20 @@ namespace platinum
         }
 
         // Interpolate $(u,v)$ parametric coordinates and hit point
-        glm::vec3 p_hit = b0 * p0 + b1 * p1 + b2 * p2;
-        glm::vec2 uv_hit = b0 * uv[0] + b1 * uv[1] + b2 * uv[2];
+        Vector3f p_hit = b0 * p0 + b1 * p1 + b2 * p2;
+        Vector2f uv_hit = b0 * uv[0] + b1 * uv[1] + b2 * uv[2];
 
         // Fill in _SurfaceInteraction_ from triangle hit
         inter = SurfaceInteraction(p_hit, uv_hit, -ray._direction, dpdu, dpdv, this);
 
         // Override surface normal in _isect_ for triangle
-        inter.n = glm::vec3(glm::normalize(glm::cross(dp02, dp12)));
+        inter.n = Vector3f(glm::normalize(glm::cross(dp02, dp12)));
         tHit = t;
 
         if (_mesh->HasNormal())
         {
-            glm::vec3 ns;
-            ns = b0 * _mesh->GetNormalAt(_indices[0]) + b1 * _mesh->GetNormalAt(_indices[1])
-                + b2 * _mesh->GetNormalAt(_indices[2]);
+            Vector3f ns;
+            ns = b0 * _mesh->GetNormalAt(_indices[0]) + b1 * _mesh->GetNormalAt(_indices[1]) + b2 * _mesh->GetNormalAt(_indices[2]);
             if (glm::length2(ns) > 0)
             {
                 ns = glm::normalize(ns);
@@ -401,13 +400,13 @@ namespace platinum
         return true;
     }
 
-    float Triangle::SolidAngle(const glm::vec3 &p, int nSamples) const
+    float Triangle::SolidAngle(const Vector3f &p, int nSamples) const
     {
         // Project the vertices into the unit sphere around p.
         const auto &p0 = _mesh->GetPositionAt(_indices[0]);
         const auto &p1 = _mesh->GetPositionAt(_indices[1]);
         const auto &p2 = _mesh->GetPositionAt(_indices[2]);
-        std::array<glm::vec3, 3> pSphere = {glm::normalize(p0 - p), glm::normalize(p1 - p), glm::normalize(p2 - p)};
+        std::array<Vector3f, 3> pSphere = {glm::normalize(p0 - p), glm::normalize(p1 - p), glm::normalize(p2 - p)};
 
         // http://math.stackexchange.com/questions/9819/area-of-a-spherical-triangle
         // Girard's theorem: surface area of a spherical triangle on a unit
@@ -420,9 +419,9 @@ namespace platinum
         // cos theta =  Dot(Cross(c, a), Cross(b, a)) /
         //              (Length(Cross(c, a)) * Length(Cross(b, a))).
         //
-        glm::vec3 cross01 = (cross(pSphere[0], pSphere[1]));
-        glm::vec3 cross12 = (cross(pSphere[1], pSphere[2]));
-        glm::vec3 cross20 = (cross(pSphere[2], pSphere[0]));
+        Vector3f cross01 = (cross(pSphere[0], pSphere[1]));
+        Vector3f cross12 = (cross(pSphere[1], pSphere[2]));
+        Vector3f cross20 = (cross(pSphere[2], pSphere[0]));
 
         // Some of these vectors may be degenerate. In this case, we don't want
         // to glm::normalize them so that we don't hit an assert. This is fine,

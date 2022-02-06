@@ -28,9 +28,9 @@ namespace platinum
         return num;
     }
 
-    Spectrum BSDF::F(const glm::vec3 &woW, const glm::vec3 &wiW, BxDFType flags) const
+    Spectrum BSDF::F(const Vector3f &woW, const Vector3f &wiW, BxDFType flags) const
     {
-        glm::vec3 wi = World2Local(wiW), wo = World2Local(woW);
+        Vector3f wi = World2Local(wiW), wo = World2Local(woW);
         if (0 == wo.z)
             return Spectrum(0.f);
 
@@ -51,7 +51,7 @@ namespace platinum
         return f;
     }
 
-    Spectrum BSDF::SampleF(const glm::vec3 &woWorld, glm::vec3 &wiWorld, const glm::vec2 &u, float &pdf,
+    Spectrum BSDF::SampleF(const Vector3f &woWorld, Vector3f &wiWorld, const Vector2f &u, float &pdf,
                            BxDFType &sampledType, BxDFType type) const
     {
         // Choose which _BxDF_ to sample
@@ -81,11 +81,11 @@ namespace platinum
         }
         CHECK(bxdf != nullptr);
         // Remap _BxDF_ sample _u_ to $[0,1)^2$
-        glm::vec2 uRemapped(glm::min(u[0] * matchingComps - comp, OneMinusEpsilon), u[1]);
+        Vector2f uRemapped(glm::min(u[0] * matchingComps - comp, OneMinusEpsilon), u[1]);
 
         // Sample chosen _BxDF_
-        glm::vec3 wi;
-        glm::vec3 wo = World2Local(woWorld);
+        Vector3f wi;
+        Vector3f wo = World2Local(woWorld);
         if (wo.z == 0)
         {
             return Spectrum(0.f);
@@ -147,14 +147,14 @@ namespace platinum
         return f;
     }
 
-    float BSDF::Pdf(const glm::vec3 &woWorld, const glm::vec3 &wiWorld, BxDFType flags) const
+    float BSDF::Pdf(const Vector3f &woWorld, const Vector3f &wiWorld, BxDFType flags) const
     {
         if (_BxDFs.empty())
         {
             return 0.f;
         }
 
-        glm::vec3 wo = World2Local(woWorld), wi = World2Local(wiWorld);
+        Vector3f wo = World2Local(woWorld), wi = World2Local(wiWorld);
 
         if (0 == wo.z)
         {
