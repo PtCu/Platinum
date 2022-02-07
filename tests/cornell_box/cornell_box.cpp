@@ -97,7 +97,7 @@ int main()
     unique_ptr<Filter> filter = make_unique<BoxFilter>(Vector2f{0.5f, 0.5f});
     auto film = make_shared<Film>(Vector2i{666, 500}, Bounds2f{{0, 0}, {1, 1}}, std::move(filter), file_name);
 
-    Ptr<Camera> camera = make_shared<PerspectiveCamera>(camera2world, 39, film);
+    Ptr<Camera> camera = make_shared<PerspectiveCamera>(camera2world, 45, film);
 
     Ptr<Sampler> sampler = make_shared<RandomSampler>(4);
 

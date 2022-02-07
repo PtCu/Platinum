@@ -83,35 +83,35 @@ namespace platinum
     Transform RotateX(float theta)
     {
         glm::mat4 trans = glm::rotate(glm::mat4(1.0f), glm::radians(theta), Vector3f(1, 0, 0));
-        glm::mat4 transInv = inverse(trans);
+        glm::mat4 transInv = glm::inverse(trans);
         return Transform(trans, transInv);
     }
 
     Transform RotateY(float theta)
     {
         glm::mat4 trans = glm::rotate(glm::mat4(1.0f), glm::radians(theta), Vector3f(0, 1, 0));
-        glm::mat4 transInv = inverse(trans);
+        glm::mat4 transInv = glm::inverse(trans);
         return Transform(trans, transInv);
     }
 
     Transform RotateZ(float theta)
     {
         glm::mat4 trans = glm::rotate(glm::mat4(1.0f), glm::radians(theta), Vector3f(0, 0, 1));
-        glm::mat4 transInv = inverse(trans);
+        glm::mat4 transInv = glm::inverse(trans);
         return Transform(trans, transInv);
     }
 
     Transform Rotate(float theta, const Vector3f &axis)
     {
         glm::mat4 trans = glm::rotate(glm::mat4(1.0f), glm::radians(theta), axis);
-        glm::mat4 transInv = inverse(trans);
+        glm::mat4 transInv = glm::inverse(trans);
         return Transform(trans, transInv);
     }
 
     Transform LookAt(const Vector3f &pos, const Vector3f &look, const Vector3f &up)
     {
         glm::mat4 worldToCamera = glm::lookAtLH(pos, look, up);
-        return Transform(worldToCamera, inverse(worldToCamera));
+        return Transform(worldToCamera, glm::inverse(worldToCamera));
     }
 
     Transform Orthographic(float znear, float zfar)

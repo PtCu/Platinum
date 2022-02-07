@@ -17,14 +17,14 @@
 namespace platinum
 {
 
-    PerspectiveCamera::PerspectiveCamera(const Transform &camera2world, float fov, Ptr<Film> film) : ProjectiveCamera(camera2world, Perspective(fov, 1e-2f, 1000.f), film)
+    PerspectiveCamera::PerspectiveCamera(const Transform &camera2world, float fov, Ptr<Film> film)
+        : ProjectiveCamera(camera2world, Perspective(fov, 1e-2f, 1000.f), film)
     {
         Initialize();
     }
     void PerspectiveCamera::Initialize()
     {
         ProjectiveCamera::Initialize();
-
         auto res = _film->GetResolution();
         auto p_min = _raster2camera.ExecOn(Vector3f(0.f), 1.f);
         auto p_max = _raster2camera.ExecOn(Vector3f(res.x, res.y, 0.f), 1.f);
@@ -40,7 +40,6 @@ namespace platinum
         //转化为相机坐标
         Vector3f p_camera = _raster2camera.ExecOn(p_film, 1.f);
         ray = Ray(Vector3f(0.f), glm::normalize(p_camera));
-        //TODO:
         ray = _camera2world.ExecOn(ray);
         return 1.f;
     }

@@ -27,15 +27,20 @@ namespace platinum
     public:
         Transform()
             : _trans(glm::mat4(1.f)), _trans_inv(glm::mat4(1.f)) {}
+
         explicit Transform(const glm::mat4 &m) : _trans(m), _trans_inv(glm::inverse(m)) {}
+
         Transform(const glm::mat4 &m, const glm::mat4 &m_inv)
             : _trans(m), _trans_inv(m_inv) {}
+
         Transform(float mat[16])
         {
             _trans = glm::make_mat4(mat);
             _trans_inv = glm::inverse(_trans);
         }
+
         friend Transform Inverse(const Transform &t) { return Transform(t._trans_inv, t._trans); }
+
         friend Transform Transpose(const Transform &t) { return Transform(glm::transpose(t._trans), glm::transpose(t._trans)); }
 
         bool operator==(const Transform &t) const
@@ -52,9 +57,11 @@ namespace platinum
         }
         Transform operator*(const Transform &t2) const
         {
-            return Transform(_trans * t2._trans, _trans_inv * t2._trans_inv);
+            return Transform(_trans * t2._trans, t2._trans_inv * _trans_inv);
         }
+
         const glm::mat4 &GetMatrix() const { return _trans; }
+
         const glm::mat4 &GetInverseMatrix() const { return _trans_inv; }
 
         /**

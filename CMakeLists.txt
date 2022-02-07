@@ -12,6 +12,10 @@ find_package(assimp CONFIG REQUIRED)
 #target_link_libraries(main PRIVATE assimp::assimp)
 find_package(glog CONFIG REQUIRED)
 #target_link_libraries(main PRIVATE glog::glog)
+
+# find_package(TBB CONFIG REQUIRED)
+# target_link_libraries(main PRIVATE TBB::tbb)
+
 #---------------------------------------
 macro(SETUP_PROJECT MODE TARGET_NAME STR_TARGET_SOURCES STR_TARGET_LIBS)
 	string(REPLACE " " ";" LIST_TARGET_SOURCES ${STR_TARGET_SOURCES})
