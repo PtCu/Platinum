@@ -88,8 +88,8 @@ int main()
 
     AddMesh(primitives, lights, &obj2world, &world2obj, gray.get(), light.get(), true);
 
-    Vector3f eye{278, 273, -799};
-    Vector3f focus{278, 273, -800};
+    Vector3f eye{278, 273, -800};
+    Vector3f focus{278, 273, -799};
     Vector3f up{0, 1, 0};
 
     Transform camera2world = Inverse(LookAt(eye, focus, up));

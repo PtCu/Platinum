@@ -38,8 +38,8 @@ namespace platinum
 
         void Add(BxDF *b)
         {
-            CHECK_LT(_BxDF_idx, _max_BxDF_num);
-            _BxDFs[_BxDF_idx++] = b;
+            CHECK_LT(_BxDF_num, _max_BxDF_num);
+            _BxDFs[_BxDF_num++] = b;
         }
         int NumComponents(BxDFType flags = BxDFType::BSDF_ALL) const;
 
@@ -64,7 +64,7 @@ namespace platinum
         //局部坐标
         const Vector3f _ns, _ss, _ts;
         static constexpr int _max_BxDF_num{8};
-        int _BxDF_idx{0};
+        int _BxDF_num{0};
         std::array<BxDF *, _max_BxDF_num> _BxDFs;
     };
 

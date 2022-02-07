@@ -16,6 +16,6 @@
 #include <core/scene.h>
 namespace platinum {
     bool VisibilityTester::Unoccluded(const Scene& scene)const {
-        return scene.Hit(_p0.SpawnRayTo(_p1));
+        return !scene.Hit(_p0.SpawnRayTo(_p1));
     }
 }

@@ -20,11 +20,12 @@ namespace platinum
     int BSDF::NumComponents(BxDFType flags) const
     {
         int num = 0;
-        for (const auto &b : _BxDFs)
+        for (size_t i = 0; i < _BxDF_num; ++i)
         {
-            if (b->MatchTypes(flags))
+            if (_BxDFs[i]->MatchTypes(flags))
                 ++num;
         }
+
         return num;
     }
 
@@ -38,13 +39,13 @@ namespace platinum
         //reflect表示入射光和出射光是否在一个半球内
         bool reflect = glm::dot(wiW, _ns) * glm::dot(woW, _ns) > 0;
         Spectrum f(0.f);
-        for (const auto &b : _BxDFs)
+        for (size_t i = 0; i < _BxDF_num; ++i)
         {
-            if (b->MatchTypes(flags) &&
-                ((reflect && (static_cast<int>(b->_type) & static_cast<int>(BxDFType::BSDF_REFLECTION))) ||
-                 (!reflect && (static_cast<int>(b->_type) & static_cast<int>(BxDFType::BSDF_TRANSMISSION)))))
+            if (_BxDFs[i]->MatchTypes(flags) &&
+                ((reflect && (static_cast<int>(_BxDFs[i]->_type) & static_cast<int>(BxDFType::BSDF_REFLECTION))) ||
+                 (!reflect && (static_cast<int>(_BxDFs[i]->_type) & static_cast<int>(BxDFType::BSDF_TRANSMISSION)))))
             {
-                f += b->F(wo, wi);
+                f += _BxDFs[i]->F(wo, wi);
             }
         }
 
@@ -71,14 +72,15 @@ namespace platinum
         // Get _BxDF_ pointer for chosen component
         BxDF *bxdf = nullptr;
         int count = comp;
-        for (const auto &b : _BxDFs)
+        for (size_t i = 0; i < _BxDF_num; ++i)
         {
-            if (b->MatchTypes(type) && count-- == 0)
+            if (_BxDFs[i]->MatchTypes(type) && 0 == count--)
             {
-                bxdf = b;
+                bxdf = _BxDFs[i];
                 break;
             }
         }
+
         CHECK(bxdf != nullptr);
         // Remap _BxDF_ sample _u_ to $[0,1)^2$
         Vector2f uRemapped(glm::min(u[0] * matchingComps - comp, OneMinusEpsilon), u[1]);
@@ -115,12 +117,10 @@ namespace platinum
         if (!(static_cast<int>(bxdf->_type) & static_cast<int>(BxDFType::BSDF_SPECULAR)) && matchingComps > 1)
         {
 
-            for (const auto &b : _BxDFs)
+            for (size_t i = 0; i < _BxDF_num; ++i)
             {
-                if (b != bxdf && b->MatchTypes(type))
-                {
-                    pdf += b->Pdf(wo, wi);
-                }
+                if (_BxDFs[i] != bxdf && _BxDFs[i]->MatchTypes(type))
+                    pdf += _BxDFs[i]->Pdf(wo, wi);
             }
         }
         if (matchingComps > 1)
@@ -133,13 +133,13 @@ namespace platinum
         {
             bool reflect = glm::dot(wiWorld, _ns) * glm::dot(woWorld, _ns) > 0;
             f = Spectrum(0.f);
-            for (const auto &b : _BxDFs)
+            for (size_t i = 0; i < _BxDF_num; ++i)
             {
-                if (b->MatchTypes(type) &&
-                    ((reflect && (static_cast<int>(b->_type) & static_cast<int>(BxDFType::BSDF_REFLECTION))) ||
-                     (!reflect && (static_cast<int>(b->_type) & static_cast<int>(BxDFType::BSDF_TRANSMISSION)))))
+                if (_BxDFs[i]->MatchTypes(type) &&
+                    ((reflect && (static_cast<int>(_BxDFs[i]->_type) & static_cast<int>(BxDFType::BSDF_REFLECTION))) ||
+                     (!reflect && (static_cast<int>(_BxDFs[i]->_type) & static_cast<int>(BxDFType::BSDF_TRANSMISSION)))))
                 {
-                    f += b->F(wo, wi);
+                    f += _BxDFs[i]->F(wo, wi);
                 }
             }
         }
@@ -163,14 +163,17 @@ namespace platinum
 
         float pdf = 0.f;
         int matchingComps = 0;
-        for (const auto &b : _BxDFs)
+
+        for (size_t i = 0; i < _BxDF_num; ++i)
         {
-            if (b->MatchTypes(flags))
+            if (_BxDFs[i]->MatchTypes(flags))
             {
                 ++matchingComps;
-                pdf += b->Pdf(wo, wi);
+                pdf += _BxDFs[i]->Pdf(wo, wi);
             }
         }
+
+      
         float v = matchingComps > 0 ? pdf / matchingComps : 0.f;
         return v;
     }
