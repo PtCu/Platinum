@@ -69,8 +69,7 @@ namespace platinum
     public:
         ProjectiveCamera() = default;
 
-        ProjectiveCamera(const Transform &cameraToWorld, const Transform &cameraToScreen, Ptr<Film> film)
-            : Camera(cameraToWorld, film), _camera2screen(cameraToScreen) {}
+        ProjectiveCamera(const Transform &cameraToWorld, const Transform &cameraToScreen, Ptr<Film> film);
 
     protected:
         /**

@@ -24,7 +24,6 @@ namespace platinum
     }
     void PerspectiveCamera::Initialize()
     {
-        ProjectiveCamera::Initialize();
         auto res = _film->GetResolution();
         auto p_min = _raster2camera.ExecOn(Vector3f(0.f), 1.f);
         auto p_max = _raster2camera.ExecOn(Vector3f(res.x, res.y, 0.f), 1.f);

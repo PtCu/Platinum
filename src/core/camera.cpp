@@ -24,7 +24,11 @@
 
 namespace platinum
 {
-
+    ProjectiveCamera::ProjectiveCamera(const Transform &cameraToWorld, const Transform &cameraToScreen, Ptr<Film> film)
+        : Camera(cameraToWorld, film), _camera2screen(cameraToScreen)
+    {
+        ProjectiveCamera::Initialize();
+    }
     void ProjectiveCamera::Initialize()
     {
         Bounds2f screen;
