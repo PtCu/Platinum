@@ -19,6 +19,7 @@ namespace platinum
 {
     void Matte::ComputeScatteringFunctions(SurfaceInteraction &si) const
     {
+        //每一个Interaction的BSDF都可能不一样，故生命周期由由该Interaction掌管
         si._bsdf = std::make_shared<BSDF>(si);
         if (!_Kr.isBlack())
         {

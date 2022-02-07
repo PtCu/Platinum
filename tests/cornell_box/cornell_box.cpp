@@ -71,11 +71,16 @@ int main()
 
     auto light = make_unique<TriangleMesh>(&obj2world, assets_path + "cbox_luminaire.obj");
 
-    auto red = make_unique<Matte>((0.63f, 0.05f, 0.05f));
-    auto green = make_unique<Matte>((0.12f, 0.45f, 0.15f));
-    auto gray = make_unique<Matte>((0.73f, 0.73f, 0.73f));
-    auto blue = make_unique<Matte>((0.1f, 0.1f, 0.73f));
-    auto cube = make_unique<Matte>((1.0f, 1.0f, 1.0f));
+    Spectrum red_sp(0.63f, 0.05f, 0.05f);
+    Spectrum green_sp(0.12f, 0.45f, 0.15f);
+    Spectrum gray_sp(0.73f, 0.73f, 0.73f);
+    Spectrum blue_sp(0.1f, 0.1f, 0.73f);
+    Spectrum cube_sp(1.0f, 1.0f, 1.0f);
+    auto red = make_unique<Matte>(red_sp);
+    auto green = make_unique<Matte>(green_sp);
+    auto gray = make_unique<Matte>(gray_sp);
+    auto blue = make_unique<Matte>(blue_sp);
+    auto cube = make_unique<Matte>(cube_sp);
 
     AddMesh(primitives, lights, &obj2world, &world2obj, gray.get(), floor.get());
     AddMesh(primitives, lights, &obj2world, &world2obj, gray.get(), ceiling.get());
@@ -99,7 +104,7 @@ int main()
 
     Ptr<Camera> camera = make_shared<PerspectiveCamera>(camera2world, 45, film);
 
-    Ptr<Sampler> sampler = make_shared<RandomSampler>(4);
+    Ptr<Sampler> sampler = make_shared<RandomSampler>(64);
 
     unique_ptr<Integrator> integrator = make_unique<WhittedIntegrator>(camera, sampler, 10);
 

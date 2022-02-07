@@ -109,7 +109,7 @@ namespace platinum
                                        _camera->_film->MergeFilmTile(std::move(filmTile));
                                        //    reporter.update();
                                    },
-                                   ExecutionPolicy::SERIAL);
+                                   ExecutionPolicy::PARALLEL);
 
         // reporter.done();
 
