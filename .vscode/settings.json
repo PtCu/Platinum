@@ -83,6 +83,14 @@
         "numeric": "cpp",
         "valarray": "cpp",
         "*.rh": "cpp",
-        "bit": "cpp"
+        "bit": "cpp",
+        "cfenv": "cpp",
+        "csignal": "cpp",
+        "cwctype": "cpp",
+        "ranges": "cpp",
+        "span": "cpp",
+        "strstream": "cpp",
+        "typeindex": "cpp",
+        "variant": "cpp"
     }
 }

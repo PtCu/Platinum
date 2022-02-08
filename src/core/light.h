@@ -12,14 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef CORE_LIGHT_CPP_
-#define CORE_LIGHT_CPP_
+#ifndef CORE_LIGHT_H_
+#define CORE_LIGHT_H_
 
 #include <core/utilities.h>
 #include <core/interaction.h>
 #include <core/spectrum.h>
 #include <math/transform.h>
-
+#include <core/object.h>
 namespace platinum
 {
     //隐含类型指定为int

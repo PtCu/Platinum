@@ -20,8 +20,8 @@
 //  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 //  DEALINGS IN THE SOFTWARE.
 
-#ifndef CORE_OBJECT_H_
-#define CORE_OBJECT_H_
+#ifndef CORE_PRIMITIVE_H_
+#define CORE_PRIMITIVE_H_
 
 #include <core/utilities.h>
 #include <core/material.h>

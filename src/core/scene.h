@@ -25,7 +25,6 @@
 
 #include <core/utilities.h>
 #include <core/primitive.h>
-#include <core/light.h>
 #include <functional>
 
 

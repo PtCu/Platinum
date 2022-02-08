@@ -12,10 +12,15 @@ find_package(assimp CONFIG REQUIRED)
 #target_link_libraries(main PRIVATE assimp::assimp)
 find_package(glog CONFIG REQUIRED)
 #target_link_libraries(main PRIVATE glog::glog)
-
-# find_package(TBB CONFIG REQUIRED)
+find_package(TBB CONFIG REQUIRED)
 # target_link_libraries(main PRIVATE TBB::tbb)
 
+# find_package(Boost COMPONENTS system REQUIRED)
+# Boost header only
+find_package(Boost 1.77.0)
+if(Boost_FOUND)
+  include_directories(${Boost_INCLUDE_DIRS})
+endif()
 #---------------------------------------
 macro(SETUP_PROJECT MODE TARGET_NAME STR_TARGET_SOURCES STR_TARGET_LIBS)
 	string(REPLACE " " ";" LIST_TARGET_SOURCES ${STR_TARGET_SOURCES})
