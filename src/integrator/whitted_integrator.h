@@ -23,8 +23,10 @@ namespace platinum
     class WhittedIntegrator : public SamplerIntegrator
     {
     public:
-        WhittedIntegrator(Ptr<Camera> camera, Ptr<Sampler> sampler, int max_depth)
-            : SamplerIntegrator(camera, sampler), _max_depth(max_depth) {}
+        WhittedIntegrator(const PropertyNode &node);
+        WhittedIntegrator(UPtr<Camera> camera, UPtr<Sampler> sampler, int max_depth)
+            : SamplerIntegrator(std::move(camera), std::move(sampler)), _max_depth(max_depth) {}
+        std::string ToString() const { return "WhittedIntegrator"; }
 
     protected:
         virtual Spectrum Li(const Scene &scene, const Ray &ray, Sampler &sampler, int depth) const override;

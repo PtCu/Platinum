@@ -30,6 +30,8 @@ namespace platinum
 
         //Clone() 方法生成一个初始采样器的新实例，供渲染线程使用
         virtual std::unique_ptr<Sampler> Clone(int seed) override;
+
+        std::string ToString() const{ return "RandomSampler"; }
     };
 }
 

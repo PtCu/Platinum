@@ -1,32 +1,31 @@
 {
-    "Sampler": {
-        "Type": "Random",
-        "SPP": 64
-    },
     "Integrator": {
         "Type": "Path",
-        "Depth": 15
-    },
-    "Camera": {
-        "Type": "Perspective",
-        "Fov": 39,
-        "Eye": [
-            278,
-            273,
-            -800
-        ],
-        "Focus": [
-            278,
-            273,
-            -799
-        ],
-        "WorldUp": [
-            0,
-            1,
-            0
-        ],
+        "Depth": 15,
+        "Sampler": {
+            "Type": "Random",
+            "SPP": 64
+        },
+        "Camera": {
+            "Type": "Perspective",
+            "Fov": 39,
+            "Eye": [
+                278,
+                273,
+                -800
+            ],
+            "Focus": [
+                278,
+                273,
+                -799
+            ],
+            "WorldUp": [
+                0,
+                1,
+                0
+            ]
+        },
         "Film": {
-            "Type": "Film",
             "Resolution": [
                 666,
                 500

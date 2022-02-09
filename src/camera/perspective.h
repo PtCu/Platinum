@@ -23,9 +23,11 @@ namespace platinum
     class PerspectiveCamera final : public ProjectiveCamera
     {
     public:
-        PerspectiveCamera(const Transform &camera2world, float fov, Ptr<Film> film);
+        PerspectiveCamera(const Transform &camera2world, float fov, UPtr<Film> film);
 
         virtual float CastingRay(const CameraSample &sample, Ray &ray) const override;
+        
+        std::string ToString() const { return "PerspectiveCamera"; }
 
     protected:
         virtual void Initialize() override;

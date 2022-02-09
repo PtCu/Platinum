@@ -16,11 +16,11 @@
 #define CORE_SAMPLER_H_
 
 #include <core/utilities.h>
-#include <glm/glm.hpp>
+#include <core/object.h>
 
 namespace platinum
 {
-    class Sampler
+    class Sampler : public Object
     {
     public:
         Sampler(int64_t samplesPerPixel) : _samplesPerPixel(samplesPerPixel) {}
@@ -33,7 +33,6 @@ namespace platinum
          */
         virtual void StartPixel(const Vector2i &p);
 
-      
         /**
          * @brief 开始下一个样本，返回值为该像素是否采样完毕
          * @return true 没有完毕
@@ -148,7 +147,6 @@ namespace platinum
 
     inline float UniformHemispherePdf() { return Inv2Pi; }
 
-   
     inline float CosineHemispherePdf(float cosTheta) { return cosTheta * InvPi; }
 
     inline Vector3f UniformSampleSphere(const Vector2f &u)
@@ -192,17 +190,13 @@ namespace platinum
         return Vector3f(d.x, d.y, z);
     }
 
-
     inline Vector2f UniformSampleTriangle(const Vector2f &u)
     {
         float su0 = glm::sqrt(u[0]);
         return Vector2f(1 - su0, u[1] * su0);
     }
 
-
-
     inline float UniformConePdf(float cosThetaMax) { return 1 / (2 * Pi * (1 - cosThetaMax)); }
-
 
     inline float BalanceHeuristic(int nf, float fPdf, int ng, float gPdf)
     {

@@ -16,10 +16,11 @@
 #define CORE_FILTER_H_
 
 #include <core/utilities.h>
+#include <core/object.h>
 
 namespace platinum
 {
-    class Filter
+    class Filter : public Object
     {
     public:
         virtual ~Filter() = default;

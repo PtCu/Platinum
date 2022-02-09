@@ -15,31 +15,34 @@
 #ifndef CORE_INTEGREATOR_H_
 #define CORE_INTEGREATOR_H_
 
-#include <glm/glm.hpp>
 #include <core/utilities.h>
 #include <core/scene.h>
 #include <core/camera.h>
 #include <core/film.h>
 #include <core/sampler.h>
+#include <core/object.h>
+
 namespace platinum
 {
-    class Integrator
+    class Integrator : public Object
     {
     public:
-        virtual ~Integrator() = default;
         virtual void Render(const Scene &scene) = 0;
     };
 
     class SamplerIntegrator : public Integrator
     {
     public:
-        SamplerIntegrator(Ptr<Camera> camera, Ptr<Sampler> sampler)
-            : _camera(camera), _sampler(sampler) {}
+        SamplerIntegrator(UPtr<Camera> camera, UPtr<Sampler> sampler)
+            : _camera(std::move(camera)), _sampler(std::move(sampler)) {}
 
         virtual void Render(const Scene &scene);
 
-    protected:
+        void SetSampler(UPtr<Sampler> sampler) { _sampler = std::move(sampler); }
 
+        void SetCamera(UPtr<Camera> camera) { _camera = std::move(camera); }
+
+    protected:
         /**
          * @brief  Li() 方法计算有多少光照量沿着该 Ray 到达成像平面，
          *          并把光照量（radiance）保存在 Film 内
@@ -59,8 +62,8 @@ namespace platinum
         Spectrum SpecularTransmit(const Ray &ray, const SurfaceInteraction &inter, const Scene &scene, Sampler &sampler, int depth) const;
 
     protected:
-        Ptr<Camera> _camera;
-        Ptr<Sampler> _sampler;
+        UPtr<Camera> _camera;
+        UPtr<Sampler> _sampler;
     };
 
 }

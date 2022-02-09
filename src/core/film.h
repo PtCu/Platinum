@@ -15,23 +15,25 @@
 #ifndef CORE_FILM_H_
 #define CORE_FILM_H_
 
-#include <glm/glm.hpp>
 #include <core/utilities.h>
 
 #include <core/parallel.h>
 #include <core/spectrum.h>
 #include <math/bounds.h>
 #include <core/filter.h>
+#include <core/object.h>
 
 namespace platinum
 {
 
-    class Film
+    class Film : public Object
     {
     public:
         Film(const Vector2i &resolution, const Bounds2f &cropWindow,
              std::unique_ptr<Filter> filter, const std::string &filename, float diagonal = 35.f,
              float scale = 1.f, float maxSampleLuminance = Infinity);
+
+        void SetFilter(std::unique_ptr<Filter> filter) { _filter = std::move(filter); }
 
         Bounds2i GetSampleBounds() const;
         const Vector2i GetResolution() const { return _resolution; }
@@ -48,6 +50,8 @@ namespace platinum
 
         void Initialize();
 
+        std::string ToString() const { return "Film"; }
+
     private:
         //Note: XYZ is a display independent representation of color,
         //      and this is why we choose to use XYZ color herein.
@@ -59,7 +63,7 @@ namespace platinum
             }
 
             float _xyz[3];            //xyz color of the pixel
-            float _filter_weight_sum;   //the sum of filter weight values
+            float _filter_weight_sum; //the sum of filter weight values
             AtomicFloat _splatXYZ[3]; //unweighted sum of samples splats
             float _pad;               //unused, ensure sizeof(Pixel) -> 32 bytes
         };

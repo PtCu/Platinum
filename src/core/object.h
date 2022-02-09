@@ -2,9 +2,8 @@
 #define CORE_OBJECT_H_
 
 #include <boost/property_tree/ptree.hpp>
-#include <boost/property_tree/json_parser.hpp>
-#include <map>
 
+#include <map>
 
 namespace platinum
 {
@@ -13,6 +12,7 @@ namespace platinum
 
     class Object
     {
+    public:
         enum class ClassType
         {
             Primitive = 0,
@@ -35,7 +35,7 @@ namespace platinum
 		 * The default implementation does not support children and
 		 * simply throws an exception
 		 */
-        virtual void AddChild(Object *child){}
+        virtual void AddChild(Object *child) {}
 
         /**
 		 * \brief Set the parent object
@@ -44,7 +44,7 @@ namespace platinum
 		 * notified when they are added to a parent object. The
 		 * default implementation does nothing.
 		 */
-        virtual void SetParent(Object *parent){}
+        virtual void SetParent(Object *parent) {}
 
         /**
 		 * \brief Perform some action associated with the object
@@ -93,8 +93,8 @@ namespace platinum
 
     class ObjectFactory
     {
-
-        using Constructor = std::function<Object *(PropertyNode)>;
+    public:
+        using Constructor = std::function<Object *(const PropertyNode &)>;
 
         static void RegisterClass(const std::string &type, const Constructor &construtor);
 
@@ -108,19 +108,19 @@ namespace platinum
 //在CPP文件中注册具体的类。
 //生成 xxx_类，并创建静态对象。类的构造函数负责调用RegisterClass，将xxx_create()函数注册。
 //xxx_create()函数调用xxx的构造函数并返回构造对象的指针
-#define REGISTER_CLASS(cls, name)                             \
-    inline cls *cls##_create(const APropertyTreeNode &node)   \
-    {                                                         \
-        return new cls(node);                                 \
-    }                                                         \
-    class cls##_                                              \
-    {                                                         \
-    public:                                                   \
-        cls##_()                                              \
-        {                                                     \
-            ObjectFactory::RegisterClass(name, cls##_create); \
-        }                                                     \
-    };                                                        \
+#define REGISTER_CLASS(cls, name)                                                        \
+    inline cls *cls##_create(const PropertyNode &node) \
+    {                                                                                    \
+        return new cls(node);                                                \
+    }                                                                                    \
+    class cls##_                                                                         \
+    {                                                                                    \
+    public:                                                                              \
+        cls##_()                                                                         \
+        {                                                                                \
+            ObjectFactory::RegisterClass(name, cls##_create);                            \
+        }                                                                                \
+    };                                                                                   \
     static cls##_ cls##__instance_;
 }
 

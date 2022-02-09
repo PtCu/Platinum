@@ -26,6 +26,7 @@
 #include <math/rand.h>
 #include <math/transform.h>
 #include <core/film.h>
+#include <core/object.h>
 namespace platinum
 {
     struct CameraSample
@@ -38,27 +39,28 @@ namespace platinum
         os << "[ pFilm: " << cs.p_film << " ]";
         return os;
     }
-    class Camera
+    class Camera : public Object
     {
     public:
         Camera() = default;
 
-        Camera(const Transform &camera2world, Ptr<Film> film)
-            : _camera2world(camera2world), _film(film) {}
+        Camera(const Transform &camera2world, UPtr<Film> film)
+            : _camera2world(camera2world), _film(std::move(film)) {}
 
-        virtual ~Camera() = default;
+        void SetFilm(UPtr<Film> film)
+        {
+            _film = std::move(film);
+        }
 
         /**
          * @brief 按照相机上的采样生成一束光线
          * 
-         * @param sample 
-         * @param ray 
          * @return float  How much the radiance arriving at the film plane along the generated ray will contribute to the final image.
          */
         virtual float CastingRay(const CameraSample &sample, Ray &ray) const = 0;
 
         Transform _camera2world;
-        Ptr<Film> _film;
+        UPtr<Film> _film;
     };
 
     /**
@@ -69,7 +71,7 @@ namespace platinum
     public:
         ProjectiveCamera() = default;
 
-        ProjectiveCamera(const Transform &cameraToWorld, const Transform &cameraToScreen, Ptr<Film> film);
+        ProjectiveCamera(const Transform &cameraToWorld, const Transform &cameraToScreen, UPtr<Film> film);
 
     protected:
         /**

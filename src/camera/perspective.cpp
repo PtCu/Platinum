@@ -17,8 +17,8 @@
 namespace platinum
 {
 
-    PerspectiveCamera::PerspectiveCamera(const Transform &camera2world, float fov, Ptr<Film> film)
-        : ProjectiveCamera(camera2world, Perspective(fov, 1e-2f, 1000.f), film)
+    PerspectiveCamera::PerspectiveCamera(const Transform &camera2world, float fov, UPtr<Film> film)
+        : ProjectiveCamera(camera2world, Perspective(fov, 1e-2f, 1000.f), std::move(film))
     {
         Initialize();
     }

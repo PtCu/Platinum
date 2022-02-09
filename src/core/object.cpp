@@ -10,7 +10,7 @@ namespace platinum
 
     Object *ObjectFactory::CreateInstance(const std::string &type, const PropertyNode &node)
     {
-        if(_ctors.find(type)==_ctors.end())
+        if (_ctors.find(type) == _ctors.end())
         {
             LOG(ERROR) << "A constructor for class \"" << type << "\" could not be found!";
             return nullptr;

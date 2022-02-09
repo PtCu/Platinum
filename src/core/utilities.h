@@ -37,13 +37,11 @@
 #include <vector>
 #include <array>
 #include <stack>
-#include <assert.h>
-#include <string.h>
-#include <stdint.h>
-#include <float.h>
+#include <string>
 #include <typeinfo>
 #include <thread>
 #include <mutex>
+#include <initializer_list>
 
 #include <glm/glm.hpp>
 #include <glog/logging.h>
@@ -95,6 +93,7 @@ namespace platinum
     struct FilmTilePixel;
     class FilmTile;
     class RGBSpectrum;
+    class Object;
 
     using Spectrum = RGBSpectrum;
 
@@ -118,6 +117,12 @@ namespace platinum
     using PtrC = std::shared_ptr<const T>;
 
     template <typename T>
+    using UPtr = std::unique_ptr<T>;
+
+    template <typename T>
+    using UPtrC = std::unique_ptr<const T>;
+
+    template <typename T>
     using WPtr = std::weak_ptr<T>;
 
     template <typename T>
@@ -127,7 +132,7 @@ namespace platinum
     }
 
     template <typename T>
-    using WPtrC = WPtr<const T>;
+    using WPtrC = std::weak_ptr<const T>;
 
     template <typename T, typename U, typename V>
     inline T clamp(T val, U low, V high)

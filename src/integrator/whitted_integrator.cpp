@@ -17,12 +17,21 @@
 namespace platinum
 {
 
+    REGISTER_CLASS(WhittedIntegrator, "Whitted");
+
+    WhittedIntegrator::WhittedIntegrator(const PropertyNode &node)
+        : SamplerIntegrator(nullptr, nullptr), _max_depth(node.get<int>("Depth"))
+    {
+    }
+
+    //https://pbr-book.org/3ed-2018/Introduction/pbrt_System_Overview#WhittedIntegrator
     Spectrum WhittedIntegrator::Li(const Scene &scene, const Ray &ray, Sampler &sampler, int depth) const
     {
 
         Spectrum L{0.f};
 
         SurfaceInteraction inter;
+        // Find closest ray intersection or return background radiance
         if (!scene.Hit(ray, inter))
         {
             //返回lights emission
@@ -54,7 +63,7 @@ namespace platinum
 
             if (sampled_li.isBlack() || pdf == 0)
                 continue;
-                
+
             Spectrum f = inter._bsdf->F(wo, wi);
 
             //如果所采样的光源上的光线没被遮挡
@@ -65,6 +74,7 @@ namespace platinum
         }
         if (depth + 1 < _max_depth)
         {
+            // Trace rays for specular reflection and refraction
             L += SpecularReflect(ray, inter, scene, sampler, depth);
             L += SpecularTransmit(ray, inter, scene, sampler, depth);
         }
