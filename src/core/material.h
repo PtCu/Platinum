@@ -24,10 +24,11 @@
 #define CORE_MATERIAL_H_
 
 #include <core/interaction.h>
+#include <core/object.h>
 
 namespace platinum
 {
-    class Material
+    class Material:public Object
     {
     public:
         Material() = default;

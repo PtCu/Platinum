@@ -47,6 +47,8 @@ namespace platinum
 
         virtual float PdfLi(const Interaction &inter, const Vector3f &wi) const;
 
+        std::string ToString() const { return "DiffuseAreaLight"; }
+
     private:
         Spectrum _Lemit;
         Shape *_shape;

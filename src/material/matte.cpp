@@ -14,9 +14,23 @@
 
 #include <material/matte.h>
 
-
 namespace platinum
 {
+
+    REGISTER_CLASS(Matte, "Matte");
+
+    Matte::Matte(const PropertyNode &node)
+    {
+    }
+    Matte::Matte() : _Kr(Spectrum(0.73, 0.73, 0.73))
+    {
+        _ref = std::make_shared<LambertianReflection>(_Kr);
+    }
+    Matte::Matte(const Spectrum &r) : _Kr(r)
+    {
+        _ref = std::make_shared<LambertianReflection>(_Kr);
+    }
+
     void Matte::ComputeScatteringFunctions(SurfaceInteraction &si) const
     {
         //每一个Interaction的BSDF都可能不一样，故生命周期由由该Interaction掌管

@@ -100,6 +100,7 @@ namespace platinum
 
     Transform Translate(const Vector3f &delta);
     Transform Scale(float x, float y, float z);
+    Transform Scale(const Vector3f &wrapped);
     Transform RotateX(float theta);
     Transform RotateY(float theta);
     Transform RotateZ(float theta);

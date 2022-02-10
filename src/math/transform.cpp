@@ -79,6 +79,12 @@ namespace platinum
         glm::mat4 transInv = glm::scale(glm::mat4(1.0f), Vector3f(1 / x, 1 / y, 1 / z));
         return Transform(trans, transInv);
     }
+    Transform Scale(const Vector3f &wrapped)
+    {
+        glm::mat4 trans = glm::scale(glm::mat4(1.0f), Vector3f(wrapped.x, wrapped.y, wrapped.z));
+        glm::mat4 transInv = glm::scale(glm::mat4(1.0f), Vector3f(1 / wrapped.x, 1 / wrapped.y, 1 / wrapped.z));
+        return Transform(trans, transInv);
+    }
 
     Transform RotateX(float theta)
     {

@@ -36,7 +36,7 @@ namespace platinum
         return flags & (int)LightFlags::LightDeltaPosition || flags & (int)LightFlags::LightDeltaDirection;
     }
 
-    class Light
+    class Light: public Object
     {
     public:
         Light(int flags, const Transform &light2world, int n_samples = 1)

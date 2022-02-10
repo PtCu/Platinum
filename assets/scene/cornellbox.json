@@ -48,28 +48,73 @@
             }
         }
     },
+    "Aggregate": "Linear",
+    "Light": [],
+    "Material": [
+        {
+            "Name": "red",
+            "Type": "Lambertian",
+            "R": [
+                0.65,
+                0.05,
+                0.05
+            ]
+        },
+        {
+            "Name": "green",
+            "Type": "Lambertian",
+            "R": [
+                0.12,
+                0.45,
+                0.15
+            ]
+        },
+        {
+            "Name": "gray",
+            "Type": "Lambertian",
+            "R": [
+                0.73,
+                0.73,
+                0.73
+            ]
+        },
+        {
+            "Name": "yellow",
+            "Type": "Lambertian",
+            "R": [
+                0.65,
+                0.45,
+                0.0
+            ]
+        },
+        {
+            "Name": "mirror",
+            "Type": "Mirror",
+            "R": [
+                0.75,
+                0.75,
+                0.75
+            ]
+        }
+    ],
     "Object": [
         {
             "Shape": {
                 "Type": "Mesh",
-                "Filename": "meshes/cbox_luminaire.obj",
-                "Transform": [
-                    0,
-                    0,
-                    -0.5,
-                    0
-                ]
+                "Filename": "meshes/cbox_luminaire.obj"
             },
-            "Material": {
-                "Type": "Lambertian",
-                "R": [
-                    0.73,
-                    0.73,
-                    0.73
-                ]
-            },
-            "Light": {
-                "Type": "AreaDiffuse",
+            "Transform": [
+                {
+                    "type": "translate",
+                    "value": [
+                        0,
+                        -0.5,
+                        0
+                    ]
+                }
+            ],
+            "Material": "gray",
+            "Emission": {
                 "Radiance": [
                     5.0,
                     4.0,
@@ -84,140 +129,84 @@
                 "Type": "Mesh",
                 "Filename": "meshes/cbox_floor.obj"
             },
-            "Material": {
-                "Type": "Lambertian",
-                "R": [
-                    0.73,
-                    0.73,
-                    0.73
-                ]
-            }
+            "Material": "gray"
         },
         {
             "Shape": {
                 "Type": "Mesh",
                 "Filename": "meshes/cbox_ceiling.obj"
             },
-            "Material": {
-                "Type": "Lambertian",
-                "R": [
-                    0.73,
-                    0.73,
-                    0.73
-                ]
-            }
+            "Material": "gray"
         },
         {
             "Shape": {
                 "Type": "Mesh",
                 "Filename": "meshes/cbox_back.obj"
             },
-            "Material": {
-                "Type": "Lambertian",
-                "R": [
-                    0.73,
-                    0.73,
-                    0.73
-                ]
-            }
+            "Material": "gray"
         },
         {
             "Shape": {
                 "Type": "Mesh",
                 "Filename": "meshes/cbox_greenwall.obj"
             },
-            "Material": {
-                "Type": "Lambertian",
-                "R": [
-                    0.12,
-                    0.45,
-                    0.15
-                ]
-            }
+            "Material": "green"
         },
         {
             "Shape": {
                 "Type": "Mesh",
                 "Filename": "meshes/cbox_redwall.obj"
             },
-            "Material": {
-                "Type": "Lambertian",
-                "R": [
-                    0.65,
-                    0.05,
-                    0.05
-                ]
-            }
+            "Material": "red"
         },
         {
             "Shape": {
                 "Type": "Mesh",
                 "Filename": "meshes/cbox_smallbox.obj"
             },
-            "Material": {
-                "Type": "Lambertian",
-                "R": [
-                    0.73,
-                    0.73,
-                    0.73
-                ]
-            }
+            "Material": "gray"
         },
         {
             "Shape": {
                 "Type": "Mesh",
                 "Filename": "meshes/cbox_largebox.obj"
             },
-            "Material": {
-                "Type": "Lambertian",
-                "R": [
-                    0.73,
-                    0.73,
-                    0.73
-                ]
-            }
+            "Material": "gray"
         },
         {
             "Shape": {
                 "Type": "Sphere",
-                "Radius": 65.0,
-                "Transform": [
-                    0,
-                    200,
-                    232,
-                    150
-                ]
+                "Radius": 65.0
             },
-            "Material": {
-                "Type": "Mirror",
-                "R": [
-                    0.75,
-                    0.75,
-                    0.75
-                ]
-            }
+            "Transform": [
+                {
+                    "type": "translate",
+                    "value": [
+                        200,
+                        232,
+                        150
+                    ]
+                }
+            ],
+            "Material": "mirror"
         },
         {
             "Shape": {
                 "Type": "Sphere",
-                "Radius": 35.0,
-                "Transform": [
-                    0,
-                    350,
-                    35,
-                    50
-                ]
+                "Radius": 35.0
             },
-            "Material": {
-                "Type": "Lambertian",
-                "R": [
-                    0.65,
-                    0.45,
-                    0.0
-                ]
-            },
-            "Light": {
-                "Type": "AreaDiffuse",
+            "Transform": [
+                {
+                    "type": "translate",
+                    "value": [
+                        350,
+                        35,
+                        50
+                    ]
+                }
+            ],
+            "Material": "yellow",
+            "Emission": {
                 "Radiance": [
                     2.0,
                     2.0,
