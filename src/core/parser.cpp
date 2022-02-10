@@ -3,11 +3,12 @@
 #include <fstream>
 #include <exception>
 #include <material/matte.h>
+#include <shape/triangle.h>
 
 namespace platinum
 {
 
-    void Parser::Parse(const std::string &path, Ptr<Scene> scene, Ptr<Integrator> integrator) const
+    void Parser::Parse(const std::string &path, Ptr<Scene> scene, Ptr<Integrator> integrator)
     {
         PropertyNode root;
 
@@ -20,6 +21,8 @@ namespace platinum
             LOG(ERROR) << "Could not open the json file " << path << ", or file format error!";
         }
         LOG(INFO) << "Parse the scene file from " << path;
+
+        _assets_path = root.get_value<std::string>("AssetsPath", "");
 
         auto integrator_node = root.get_child_optional("Integrator");
         if (!integrator_node)
@@ -120,7 +123,7 @@ namespace platinum
         for (const auto &p : root.get_child("Object"))
         {
             //对于列表中的元素value，p为(,value)。用p.second来访问
-            Transform obj2world{};
+            Transform obj2world, world2obj;
             std::vector<Transform> transforms;
             auto _transform_node = p.second.get_child_optional("Transform");
             if (_transform_node)
@@ -132,11 +135,13 @@ namespace platinum
             {
                 obj2world = (*tr) * obj2world;
             }
-
+            world2obj = Inverse(obj2world);
+            
             auto _shape_node = p.second.get_child("Shape");
-            if (_shape_node.get<std::string>("Type") == "Mesh")
+            if ("Mesh" == _shape_node.get<std::string>("Type"))
             {
-                
+                auto mesh_path = _shape_node.get<std::string>("Filename");
+                TriangleMesh mesh(&obj2world, _assets_path + mesh_path);
             }
         }
     }

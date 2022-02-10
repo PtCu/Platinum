@@ -1,4 +1,5 @@
 {
+    "AssetsPath":"D:/Homework/graphics/rendering/Platinum/assets/",
     "Integrator": {
         "Type": "Path",
         "Depth": 15,
@@ -101,7 +102,7 @@
         {
             "Shape": {
                 "Type": "Mesh",
-                "Filename": "meshes/cbox_luminaire.obj"
+                "Filename": "models/cornellbox/cbox_luminaire.obj"
             },
             "Transform": [
                 {
@@ -127,49 +128,49 @@
         {
             "Shape": {
                 "Type": "Mesh",
-                "Filename": "meshes/cbox_floor.obj"
+                "Filename": "models/cornellbox//cbox_floor.obj"
             },
             "Material": "gray"
         },
         {
             "Shape": {
                 "Type": "Mesh",
-                "Filename": "meshes/cbox_ceiling.obj"
+                "Filename": "models/cornellbox//cbox_ceiling.obj"
             },
             "Material": "gray"
         },
         {
             "Shape": {
                 "Type": "Mesh",
-                "Filename": "meshes/cbox_back.obj"
+                "Filename": "models/cornellbox//cbox_back.obj"
             },
             "Material": "gray"
         },
         {
             "Shape": {
                 "Type": "Mesh",
-                "Filename": "meshes/cbox_greenwall.obj"
+                "Filename": "models/cornellbox//cbox_greenwall.obj"
             },
             "Material": "green"
         },
         {
             "Shape": {
                 "Type": "Mesh",
-                "Filename": "meshes/cbox_redwall.obj"
+                "Filename": "models/cornellbox//cbox_redwall.obj"
             },
             "Material": "red"
         },
         {
             "Shape": {
                 "Type": "Mesh",
-                "Filename": "meshes/cbox_smallbox.obj"
+                "Filename": "models/cornellbox//cbox_smallbox.obj"
             },
             "Material": "gray"
         },
         {
             "Shape": {
                 "Type": "Mesh",
-                "Filename": "meshes/cbox_largebox.obj"
+                "Filename": "models/cornellbox//cbox_largebox.obj"
             },
             "Material": "gray"
         },

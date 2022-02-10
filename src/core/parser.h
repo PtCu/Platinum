@@ -23,7 +23,7 @@ namespace platinum
         friend class Singleton<Parser>;
 
     public:
-        void Parse(const std::string &path, Ptr<Scene> scene, Ptr<Integrator> integrator) const;
+        void Parse(const std::string &path, Ptr<Scene> scene, Ptr<Integrator> integrator);
 
         Parser(const Parser &) = delete;
 
@@ -38,7 +38,10 @@ namespace platinum
 
         void ParseObject(const PropertyNode &root, std::vector<Ptr<Primitive>> &primitives, std::vector<Ptr<Light>> &lights) const;
 
-        void ParseTransform(const PropertyNode &trans, std::vector<Transform> &transforms)const;
+        void ParseTransform(const PropertyNode &trans, std::vector<Transform> &transforms) const;
+
+    private:
+        std::string _assets_path;
     };
 }
 #endif
