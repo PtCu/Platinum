@@ -21,6 +21,14 @@ namespace platinum
 
     Matte::Matte(const PropertyNode &node)
     {
+        std::array<float, 3> spectrum;
+        auto iter = node.get_child("R").begin();
+        for (size_t i = 0; i < 3; ++i,++iter)
+        {
+            spectrum[i] = iter->second.get_value<float>();
+        }
+        _Kr = Spectrum::fromRGB(spectrum);
+        _ref = std::make_shared<LambertianReflection>(_Kr);
     }
     Matte::Matte() : _Kr(Spectrum(0.73, 0.73, 0.73))
     {
