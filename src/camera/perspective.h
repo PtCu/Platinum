@@ -23,6 +23,8 @@ namespace platinum
     class PerspectiveCamera final : public ProjectiveCamera
     {
     public:
+        PerspectiveCamera(const PropertyNode &node);
+
         PerspectiveCamera(const Transform &camera2world, float fov, UPtr<Film> film);
 
         virtual float CastingRay(const CameraSample &sample, Ray &ray) const override;

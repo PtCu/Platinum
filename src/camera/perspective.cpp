@@ -16,6 +16,28 @@
 
 namespace platinum
 {
+    REGISTER_CLASS(PerspectiveCamera, "Perspective");
+
+    PerspectiveCamera::PerspectiveCamera(const PropertyNode &node)
+    {
+        float _fov = node.get<float>("FOV");
+
+        Vector3f _eye, _focus, _up;
+        auto eye_iter = node.get_child("Eye").begin();
+        auto focus_iter = node.get_child("Focus").begin();
+        auto up_iter = node.get_child("WorldUp").begin();
+        for (size_t i = 0; i < 3; ++i, ++eye_iter, ++focus_iter, ++up_iter)
+        {
+            _eye[i] = eye_iter->second.get_value<float>();
+            _focus[i] = focus_iter->second.get_value<float>();
+            _up[i] = up_iter->second.get_value<float>();
+        }
+
+        _camera2world = Inverse(LookAt(_eye, _focus, _up));
+        _camera2screen = Perspective(_fov, 1e-2f, 1000.f);
+
+        Initialize();
+    }
 
     PerspectiveCamera::PerspectiveCamera(const Transform &camera2world, float fov, UPtr<Film> film)
         : ProjectiveCamera(camera2world, Perspective(fov, 1e-2f, 1000.f), std::move(film))
