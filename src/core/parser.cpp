@@ -11,7 +11,6 @@ namespace platinum
     void Parser::Parse(const std::string &path, Ptr<Scene> scene, Ptr<Integrator> integrator)
     {
         PropertyNode root;
-
         try
         {
             boost::property_tree::read_json(path, root);
@@ -22,7 +21,7 @@ namespace platinum
         }
         LOG(INFO) << "Parse the scene file from " << path;
 
-        _assets_path = root.get_value<std::string>("AssetsPath", "");
+        _assets_path = root.get<std::string>("AssetsPath", "");
 
         auto integrator_node = root.get_child_optional("Integrator");
         if (!integrator_node)
@@ -78,9 +77,9 @@ namespace platinum
     void Parser::ParseTriMesh(const PropertyNode &root, Transform *obj2world,
                               Transform *world2obj)
     {
-        const auto mesh_path = root.get<std::string>("Shape.Filename");
-        const auto mesh = std::make_unique<TriangleMesh>(obj2world, mesh_path);
-        const auto mat_string = root.get_value_optional<std::string>("Material");
+        auto mesh_path = root.get<std::string>("Shape.Filename");
+        auto mesh = std::make_unique<TriangleMesh>(obj2world, mesh_path);
+        const auto mat_string = root.get_optional<std::string>("Material");
         Ptr<Material> material = nullptr;
         if (!mat_string || _materials.find(mat_string.get()) == _materials.end())
         {
@@ -90,7 +89,7 @@ namespace platinum
 
         auto is_emit = root.get_child_optional("Emission");
 
-        const auto &meshIndices = mesh->GetIndices();
+        auto &meshIndices = mesh->GetIndices();
 
         for (size_t i = 0; i < meshIndices.size(); i += 3)
         {
@@ -98,21 +97,21 @@ namespace platinum
             indices[0] = meshIndices[i + 0];
             indices[1] = meshIndices[i + 1];
             indices[2] = meshIndices[i + 2];
-            auto triangle = std::make_shared<Triangle>(obj2world, world2obj, indices, mesh);
+            auto triangle = std::make_shared<Triangle>(obj2world, world2obj, indices, mesh.get());
             Ptr<AreaLight> area_light = nullptr;
             if (is_emit)
             {
                 area_light = Ptr<AreaLight>(static_cast<AreaLight *>(ObjectFactory::CreateInstance("DiffuseAreaLight", is_emit.get())));
             }
-            _primitives.push_back(std::make_shared<GeometricPrimitive>(triangle, material.get(), area_light));
+            _primitives.emplace_back(std::make_shared<GeometricPrimitive>(triangle, material.get(), area_light));
         }
 
-        _meshes.emplace_back(mesh);
+        _meshes.emplace_back(std::move(mesh));
     }
 
     void Parser::ParseSimpleShape(const PropertyNode &root, Transform *obj2world, Transform *world2obj)
     {
-        const auto mat_string = root.get_value_optional<std::string>("Material");
+        const auto mat_string = root.get_optional<std::string>("Material");
         Ptr<Material> material = nullptr;
         if (!mat_string || _materials.find(mat_string.get()) == _materials.end())
         {
@@ -132,7 +131,7 @@ namespace platinum
             area_light = Ptr<AreaLight>(static_cast<AreaLight *>(ObjectFactory::CreateInstance("DiffuseAreaLight", is_emit.get())));
         }
 
-        _primitives.push_back(std::make_shared<GeometricPrimitive>(shape, material.get(), area_light));
+        _primitives.emplace_back(std::make_shared<GeometricPrimitive>(shape, material.get(), area_light));
     }
 
     void Parser::ParseTransform(const PropertyNode &transform_node, Transform *obj2world)
@@ -140,44 +139,45 @@ namespace platinum
         std::vector<Transform> transforms;
         for (const auto &trans : transform_node)
         {
-            auto type = trans.second.get_value<std::string>("type");
+            auto type = trans.second.get<std::string>("type");
             if ("translate" == type)
             {
                 auto _translate_node = trans.second.get_child("value");
                 auto iter = _translate_node.begin();
-                Vector3f translate{};
-                for (size_t i = 0; i < 3; ++i)
+                Vector3f translate;
+                for (size_t i = 0; i < 3; ++i, ++iter)
                 {
-                    translate[i++] = (iter++)->second.get_value<float>();
+                    translate[i] = iter->second.get_value<float>(0.f);
                 }
-                transforms.push_back(Translate(translate));
+                transforms.emplace_back(Translate(translate));
             }
             else if ("scale" == type)
             {
                 auto _scale_node = trans.second.get_child("value");
                 auto iter = _scale_node.begin();
-                Vector3f scale{};
-                for (size_t i = 0; i < 3; ++i)
+                Vector3f scale;
+                for (size_t i = 0; i < 3; ++i, iter++)
                 {
-                    scale[i++] = (iter++)->second.get_value<float>();
+                    scale[i] = iter->second.get_value<float>(0.f);
                 }
 
-                transforms.push_back(Scale(scale));
+                transforms.emplace_back(Scale(scale));
             }
             else if ("rotate" == type)
             {
                 auto _rotate_node = trans.second.get_child("value");
                 //第一个数为旋转度数
                 auto iter = _rotate_node.begin();
-                float theta = iter->second.get_value<float>();
+                float theta = iter->second.get_value<float>(0.f);
+                iter++;
                 //后三个数为旋转轴
-                Vector3f axis{};
-                for (size_t i = 0; i < 3; ++i)
+                Vector3f axis;
+                for (size_t i = 0; i < 3; ++i, iter++)
                 {
-                    axis[i++] = (++iter)->second.get_value<float>();
+                    axis[i] = iter->second.get_value<float>(0.f);
                 }
 
-                transforms.push_back(Rotate(theta, axis));
+                transforms.emplace_back(Rotate(theta, axis));
             }
         }
 
@@ -215,8 +215,8 @@ namespace platinum
                 ParseSimpleShape(p.second, obj2world.get(), world2obj.get());
             }
 
-            _transforms.emplace_back(obj2world);
-            _transforms.emplace_back(world2obj);
+            _transforms.emplace_back(std::move(obj2world));
+            _transforms.emplace_back(std::move(world2obj));
         }
     }
 }

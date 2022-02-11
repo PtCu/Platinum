@@ -23,12 +23,12 @@ namespace platinum
         auto spectrum_node = node.get_child("Radiance");
         auto iter = spectrum_node.begin();
         std::array<float, 3> spectrum;
-        for (size_t i = 0; i < 3; ++i)
+        for (size_t i = 0; i < 3; ++i,++iter)
         {
-            spectrum[i++] = (iter++)->second.get_value<float>();
+            spectrum[i] = iter->second.get_value<float>();
         }
         _Lemit = Spectrum::fromRGB(spectrum);
-        _two_sided = node.get_value<bool>("TwoSided");
+        _two_sided = node.get<bool>("TwoSided");
     }
 
     Spectrum DiffuseAreaLight::SampleLe(const Vector2f &u1, const Vector2f &u2, Ray &ray,
