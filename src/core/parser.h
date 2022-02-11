@@ -33,19 +33,25 @@ namespace platinum
     private:
         Parser() = default;
 
-        void ParseLight(const PropertyNode& root, std::vector<Ptr<Light>>& lights) const;
+        void ParseLight(const PropertyNode& root);
 
-        void ParseMaterial(const PropertyNode& root, std::unordered_map<std::string, Ptr<Material>>& materials) const;
+        void ParseMaterial(const PropertyNode& root);
 
-        void ParseObject(const PropertyNode& root, const std::unordered_map<std::string, Ptr<Material>>& materials, std::vector<Ptr<Primitive>>& primitives,
-            std::vector<Ptr<Light>>& lights, std::vector<UPtr<Transform>>& transform, std::vector<UPtr<TriangleMesh>>& trimesh) const;
+        void ParseObject(const PropertyNode& root) ;
 
-        void ParseTransform(const PropertyNode& trans, Transform* transform) const;
+        void ParseTransform(const PropertyNode& root, Transform* transform) ;
 
-        void ParseTriMesh(const PropertyNode& root, const Transform* obj2world, const Transform* world2obj, const std::optional<Spectrum> sp, const std::unordered_map<std::string, Ptr<Material>>& materials, std::vector<UPtr<TriangleMesh>>& trimesh)const;
+        void ParseTriMesh(const PropertyNode& root, Transform* obj2world, Transform* world2obj);
+
+        void ParseSimpleShape(const PropertyNode &root, Transform *obj2world, Transform *world2obj);
 
     private:
         std::string _assets_path;
+        std::vector<Ptr<Light>> &_lights;
+        std::unordered_map<std::string, Ptr<Material>> &_materials;
+        std::vector<Ptr<Primitive>> &_primitives;
+        std::vector<UPtr<Transform>> &_transforms;
+        std::vector<UPtr<TriangleMesh>> &_meshes;
     };
 }
 #endif

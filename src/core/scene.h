@@ -26,7 +26,7 @@
 #include <core/utilities.h>
 #include <core/primitive.h>
 #include <functional>
-
+#include <shape/triangle.h>
 
 namespace platinum
 {

@@ -1,11 +1,11 @@
 // Copyright 2022 ptcup
-// 
+//
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
-// 
+//
 //     http://www.apache.org/licenses/LICENSE-2.0
-// 
+//
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -14,8 +14,17 @@
 
 #include <core/light.h>
 #include <core/scene.h>
-namespace platinum {
-    bool VisibilityTester::Unoccluded(const Scene& scene)const {
+namespace platinum
+{
+    bool VisibilityTester::Unoccluded(const Scene &scene) const
+    {
         return !scene.Hit(_p0.SpawnRayTo(_p1));
     }
+
+    Light::Light(const PropertyNode &node)
+    {
+        _num_samples = node.get<int>("LightSamples", 1);
+    }
+    AreaLight::AreaLight(const PropertyNode &node)
+        : Light(node) { _flags = (int)LightFlags::LightArea; }
 }

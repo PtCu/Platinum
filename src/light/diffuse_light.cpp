@@ -17,6 +17,20 @@
 namespace platinum
 {
 
+    DiffuseAreaLight::DiffuseAreaLight(const PropertyNode &node)
+        : AreaLight(node), _shape(nullptr)
+    {
+        auto spectrum_node = node.get_child("Radiance");
+        auto iter = spectrum_node.begin();
+        std::array<float, 3> spectrum;
+        for (size_t i = 0; i < 3; ++i)
+        {
+            spectrum[i++] = (iter++)->second.get_value<float>();
+        }
+        _Lemit = Spectrum::fromRGB(spectrum);
+        _two_sided = node.get_value<bool>("TwoSided");
+    }
+
     Spectrum DiffuseAreaLight::SampleLe(const Vector2f &u1, const Vector2f &u2, Ray &ray,
                                         Vector3f &nLight, float &pdfPos, float &pdfDir) const
     {

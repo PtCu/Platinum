@@ -66,6 +66,8 @@ namespace platinum
 
         virtual float SolidAngle(const Vector3f &p, int nSamples = 512) const override;
 
+        std::string ToString() const { return "Triangle"; }
+
     private:
         TriangleMesh *_mesh;
         std::array<int, 3> _indices;

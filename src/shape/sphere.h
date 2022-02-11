@@ -65,6 +65,8 @@ namespace platinum
 
         virtual float SolidAngle(const Vector3f &p, int nSamples = 512) const override;
 
+        std::string ToString() const { return "Sphere"; }
+
     private:
         float _radius;
     };

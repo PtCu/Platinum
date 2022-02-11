@@ -204,6 +204,23 @@
                         35,
                         50
                     ]
+                },
+                {
+                    "type": "scale",
+                    "value": [
+                        1,
+                        1.2,
+                        0.3
+                    ]
+                },
+                {
+                    "type": "rotate",
+                    "value": [
+                        1,
+                        1,
+                        1.2,
+                        0.3
+                    ]
                 }
             ],
             "Material": "yellow",

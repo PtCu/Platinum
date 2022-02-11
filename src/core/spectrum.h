@@ -273,7 +273,7 @@ namespace platinum
         RGBSpectrum(float v = 0.f) : CoefficientSpectrum<3>(v) {}
         RGBSpectrum(const CoefficientSpectrum<3>& v) : CoefficientSpectrum<3>(v) {}
         RGBSpectrum(const RGBSpectrum& s) { *this = s; }
-        RGBSpectrum(std::array<float, 3>& rgb) {
+        RGBSpectrum(const std::array<float, 3>& rgb) {
             c[0] = rgb[0];
             c[1] = rgb[1];
             c[2] = rgb[2];
@@ -285,6 +285,15 @@ namespace platinum
             c[2] = b;
         }
         static RGBSpectrum fromRGB(const float rgb[3])
+        {
+            RGBSpectrum s;
+            s.c[0] = rgb[0];
+            s.c[1] = rgb[1];
+            s.c[2] = rgb[2];
+            DCHECK(!s.hasNaNs());
+            return s;
+        }
+        static RGBSpectrum fromRGB(const std::array<float, 3> &rgb)
         {
             RGBSpectrum s;
             s.c[0] = rgb[0];

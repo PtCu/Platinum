@@ -17,9 +17,10 @@
 
 #include <core/utilities.h>
 #include <math/bounds.h>
+#include <core/object.h>
 namespace platinum
 {
-    class Shape
+    class Shape : public Object
     {
     public:
         Shape(Transform *object2world, Transform *world2object)

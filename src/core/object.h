@@ -104,23 +104,23 @@ namespace platinum
         static std::map<std::string, Constructor> _ctors;
     };
 
-// Macro for registering an object constructor with the \ref AObjectFactory
-//在CPP文件中注册具体的类。
-//生成 xxx_类，并创建静态对象。类的构造函数负责调用RegisterClass，将xxx_create()函数注册。
-//xxx_create()函数调用xxx的构造函数并返回构造对象的指针
-#define REGISTER_CLASS(cls, name)                                                        \
-    inline cls *cls##_create(const PropertyNode &node) \
-    {                                                                                    \
-        return new cls(node);                                                \
-    }                                                                                    \
-    class cls##_                                                                         \
-    {                                                                                    \
-    public:                                                                              \
-        cls##_()                                                                         \
-        {                                                                                \
-            ObjectFactory::RegisterClass(name, cls##_create);                            \
-        }                                                                                \
-    };                                                                                   \
+    //  Macro for registering an object constructor with the \ref AObjectFactory
+    //  在CPP文件中注册具体的类。
+    //  生成 xxx_类，并创建静态对象。类的构造函数负责调用RegisterClass，将xxx_create()函数注册。
+    //  xxx_create()函数调用xxx的构造函数并返回构造对象的指针
+#define REGISTER_CLASS(cls, name)                             \
+    inline cls *cls##_create(const PropertyNode &node)        \
+    {                                                         \
+        return new cls(node);                                 \
+    }                                                         \
+    class cls##_                                              \
+    {                                                         \
+    public:                                                   \
+        cls##_()                                              \
+        {                                                     \
+            ObjectFactory::RegisterClass(name, cls##_create); \
+        }                                                     \
+    };                                                        \
     static cls##_ cls##__instance_;
 }
 
