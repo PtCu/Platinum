@@ -50,7 +50,7 @@ namespace platinum
             DCHECK(!hasNaNs());
         }
 
-        CoefficientSpectrum &operator+=(const CoefficientSpectrum &s2)
+        CoefficientSpectrum& operator+=(const CoefficientSpectrum& s2)
         {
             DCHECK(!s2.hasNaNs());
             for (int i = 0; i < nSpectrumSamples; ++i)
@@ -58,7 +58,7 @@ namespace platinum
             return *this;
         }
 
-        CoefficientSpectrum operator+(const CoefficientSpectrum &s2) const
+        CoefficientSpectrum operator+(const CoefficientSpectrum& s2) const
         {
             DCHECK(!s2.hasNaNs());
             CoefficientSpectrum ret = *this;
@@ -67,7 +67,7 @@ namespace platinum
             return ret;
         }
 
-        CoefficientSpectrum operator-(const CoefficientSpectrum &s2) const
+        CoefficientSpectrum operator-(const CoefficientSpectrum& s2) const
         {
             DCHECK(!s2.hasNaNs());
             CoefficientSpectrum ret = *this;
@@ -76,7 +76,7 @@ namespace platinum
             return ret;
         }
 
-        CoefficientSpectrum operator/(const CoefficientSpectrum &s2) const
+        CoefficientSpectrum operator/(const CoefficientSpectrum& s2) const
         {
             DCHECK(!s2.hasNaNs());
             CoefficientSpectrum ret = *this;
@@ -88,7 +88,7 @@ namespace platinum
             return ret;
         }
 
-        CoefficientSpectrum operator*(const CoefficientSpectrum &sp) const
+        CoefficientSpectrum operator*(const CoefficientSpectrum& sp) const
         {
             DCHECK(!sp.hasNaNs());
             CoefficientSpectrum ret = *this;
@@ -97,7 +97,7 @@ namespace platinum
             return ret;
         }
 
-        CoefficientSpectrum &operator*=(const CoefficientSpectrum &sp)
+        CoefficientSpectrum& operator*=(const CoefficientSpectrum& sp)
         {
             DCHECK(!sp.hasNaNs());
             for (int i = 0; i < nSpectrumSamples; ++i)
@@ -114,7 +114,7 @@ namespace platinum
             return ret;
         }
 
-        CoefficientSpectrum &operator*=(float a)
+        CoefficientSpectrum& operator*=(float a)
         {
             for (int i = 0; i < nSpectrumSamples; ++i)
                 c[i] *= a;
@@ -122,7 +122,7 @@ namespace platinum
             return *this;
         }
 
-        friend inline CoefficientSpectrum operator*(float a, const CoefficientSpectrum &s)
+        friend inline CoefficientSpectrum operator*(float a, const CoefficientSpectrum& s)
         {
             DCHECK(!glm::isnan(a) && !s.hasNaNs());
             return s * a;
@@ -139,7 +139,7 @@ namespace platinum
             return ret;
         }
 
-        CoefficientSpectrum &operator/=(float a)
+        CoefficientSpectrum& operator/=(float a)
         {
             CHECK_NE(a, 0);
             DCHECK(!glm::isnan(a));
@@ -148,7 +148,7 @@ namespace platinum
             return *this;
         }
 
-        bool operator==(const CoefficientSpectrum &sp) const
+        bool operator==(const CoefficientSpectrum& sp) const
         {
             for (int i = 0; i < nSpectrumSamples; ++i)
             {
@@ -158,7 +158,7 @@ namespace platinum
             return true;
         }
 
-        bool operator!=(const CoefficientSpectrum &sp) const
+        bool operator!=(const CoefficientSpectrum& sp) const
         {
             return !(*this == sp);
         }
@@ -173,7 +173,7 @@ namespace platinum
             return true;
         }
 
-        friend CoefficientSpectrum sqrt(const CoefficientSpectrum &s)
+        friend CoefficientSpectrum sqrt(const CoefficientSpectrum& s)
         {
             CoefficientSpectrum ret;
             for (int i = 0; i < nSpectrumSamples; ++i)
@@ -183,7 +183,7 @@ namespace platinum
         }
 
         template <int n>
-        friend inline CoefficientSpectrum<n> pow(const CoefficientSpectrum<n> &s, float e);
+        friend inline CoefficientSpectrum<n> pow(const CoefficientSpectrum<n>& s, float e);
 
         CoefficientSpectrum operator-() const
         {
@@ -193,7 +193,7 @@ namespace platinum
             return ret;
         }
 
-        friend CoefficientSpectrum exp(const CoefficientSpectrum &s)
+        friend CoefficientSpectrum exp(const CoefficientSpectrum& s)
         {
             CoefficientSpectrum ret;
             for (int i = 0; i < nSpectrumSamples; ++i)
@@ -202,7 +202,7 @@ namespace platinum
             return ret;
         }
 
-        friend std::ostream &operator<<(std::ostream &os, const CoefficientSpectrum &s)
+        friend std::ostream& operator<<(std::ostream& os, const CoefficientSpectrum& s)
         {
             return os << s.toString();
         }
@@ -247,7 +247,7 @@ namespace platinum
             return false;
         }
 
-        float &operator[](int i)
+        float& operator[](int i)
         {
             DCHECK(i >= 0 && i < nSpectrumSamples);
             return c[i];
@@ -271,8 +271,13 @@ namespace platinum
 
     public:
         RGBSpectrum(float v = 0.f) : CoefficientSpectrum<3>(v) {}
-        RGBSpectrum(const CoefficientSpectrum<3> &v) : CoefficientSpectrum<3>(v) {}
-        RGBSpectrum(const RGBSpectrum &s) { *this = s; }
+        RGBSpectrum(const CoefficientSpectrum<3>& v) : CoefficientSpectrum<3>(v) {}
+        RGBSpectrum(const RGBSpectrum& s) { *this = s; }
+        RGBSpectrum(std::array<float, 3>& rgb) {
+            c[0] = rgb[0];
+            c[1] = rgb[1];
+            c[2] = rgb[2];
+        }
         RGBSpectrum(float r, float g, float b)
         {
             c[0] = r;
@@ -289,7 +294,7 @@ namespace platinum
             return s;
         }
 
-        void toRGB(float *rgb) const
+        void toRGB(float* rgb) const
         {
             rgb[0] = c[0];
             rgb[1] = c[1];
@@ -297,7 +302,7 @@ namespace platinum
         }
 
         void toXYZ(float xyz[3]) const { RGBToXYZ(c, xyz); }
-        const RGBSpectrum &toRGBSpectrum() const { return *this; }
+        const RGBSpectrum& toRGBSpectrum() const { return *this; }
 
         static RGBSpectrum fromXYZ(const float xyz[3], SpectrumType type = SpectrumType::Reflectance)
         {
@@ -308,7 +313,7 @@ namespace platinum
 
         float y() const
         {
-            const float YWeight[3] = {0.212671f, 0.715160f, 0.072169f};
+            const float YWeight[3] = { 0.212671f, 0.715160f, 0.072169f };
             return YWeight[0] * c[0] + YWeight[1] * c[1] + YWeight[2] * c[2];
         }
     };
@@ -316,7 +321,7 @@ namespace platinum
     // Spectrum Inline Functions
     template <int nSpectrumSamples>
     inline CoefficientSpectrum<nSpectrumSamples> pow(
-        const CoefficientSpectrum<nSpectrumSamples> &s, float e)
+        const CoefficientSpectrum<nSpectrumSamples>& s, float e)
     {
         CoefficientSpectrum<nSpectrumSamples> ret;
         for (int i = 0; i < nSpectrumSamples; ++i)
