@@ -50,17 +50,25 @@ namespace platinum
     class Sphere : public Shape
     {
     public:
+        Sphere(const PropertyNode &node);
+
         Sphere(Transform *object2world, Transform *world2object, const float radius)
             : Shape(object2world, world2object), _radius(radius) {}
+
         virtual ~Sphere() = default;
+
         virtual float Area() const override;
+
         virtual Interaction Sample(const Vector2f &u, float &pdf) const override;
+
         virtual Interaction Sample(const Interaction &ref, const Vector2f &u, float &pdf) const override;
+
         virtual float Pdf(const Interaction &ref, const Vector3f &wi) const override;
 
         virtual Bounds3f ObjectBound() const override;
 
         virtual bool Hit(const Ray &ray) const override;
+        
         virtual bool Hit(const Ray &ray, float &t_hit, SurfaceInteraction &inter) const override;
 
         virtual float SolidAngle(const Vector3f &p, int nSamples = 512) const override;

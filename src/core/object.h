@@ -109,6 +109,7 @@ namespace platinum
     //  在CPP文件中注册具体的类。
     //  生成 xxx_类，并创建静态对象。类的构造函数负责调用RegisterClass，将xxx_create()函数注册。
     //  xxx_create()函数调用xxx的构造函数并返回构造对象的指针
+    //  运行时注册。s
 #define REGISTER_CLASS(cls, name)                             \
     inline cls *cls##_create(const PropertyNode &node)        \
     {                                                         \
@@ -122,7 +123,7 @@ namespace platinum
             ObjectFactory::RegisterClass(name, cls##_create); \
         }                                                     \
     };                                                        \
-    static cls##_ cls##__instance_;
+    static cls##_ cls##_instance_;
 }
 
 #endif
