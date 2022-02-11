@@ -21,7 +21,7 @@ namespace platinum
     {
         for (const auto &hitable : _primitives)
         {
-            _world_bounds = UnionBounds(_world_bounds, hitable->WorldBound());
+            _world_bounds   = UnionBounds(_world_bounds, hitable->WorldBound());
         }
     }
 

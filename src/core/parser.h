@@ -24,34 +24,36 @@ namespace platinum
         friend class Singleton<Parser>;
 
     public:
-        void Parse(const std::string& path, Ptr<Scene> scene, Ptr<Integrator> integrator);
+        void Parse(const std::string &path, Ptr<Scene> scene, Ptr<Integrator> integrator);
 
-        Parser(const Parser&) = delete;
+        Parser(const Parser &) = delete;
 
-        Parser& operator=(const Parser&) = delete;
+        Parser &operator=(const Parser &) = delete;
 
     private:
         Parser() = default;
 
-        void ParseLight(const PropertyNode& root);
+        void ParseLight(const PropertyNode &root);
 
-        void ParseMaterial(const PropertyNode& root);
+        void ParseMaterial(const PropertyNode &root);
 
-        void ParseObject(const PropertyNode& root) ;
+        void ParseObject(const PropertyNode &root);
 
-        void ParseTransform(const PropertyNode& root, Transform* transform) ;
+        void ParseAggregate(const PropertyNode &root);
 
-        void ParseTriMesh(const PropertyNode& root, Transform* obj2world, Transform* world2obj);
+        void ParseTransform(const PropertyNode &root, Transform *transform);
+
+        void ParseTriMesh(const PropertyNode &root, Transform *obj2world, Transform *world2obj);
 
         void ParseSimpleShape(const PropertyNode &root, Transform *obj2world, Transform *world2obj);
 
     private:
         std::string _assets_path;
-        std::vector<Ptr<Light>> &_lights;
-        std::unordered_map<std::string, Ptr<Material>> &_materials;
-        std::vector<Ptr<Primitive>> &_primitives;
-        std::vector<UPtr<Transform>> &_transforms;
-        std::vector<UPtr<TriangleMesh>> &_meshes;
+        std::unordered_map<std::string, Ptr<Material>> _materials;
+         std::vector<Ptr<Primitive>> _primitives;
+
+        //对scene修改
+        Ptr<Scene> _scene;
     };
 }
 #endif

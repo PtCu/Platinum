@@ -1,5 +1,5 @@
 {
-    "AssetsPath":"D:/Homework/graphics/rendering/Platinum/assets/",
+    "AssetsPath": "D:/Homework/graphics/rendering/Platinum/assets/",
     "Integrator": {
         "Type": "Path",
         "Depth": 15,
@@ -49,7 +49,9 @@
             }
         }
     },
-    "Aggregate": "Linear",
+    "Aggregate": {
+        "Type": "Linear"
+    },
     "Light": [],
     "Material": [
         {

@@ -33,34 +33,25 @@ namespace platinum
     class Scene
     {
     public:
-        Scene(const Ptr<Aggregate>& aggre, const std::vector<Ptr<Light>>& lights)
-            : _aggres(aggre), _lights(lights)
-        {
-            _worldbound = _aggres->WorldBound();
-            for (const auto& light : _lights)
-            {
-                light->Preprocess(*this);
-                if (light->_flags & (int)LightFlags::LightInfinite)
-                    _infinite_lights.push_back(light);
-            }
-        }
+        Scene() = default;
 
-        bool Hit(const Ray& ray, SurfaceInteraction& inter) const;
+        Scene(UPtr<Aggregate> aggre, const std::vector<Ptr<Light>> &lights);
 
-        bool Hit(const Ray& ray) const;
+        bool Hit(const Ray &ray, SurfaceInteraction &inter) const;
 
-        const Bounds3f& WorldBound() const { return _worldbound; }
+        bool Hit(const Ray &ray) const;
+
+        const Bounds3f &WorldBound() const { return _worldbound; }
 
         std::vector<Ptr<Light>> _lights;
         std::vector<Ptr<Light>> _infinite_lights;
-
+       
         std::vector<UPtr<Transform>> _transforms;
-        std::vector<UPtr<TriangleMesh>> _triangle_meshes;
+        std::vector<UPtr<TriangleMesh>> _meshes;
+        UPtr<Aggregate> _aggres;
 
     private:
-        Ptr<Aggregate> _aggres;
         Bounds3f _worldbound;
-
     };
 
 } // namespace platinum

@@ -108,9 +108,9 @@ int main()
 
     UPtr<Integrator> integrator = make_unique<WhittedIntegrator>(std::move(camera), std::move(sampler), 10);
 
-    Ptr<Aggregate> aggre = make_shared<LinearAggregate>(primitives);
+    UPtr<Aggregate> aggre = make_unique<LinearAggregate>(primitives);
 
-    auto scene = make_shared<Scene>(aggre, lights);
+    auto scene = make_shared<Scene>(std::move(aggre), lights);
 
     integrator->Render(*scene);
 }

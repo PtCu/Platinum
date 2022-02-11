@@ -82,11 +82,19 @@ namespace platinum
         const Material *_material;
     };
 
-    class Aggregate : public Primitive
+    class Aggregate : public Primitive, public Object
     {
     public:
+        Aggregate() = default;
+
         Aggregate(const std::vector<Ptr<Primitive>> &primitives)
             : _primitives(primitives) {}
+        /**
+         * @brief Set the Primitives object in a move constructor way.
+         * 
+         * @param primitives 
+         */
+        void SetPrimitives(const std::vector<Ptr<Primitive>> &primitives) { _primitives = std::move(primitives); }
 
         virtual const AreaLight *GetAreaLight() const override { return nullptr; }
 

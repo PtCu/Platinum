@@ -4,48 +4,69 @@
 #include <exception>
 #include <material/matte.h>
 #include <light/diffuse_light.h>
-
+#include <accelerator/linear.h>
 namespace platinum
 {
 
     void Parser::Parse(const std::string &path, Ptr<Scene> scene, Ptr<Integrator> integrator)
     {
+        scene = std::make_shared<Scene>();
+
+        _scene = scene;
+
         PropertyNode root;
         try
         {
             boost::property_tree::read_json(path, root);
+
+            LOG(INFO) << "Parse the scene file from " << path;
+
+            _assets_path = root.get<std::string>("AssetsPath", "");
+
+            auto integrator_node = root.get_child_optional("Integrator");
+            if (!integrator_node)
+            {
+                LOG(ERROR) << "No integrator contained!";
+                return;
+            }
+            integrator = Ptr<Integrator>(static_cast<Integrator *>(ObjectFactory::CreateInstance(integrator_node->get<std::string>("Type", "Path"),
+                                                                                                 integrator_node.get())));
+
+            ParseMaterial(root);
+
+            ParseLight(root);
+
+            ParseObject(root);
+
+            for (const auto &p : _primitives)
+            {
+                if (p->GetAreaLight())
+                {
+                    _scene->_lights.emplace_back(std::static_pointer_cast<Light>(dynamic_cast<GeometricPrimitive *>(p.get())->GetAreaLightPtr()));
+                }
+            }
+
+            ParseAggregate(root);
+
+            
         }
         catch (boost::property_tree::json_parser::json_parser_error &)
         {
             LOG(ERROR) << "Could not open the json file " << path << ", or file format error!";
         }
-        LOG(INFO) << "Parse the scene file from " << path;
-
-        _assets_path = root.get<std::string>("AssetsPath", "");
-
-        auto integrator_node = root.get_child_optional("Integrator");
-        if (!integrator_node)
-        {
-            LOG(ERROR) << "No integrator contained!";
-            return;
-        }
-        auto _integrator = Ptr<Integrator>(static_cast<Integrator *>(ObjectFactory::CreateInstance(integrator_node->get<std::string>("Type", "Path"),
-                                                                                                   integrator_node.get())));
-
-        ParseMaterial(root);
-
-        ParseLight(root);
-
-        ParseObject(root);
-
-        for (const auto &p : _primitives)
-        {
-            if (p->GetAreaLight())
-            {
-                _lights.push_back(std::static_pointer_cast<Light>(dynamic_cast<GeometricPrimitive *>(p.get())->GetAreaLightPtr()));
-            }
-        }
     }
+
+    void Parser::ParseAggregate(const PropertyNode &root)
+    {
+        auto aggre_node = root.get_child_optional("Aggregate");
+        if (!aggre_node)
+        {
+            _scene->_aggres = UPtr<Aggregate>(new LinearAggregate);
+        }
+        _scene->_aggres = UPtr<Aggregate>(static_cast<Aggregate *>(ObjectFactory::CreateInstance(aggre_node->get<std::string>("Type"), aggre_node.get())));
+        _scene->_aggres->SetPrimitives(_primitives);
+    }
+
     void Parser::ParseLight(const PropertyNode &root)
     {
         if (!root.get_child_optional("Light"))
@@ -53,9 +74,10 @@ namespace platinum
         for (const auto &p : root.get_child("Light"))
         {
             auto _light = Ptr<Light>(static_cast<Light *>(ObjectFactory::CreateInstance(p.second.get<std::string>("Type"), p.second)));
-            _lights.push_back(_light);
+            _scene->_lights.emplace_back(_light);
         }
     }
+
     void Parser::ParseMaterial(const PropertyNode &root)
     {
         if (!root.get_child_optional("Material"))
@@ -106,7 +128,7 @@ namespace platinum
             _primitives.emplace_back(std::make_shared<GeometricPrimitive>(triangle, material.get(), area_light));
         }
 
-        _meshes.emplace_back(std::move(mesh));
+        _scene->_meshes.emplace_back(std::move(mesh));
     }
 
     void Parser::ParseSimpleShape(const PropertyNode &root, Transform *obj2world, Transform *world2obj)
@@ -156,7 +178,7 @@ namespace platinum
                 auto _scale_node = trans.second.get_child("value");
                 auto iter = _scale_node.begin();
                 Vector3f scale;
-                for (size_t i = 0; i < 3; ++i, iter++)
+                for (size_t i = 0; i < 3; ++i, ++iter)
                 {
                     scale[i] = iter->second.get_value<float>(0.f);
                 }
@@ -172,7 +194,7 @@ namespace platinum
                 iter++;
                 //后三个数为旋转轴
                 Vector3f axis;
-                for (size_t i = 0; i < 3; ++i, iter++)
+                for (size_t i = 0; i < 3; ++i, ++iter)
                 {
                     axis[i] = iter->second.get_value<float>(0.f);
                 }
@@ -215,8 +237,8 @@ namespace platinum
                 ParseSimpleShape(p.second, obj2world.get(), world2obj.get());
             }
 
-            _transforms.emplace_back(std::move(obj2world));
-            _transforms.emplace_back(std::move(world2obj));
+            _scene->_transforms.emplace_back(std::move(obj2world));
+            _scene->_transforms.emplace_back(std::move(world2obj));
         }
     }
 }
