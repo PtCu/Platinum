@@ -16,12 +16,16 @@
 
 namespace platinum
 {
+    LinearAggregate::LinearAggregate(const PropertyNode &node)
+        : Aggregate(node)
+    {
+    }
     LinearAggregate::LinearAggregate(const std::vector<Ptr<Primitive>> &hitables)
         : Aggregate(hitables)
     {
         for (const auto &hitable : _primitives)
         {
-            _world_bounds   = UnionBounds(_world_bounds, hitable->WorldBound());
+            _world_bounds = UnionBounds(_world_bounds, hitable->WorldBound());
         }
     }
 

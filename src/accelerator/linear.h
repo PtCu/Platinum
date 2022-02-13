@@ -21,6 +21,8 @@ namespace platinum
     class LinearAggregate final : public Aggregate
     {
     public:
+        LinearAggregate(const PropertyNode&node);
+        
         LinearAggregate()=default;
 
         LinearAggregate(const std::vector<Ptr<Primitive>> &);

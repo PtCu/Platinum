@@ -10,7 +10,8 @@ namespace platinum
 
     using PropertyNode = boost::property_tree::ptree;
 
-    //从配置文件中创建对象所需的基类    
+
+    //从配置文件中创建对象所需的基类
     class Object
     {
     public:

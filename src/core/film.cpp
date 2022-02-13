@@ -19,6 +19,34 @@
 namespace platinum
 {
 
+    Film::Film(const PropertyNode &root)
+    {
+        auto iter = root.get_child("Resolution").begin();
+        _resolution[0] = (iter++)->second.get_value<float>();
+        _resolution[1] = iter->second.get_value<float>();
+        iter = root.get_child("CropMin").begin();
+        Bounds2f cropWindow;
+        cropWindow._p_min[0] = (iter++)->second.get_value<float>();
+        cropWindow._p_min[1] = iter->second.get_value<float>();
+        iter = root.get_child("CropMax").begin();
+        cropWindow._p_max[0] = (iter++)->second.get_value<float>();
+        cropWindow._p_max[1] = (iter++)->second.get_value<float>();
+
+        _cropped_pixel_bounds =
+            Bounds2i(
+                Vector2i(glm::ceil(_resolution.x * cropWindow._p_min.x),
+                         glm::ceil(_resolution.y * cropWindow._p_min.y)),
+                Vector2i(glm::ceil(_resolution.x * cropWindow._p_max.x),
+                         glm::ceil(_resolution.y * cropWindow._p_max.y)));
+        LOG(INFO) << "Created film with full resolution " << _resolution << ". Crop window of " << cropWindow << " -> croppedPixelBounds " << _cropped_pixel_bounds;
+
+        _filename = root.get<std::string>("Filename");
+
+        _filter = UPtr<Filter>(static_cast<Filter *>(ObjectFactory::CreateInstance(root.get<std::string>("Filter.Type"), root.get_child("Filter"))));
+
+        Initialize();
+    }
+
     Film::Film(const Vector2i &resolution, const Bounds2f &cropWindow, std::unique_ptr<Filter> filter,
                const std::string &filename, float Diagonal, float scale, float maxSampleLuminance)
         : _resolution(resolution), _filter(std::move(filter)), _diagonal(Diagonal),

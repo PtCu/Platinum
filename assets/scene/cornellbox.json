@@ -24,28 +24,28 @@
                 0,
                 1,
                 0
-            ]
-        },
-        "Film": {
-            "Resolution": [
-                666,
-                500
             ],
-            "CropMin": [
-                0,
-                0
-            ],
-            "CropMax": [
-                1,
-                1
-            ],
-            "Filename": "cornellBox.png",
-            "Filter": {
-                "Type": "Box",
-                "Radius": [
-                    0.5,
-                    0.5
-                ]
+            "Film": {
+                "Resolution": [
+                    666,
+                    500
+                ],
+                "CropMin": [
+                    0,
+                    0
+                ],
+                "CropMax": [
+                    1,
+                    1
+                ],
+                "Filename": "cornellBox.png",
+                "Filter": {
+                    "Type": "Box",
+                    "Radius": [
+                        0.5,
+                        0.5
+                    ]
+                }
             }
         }
     },

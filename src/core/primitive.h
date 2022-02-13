@@ -85,6 +85,8 @@ namespace platinum
     class Aggregate : public Primitive, public Object
     {
     public:
+        Aggregate(const PropertyNode&node){}
+
         Aggregate() = default;
 
         Aggregate(const std::vector<Ptr<Primitive>> &primitives)

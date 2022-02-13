@@ -17,6 +17,9 @@
 namespace platinum
 {
 
+    Sampler::Sampler(const PropertyNode &root) : _samplesPerPixel(root.get<int64_t>("SPP"))
+    {
+    }
     CameraSample Sampler::GetCameraSample(const Vector2i &p_raster, Filter *flter)
     {
         CameraSample cs;

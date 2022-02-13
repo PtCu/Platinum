@@ -2,7 +2,7 @@
 
 namespace platinum
 {
-    REGISTER_CLASS(BoxFilter, "BoxFilter");
+    REGISTER_CLASS(BoxFilter, "Box");
 
     BoxFilter(const PropertyNode &node) : Filter(node) {}
 }

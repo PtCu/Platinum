@@ -16,7 +16,12 @@
 
 namespace platinum
 {
+    REGISTER_CLASS(RandomSampler, "Random");
 
+    RandomSampler::RandomSampler(const PropertyNode &root) : Sampler(root)
+    {
+    }
+    
     RandomSampler::RandomSampler(int ns) : Sampler(ns) {}
 
     float RandomSampler::Get1D()

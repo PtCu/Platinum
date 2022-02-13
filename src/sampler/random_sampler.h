@@ -22,7 +22,10 @@ namespace platinum
     class RandomSampler final : public Sampler
     {
     public:
+        RandomSampler(const PropertyNode &);
+
         RandomSampler(int ns);
+
         virtual void StartPixel(const Vector2i &) override;
 
         virtual float Get1D() override;

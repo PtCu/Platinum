@@ -23,6 +23,8 @@ namespace platinum
     class Sampler : public Object
     {
     public:
+        Sampler(const PropertyNode &);
+
         Sampler(int64_t samplesPerPixel) : _samplesPerPixel(samplesPerPixel) {}
 
         virtual ~Sampler() = default;
