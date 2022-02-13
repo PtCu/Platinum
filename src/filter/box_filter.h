@@ -8,9 +8,12 @@ namespace platinum
     class BoxFilter final : public Filter
     {
     public:
+        BoxFilter(const PropertyNode &node);
+
         BoxFilter(const Vector2f &radius) : Filter(radius) {}
 
         std::string ToString() const { return "BoxFilter"; }
+
         virtual float Evaluate(const Vector2f &p) const override
         {
             return 1.f;

@@ -29,6 +29,8 @@ namespace platinum
     class Film : public Object
     {
     public:
+        Film(const PropertyNode &node);
+
         Film(const Vector2i &resolution, const Bounds2f &cropWindow,
              std::unique_ptr<Filter> filter, const std::string &filename, float diagonal = 35.f,
              float scale = 1.f, float maxSampleLuminance = Infinity);
