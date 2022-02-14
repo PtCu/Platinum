@@ -1,4 +1,5 @@
 #include <core/parser.h>
+#include <material/mirror.h>
 
 using namespace platinum;
 using namespace std;

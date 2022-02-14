@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.0.0)
-set(PROJECT_NAME "RenderToy")
+set(PROJECT_NAME "Platinum")
 project (${PROJECT_NAME} VERSION 0.1.0)
 
 set(CMAKE_CXX_STANDARD 17)
@@ -44,7 +44,8 @@ macro(SETUP_PROJECT MODE TARGET_NAME STR_TARGET_SOURCES STR_TARGET_LIBS)
 				SET_TARGET_PROPERTIES(${TARGET_NAME} PROPERTIES FOLDER ${FOLDER_NAME})
 			endif()
 			if(NOT ${STR_TARGET_LIBS} STREQUAL " ")
-				target_link_libraries( ${TARGET_NAME} ${LIST_TARGET_LIBS} )
+				set_target_properties(${TARGET_NAME} PROPERTIES LINK_FLAGS /WHOLEARCHIVE)
+				target_link_libraries( ${TARGET_NAME} ${LIST_TARGET_LIBS})
 			endif()
 			install (TARGETS ${TARGET_NAME} DESTINATION ${INSTALL_DIR})
 			message(STATUS "Setup Project ${Mode} ${FOLDER_NAME}/[${TARGET_NAME}]")
@@ -79,6 +80,7 @@ include_directories(
 	${CMAKE_BINARY_DIR}/config
 )
 
+add_compile_options(/O2 /fp:fast /arch:AVX2)
 
 configure_file(config/ROOT_PATH.h.in config/ROOT_PATH.h)
 
