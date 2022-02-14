@@ -16,12 +16,13 @@
 #define CORE_FILM_H_
 
 #include <core/utilities.h>
+#include <core/object.h>
 
 #include <core/parallel.h>
 #include <core/spectrum.h>
 #include <math/bounds.h>
 #include <core/filter.h>
-#include <core/object.h>
+
 
 namespace platinum
 {
@@ -38,7 +39,7 @@ namespace platinum
         void SetFilter(std::unique_ptr<Filter> filter) { _filter = std::move(filter); }
 
         Bounds2i GetSampleBounds() const;
-        
+
         const Vector2i GetResolution() const { return _resolution; }
 
         std::unique_ptr<FilmTile> GetFilmTile(const Bounds2i &sampleBounds);

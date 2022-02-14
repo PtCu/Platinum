@@ -70,7 +70,7 @@ int main()
 
     UPtr<Aggregate> aggre = make_unique<LinearAggregate>(primitives);
 
-    auto scene = make_shared<Scene>(aggre, lights);
+    auto scene = make_shared<Scene>(std::move(aggre), lights);
 
     integrator->Render(*scene);
 }

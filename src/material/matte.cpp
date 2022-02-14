@@ -30,7 +30,7 @@ namespace platinum
         _Kr = Spectrum::fromRGB(spectrum);
         _ref = std::make_shared<LambertianReflection>(_Kr);
     }
-    
+
     Matte::Matte() : _Kr(Spectrum(0.73, 0.73, 0.73))
     {
         _ref = std::make_shared<LambertianReflection>(_Kr);

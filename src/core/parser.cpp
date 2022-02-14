@@ -5,6 +5,9 @@
 #include <material/matte.h>
 #include <light/diffuse_light.h>
 #include <accelerator/linear.h>
+#include <material/mirror.h>
+#include <integrator/whitted_integrator.h>
+
 namespace platinum
 {
 
@@ -29,6 +32,10 @@ namespace platinum
                 LOG(ERROR) << "No integrator contained!";
                 return;
             }
+
+            auto a = integrator_node->get<std::string>("Type", "Path");
+            auto b = integrator_node.get();
+
             integrator = Ptr<Integrator>(static_cast<Integrator *>(ObjectFactory::CreateInstance(integrator_node->get<std::string>("Type", "Path"),
                                                                                                  integrator_node.get())));
 
@@ -47,8 +54,6 @@ namespace platinum
             }
 
             ParseAggregate(root);
-
-            
         }
         catch (boost::property_tree::json_parser::json_parser_error &)
         {
@@ -100,7 +105,7 @@ namespace platinum
                               Transform *world2obj)
     {
         auto mesh_path = root.get<std::string>("Shape.Filename");
-        auto mesh = std::make_unique<TriangleMesh>(obj2world, mesh_path);
+        auto mesh = std::make_unique<TriangleMesh>(obj2world, _assets_path+mesh_path);
         const auto mat_string = root.get_optional<std::string>("Material");
         Ptr<Material> material = nullptr;
         if (!mat_string || _materials.find(mat_string.get()) == _materials.end())

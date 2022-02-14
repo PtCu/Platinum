@@ -20,7 +20,7 @@
 namespace platinum
 {
 
-    class WhittedIntegrator : public SamplerIntegrator
+    class WhittedIntegrator final: public SamplerIntegrator
     {
     public:
         WhittedIntegrator(const PropertyNode &node);

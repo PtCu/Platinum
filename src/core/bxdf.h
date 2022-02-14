@@ -151,6 +151,14 @@ namespace platinum
     private:
         Spectrum _etaI, _etaT, _kt;
     };
+
+    class FresnelNoOp : public Fresnel
+    {
+    public:
+        virtual Spectrum Evaluate(float) const override { return Spectrum(1.); }
+    };
 }
+
+
 
 #endif

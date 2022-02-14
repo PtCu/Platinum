@@ -25,9 +25,7 @@ namespace platinum
         _sampler = UPtr<Sampler>(static_cast<Sampler *>(ObjectFactory::CreateInstance(root.get<std::string>("Sampler.Type"), root.get_child("Sampler"))));
 
         _camera = UPtr<Camera>(static_cast<Camera *>(ObjectFactory::CreateInstance(root.get<std::string>("Camera.Type"), root.get_child("Camera"))));
-
-        
-     }
+    }
 
     //https://pbr-book.org/3ed-2018/Introduction/pbrt_System_Overview#WhittedIntegrator
     Spectrum WhittedIntegrator::Li(const Scene &scene, const Ray &ray, Sampler &sampler, int depth) const
@@ -85,4 +83,5 @@ namespace platinum
         }
         return L;
     }
+
 }

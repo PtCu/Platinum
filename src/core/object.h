@@ -102,14 +102,16 @@ namespace platinum
         static Object *CreateInstance(const std::string &type, const PropertyNode &node);
 
     private:
-        static std::map<std::string, Constructor> _ctors;
+        static std::map<std::string, Constructor> &GetMap();
+        
     };
 
     //  Macro for registering an object constructor with the \ref AObjectFactory
     //  在CPP文件中注册具体的类。
     //  生成 xxx_类，并创建静态对象。类的构造函数负责调用RegisterClass，将xxx_create()函数注册。
     //  xxx_create()函数调用xxx的构造函数并返回构造对象的指针
-    //  运行时注册。s
+    //  运行时注册。
+
 #define REGISTER_CLASS(cls, name)                             \
     inline cls *cls##_create(const PropertyNode &node)        \
     {                                                         \

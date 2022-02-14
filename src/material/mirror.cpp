@@ -14,12 +14,13 @@ namespace platinum
             spectrum[i] = iter->second.get_value<float>();
         }
         _Kr = Spectrum::fromRGB(spectrum);
-        _ref = std::make_shared<SpecularReflection>(_Kr);
+        _ref = std::make_shared<SpecularReflection>(_Kr, nullptr);
     }
 
     Mirror::Mirror(const Spectrum &r) : _Kr(r)
     {
-        _ref = std::make_shared<SpecularReflection>(_Kr);
+
+        _ref = std::make_shared<SpecularReflection>(_Kr, nullptr);
     }
 
     void Mirror::ComputeScatteringFunctions(SurfaceInteraction &si) const

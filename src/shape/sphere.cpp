@@ -36,6 +36,7 @@ namespace platinum
     :Shape(node),_radius(node.get<float>("Radius",1.f))
     {
     }
+    
     Bounds3f Sphere::ObjectBound() const
     {
         return Bounds3f(-Vector3f(_radius, _radius, _radius), Vector3f(_radius, _radius, _radius));

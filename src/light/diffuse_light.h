@@ -20,7 +20,7 @@
 
 namespace platinum
 {
-    class DiffuseAreaLight : public AreaLight
+    class DiffuseAreaLight final: public AreaLight
     {
     public:
         DiffuseAreaLight(const PropertyNode &node);
