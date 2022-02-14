@@ -9,9 +9,20 @@
 
 namespace platinum
 {
-    class Mirror final:  public Material
+    class Mirror final : public Material
     {
-        
+    public:
+        Mirror(const PropertyNode &root);
+
+        Mirror(const Spectrum &r);
+
+        virtual void ComputeScatteringFunctions(SurfaceInteraction &si) const override;
+
+        virtual std::string ToString() const override { return "Mirror"; }
+
+    private:
+        Spectrum _Kr;
+        Ptr<SpecularReflection> _ref;
     };
 }
 
