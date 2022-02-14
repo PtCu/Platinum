@@ -31,7 +31,7 @@ namespace platinum
         virtual ~Filter() = default;
 
         virtual float Evaluate(const Vector2f &p) const = 0;
-
+        
         Vector2f _radius, _inv_radius;
     };
 }

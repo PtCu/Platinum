@@ -4,7 +4,7 @@ using namespace platinum;
 using namespace std;
 int main(int argc, char **argv)
 {
-    auto parser = Parser::GetInstance();
+    auto& parser = Parser::GetInstance();
     Ptr<Integrator> integrator = nullptr;
     Ptr<Scene> scene = nullptr;
     std::string filename = "D:/Homework/graphics/rendering/Platinum/assets/scene/cornellbox.json";

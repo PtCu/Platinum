@@ -1,7 +1,7 @@
 {
     "AssetsPath": "D:/Homework/graphics/rendering/Platinum/assets/",
     "Integrator": {
-        "Type": "Path",
+        "Type": "Whitted",
         "Depth": 15,
         "Sampler": {
             "Type": "Random",

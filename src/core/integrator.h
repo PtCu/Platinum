@@ -28,6 +28,7 @@ namespace platinum
     {
     public:
         virtual void Render(const Scene &scene) = 0;
+
     };
 
     class SamplerIntegrator : public Integrator

@@ -38,6 +38,7 @@ namespace platinum
         void SetFilter(std::unique_ptr<Filter> filter) { _filter = std::move(filter); }
 
         Bounds2i GetSampleBounds() const;
+        
         const Vector2i GetResolution() const { return _resolution; }
 
         std::unique_ptr<FilmTile> GetFilmTile(const Bounds2i &sampleBounds);
@@ -46,6 +47,7 @@ namespace platinum
         void WriteImageToFile(float splatScale = 1);
 
         void SetImage(const Spectrum *img) const;
+
         void AddSplat(const Vector2f &p, Spectrum v);
 
         void Clear();
@@ -53,6 +55,8 @@ namespace platinum
         void Initialize();
 
         std::string ToString() const { return "Film"; }
+
+      
 
     private:
         //Note: XYZ is a display independent representation of color,

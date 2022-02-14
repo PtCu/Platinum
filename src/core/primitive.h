@@ -32,7 +32,7 @@
 namespace platinum
 {
 
-    class Primitive
+    class Primitive : public Object
     {
     public:
         typedef Ptr<Primitive> ptr;
@@ -56,8 +56,7 @@ namespace platinum
     {
     public:
         GeometricPrimitive(const Ptr<Shape> &shape, const Material *material,
-                           const Ptr<AreaLight> &area_light)
-            : _shape(shape), _material(material), _area_light(area_light) {}
+                           const Ptr<AreaLight> &area_light);
 
         virtual bool Hit(const Ray &ray) const override { return _shape->Hit(ray); }
 
@@ -75,6 +74,8 @@ namespace platinum
 
         virtual void ComputeScatteringFunctions(SurfaceInteraction &isect) const override;
 
+        virtual std::string ToString() const override { return "GeometricPrimitive"; }
+
     private:
         Ptr<Shape> _shape;
         Ptr<AreaLight> _area_light;
@@ -82,10 +83,10 @@ namespace platinum
         const Material *_material;
     };
 
-    class Aggregate : public Primitive, public Object
+    class Aggregate : public Primitive
     {
     public:
-        Aggregate(const PropertyNode&node){}
+        Aggregate(const PropertyNode &node) {}
 
         Aggregate() = default;
 

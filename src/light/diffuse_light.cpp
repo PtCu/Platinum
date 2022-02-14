@@ -14,8 +14,10 @@
 
 #include <light/diffuse_light.h>
 #include <glm/gtx/norm.hpp>
+#include <core/primitive.h>
 namespace platinum
 {
+    REGISTER_CLASS(DiffuseAreaLight, "DiffuseAreaLight");
 
     DiffuseAreaLight::DiffuseAreaLight(const PropertyNode &node)
         : AreaLight(node), _shape(nullptr)
@@ -23,12 +25,27 @@ namespace platinum
         auto spectrum_node = node.get_child("Radiance");
         auto iter = spectrum_node.begin();
         std::array<float, 3> spectrum;
-        for (size_t i = 0; i < 3; ++i,++iter)
+        for (size_t i = 0; i < 3; ++i, ++iter)
         {
             spectrum[i] = iter->second.get_value<float>();
         }
         _Lemit = Spectrum::fromRGB(spectrum);
         _two_sided = node.get<bool>("TwoSided");
+    }
+    void DiffuseAreaLight::SetParent(Object *parent)
+    {
+       
+        auto p_node = dynamic_cast<GeometricPrimitive *>(parent);
+        if (!p_node)
+        {
+            LOG(ERROR) << "DiffuseAreaLight's parent can only be primitive!";
+        }
+        _shape =p_node->GetShape();
+        _area = _shape->Area();
+        _light2World = *_shape->_object2world;
+        _world2Light = *_shape->_world2object;
+
+       
     }
 
     Spectrum DiffuseAreaLight::SampleLe(const Vector2f &u1, const Vector2f &u2, Ray &ray,

@@ -53,6 +53,8 @@ namespace platinum
 
         std::string ToString() const { return "DiffuseAreaLight"; }
 
+       virtual void DiffuseAreaLight::SetParent(Object *parent) override;
+
     private:
         Spectrum _Lemit;
         Shape *_shape;
