@@ -20,7 +20,7 @@ namespace platinum
 
     PerspectiveCamera::PerspectiveCamera(const PropertyNode &root)
     {
-        float _fov = root.get<float>("FOV");
+        float _fov = root.get<float>("Fov");
 
         Vector3f _eye, _focus, _up;
         auto eye_iter = root.get_child("Eye").begin();
@@ -36,7 +36,9 @@ namespace platinum
         _camera2world = Inverse(LookAt(_eye, _focus, _up));
         _camera2screen = Perspective(_fov, 1e-2f, 1000.f);
 
-        _film = UPtr<Film>(static_cast<Film *>(ObjectFactory::CreateInstance(root.get<std::string>("Film.Type"), root.get_child("Film"))));
+        _film = UPtr<Film>(static_cast<Film *>(ObjectFactory::CreateInstance("Film", root.get_child("Film"))));
+
+        ProjectiveCamera::Initialize();
 
         Initialize();
     }
@@ -46,6 +48,7 @@ namespace platinum
     {
         Initialize();
     }
+    
     void PerspectiveCamera::Initialize()
     {
         auto res = _film->GetResolution();

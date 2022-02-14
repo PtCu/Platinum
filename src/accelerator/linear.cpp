@@ -22,9 +22,17 @@ namespace platinum
         : Aggregate(node)
     {
     }
+
     LinearAggregate::LinearAggregate(const std::vector<Ptr<Primitive>> &hitables)
         : Aggregate(hitables)
     {
+        for (const auto &hitable : _primitives)
+        {
+            _world_bounds = UnionBounds(_world_bounds, hitable->WorldBound());
+        }
+    }
+
+    void LinearAggregate::Initialize(){
         for (const auto &hitable : _primitives)
         {
             _world_bounds = UnionBounds(_world_bounds, hitable->WorldBound());

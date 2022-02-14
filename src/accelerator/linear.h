@@ -27,6 +27,8 @@ namespace platinum
 
         LinearAggregate(const std::vector<Ptr<Primitive>> &);
 
+        virtual void Initialize();
+        
         virtual bool Hit(const Ray &ray) const override;
 
         virtual bool Hit(const Ray &ray, SurfaceInteraction &inter) const;

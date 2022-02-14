@@ -35,6 +35,19 @@ namespace platinum
                 _infinite_lights.push_back(light);
         }
     }
+
+    void Scene::Initialize()
+    {
+        _aggres->Initialize();
+        _worldbound = _aggres->WorldBound();
+        for (const auto &light : _lights)
+        {
+            light->Preprocess(*this);
+            if (light->_flags & (int)LightFlags::LightInfinite)
+                _infinite_lights.push_back(light);
+        }
+    }
+
     bool Scene::Hit(const Ray &ray, SurfaceInteraction &inter) const
     {
         return _aggres->Hit(ray, inter);

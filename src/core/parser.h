@@ -24,7 +24,7 @@ namespace platinum
         friend class Singleton<Parser>;
 
     public:
-        void Parse(const std::string &path, Ptr<Scene> scene, Ptr<Integrator> integrator);
+        void Parse(const std::string &path, Ptr<Scene> &scene, Ptr<Integrator> &integrator);
 
         Parser(const Parser &) = delete;
 

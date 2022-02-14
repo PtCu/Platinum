@@ -90,6 +90,8 @@ namespace platinum
 
         Aggregate() = default;
 
+        virtual void Initialize() {}
+
         Aggregate(const std::vector<Ptr<Primitive>> &primitives)
             : _primitives(primitives) {}
         /**

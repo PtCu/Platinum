@@ -100,7 +100,7 @@ namespace platinum
                                                VLOG(1) << "Camera sample: " << cameraSample << " -> ray: " << ray << " -> L = " << L;
 
                                                // Add camera ray's contribution to image
-                                               filmTile->addSample(cameraSample.p_film, L, rayWeight);
+                                               filmTile->AddSample(cameraSample.p_film, L, rayWeight);
 
                                            } while (tileSampler->StartNextSample());
                                        }

@@ -65,9 +65,9 @@ endforeach ()
 
 set(EXTRA_LIBS ${EXTRA_LIBS} glm::glm assimp::assimp TBB::tbb glog::glog)
 
-if(MSVC)
-	add_compile_options(/O2 /fp:fast /arch:AVX2)
-endif()
+# if(MSVC)
+# 	add_compile_options(/O2 /fp:fast /arch:AVX2)
+# endif()
 
 configure_file(config/ROOT_PATH.h.in config/ROOT_PATH.h)
 

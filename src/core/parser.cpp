@@ -11,7 +11,7 @@
 namespace platinum
 {
 
-    void Parser::Parse(const std::string &path, Ptr<Scene> scene, Ptr<Integrator> integrator)
+    void Parser::Parse(const std::string &path, Ptr<Scene> &scene, Ptr<Integrator> &integrator)
     {
         scene = std::make_shared<Scene>();
 
@@ -59,6 +59,9 @@ namespace platinum
         {
             LOG(ERROR) << "Could not open the json file " << path << ", or file format error!";
         }
+
+        scene->Initialize();
+        
     }
 
     void Parser::ParseAggregate(const PropertyNode &root)

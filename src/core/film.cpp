@@ -18,6 +18,7 @@
 #include <stb/stb_image_write.h>
 namespace platinum
 {
+    REGISTER_CLASS(Film, "Film");
 
     Film::Film(const PropertyNode &root)
     {
@@ -43,6 +44,10 @@ namespace platinum
         _filename = root.get<std::string>("Filename");
 
         _filter = UPtr<Filter>(static_cast<Filter *>(ObjectFactory::CreateInstance(root.get<std::string>("Filter.Type"), root.get_child("Filter"))));
+
+        _diagonal = root.get<float>("Diagonal", 35.f);
+        _scale = root.get<float>("Scale", 1.f);
+        _max_sample_luminance = root.get<float>("MaxLum", Infinity);
 
         Initialize();
     }
@@ -84,6 +89,8 @@ namespace platinum
             }
         }
     }
+
+    
 
     Bounds2i Film::GetSampleBounds() const
     {

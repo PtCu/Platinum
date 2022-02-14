@@ -37,6 +37,8 @@ namespace platinum
 
         Scene(UPtr<Aggregate> aggre, const std::vector<Ptr<Light>> &lights);
 
+        void Initialize();
+        
         bool Hit(const Ray &ray, SurfaceInteraction &inter) const;
 
         bool Hit(const Ray &ray) const;

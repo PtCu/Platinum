@@ -121,7 +121,7 @@ namespace platinum
             m_pixels = std::vector<FilmTilePixel>(glm::max(0, pixelBounds.Area()));
         }
 
-        void addSample(const Vector2f &pFilm, Spectrum L, float sampleWeight = 1.f)
+        void AddSample(const Vector2f &pFilm, Spectrum L, float sampleWeight = 1.f)
         {
             if (L.y() > m_maxSampleLuminance)
                 L *= m_maxSampleLuminance / L.y();
