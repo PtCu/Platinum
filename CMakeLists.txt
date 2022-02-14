@@ -1,77 +1,35 @@
 cmake_minimum_required(VERSION 3.0.0)
+
 set(PROJECT_NAME "Platinum")
 project (${PROJECT_NAME} VERSION 0.1.0)
 
 set(CMAKE_CXX_STANDARD 17)
 
-find_package(glm CONFIG REQUIRED)
-#target_link_libraries(main PRIVATE glm::glm)
-find_package(spdlog CONFIG REQUIRED)
-#target_link_libraries(main PRIVATE spdlog::spdlog spdlog::spdlog_header_only)
-find_package(assimp CONFIG REQUIRED)
-#target_link_libraries(main PRIVATE assimp::assimp)
-find_package(glog CONFIG REQUIRED)
-#target_link_libraries(main PRIVATE glog::glog)
-find_package(TBB CONFIG REQUIRED)
-# target_link_libraries(main PRIVATE TBB::tbb)
+# 开启工程虚拟目录
+set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
-# find_package(Boost COMPONENTS system REQUIRED)
+find_package(glm CONFIG REQUIRED)
+
+find_package(assimp CONFIG REQUIRED)
+
+find_package(TBB CONFIG REQUIRED)
+
+# glog configuration
+find_package(glog CONFIG REQUIRED)
+set(WITH_GFLAGS OFF CACHE BOOL "Use gflags")
+set(BUILD_SHARED_LIBS OFF CACHE BOOL " " FORCE)
+if(WIN32)
+  add_definitions( -D GOOGLE_GLOG_DLL_DECL= )
+endif()
+
+add_definitions( -D HAVE_SNPRINTF)
+
 # Boost header only
 find_package(Boost 1.77.0)
 if(Boost_FOUND)
   include_directories(${Boost_INCLUDE_DIRS})
 endif()
-#---------------------------------------
-macro(SETUP_PROJECT MODE TARGET_NAME STR_TARGET_SOURCES STR_TARGET_LIBS)
-	string(REPLACE " " ";" LIST_TARGET_SOURCES ${STR_TARGET_SOURCES})
-	string(REPLACE " " ";" LIST_TARGET_LIBS ${STR_TARGET_LIBS})
-	
-	if(${STR_TARGET_SOURCES} STREQUAL " ")
-		message(WARNING "Target [${TARGET_NAME}] has no source, so it won't be generated.")
-	else()
-		if(${MODE} STREQUAL "EXE")
-			add_executable( ${TARGET_NAME} ${LIST_TARGET_SOURCES})
-			set(INSTALL_DIR "bin")
-		elseif(${MODE} STREQUAL "LIB")
-			add_library(${TARGET_NAME} ${LIST_TARGET_SOURCES})
-			set(INSTALL_DIR "lib/${FOLDER_NAME}")
-		else()
-			message(FATAL_ERROR "Mode [${MODE}] is not supported, so target [TARGET_NAME] is not generated!")
-			set(MODE_NOTSUPPORT " ")
-		endif()
-		if(NOT DEFINED MODE_NOTSUPPORT)
-			if( NOT ${FOLDER_NAME} STREQUAL " ")
-				SET_TARGET_PROPERTIES(${TARGET_NAME} PROPERTIES FOLDER ${FOLDER_NAME})
-			endif()
-			if(NOT ${STR_TARGET_LIBS} STREQUAL " ")
-				set_target_properties(${TARGET_NAME} PROPERTIES LINK_FLAGS /WHOLEARCHIVE)
-				target_link_libraries( ${TARGET_NAME} ${LIST_TARGET_LIBS})
-			endif()
-			install (TARGETS ${TARGET_NAME} DESTINATION ${INSTALL_DIR})
-			message(STATUS "Setup Project ${Mode} ${FOLDER_NAME}/[${TARGET_NAME}]")
-		endif()
-	endif()
-endmacro(SETUP_PROJECT TARGET_NAME STR_TARGET_SOURCES STR_TARGET_LIBS)
-#---------------------------------------
-macro(ADD_ALL_SUBDIR)
-	file(GLOB _children RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/*)
-	set(_dirlist "")
-	foreach(_child ${_children})
-		if(IS_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/${_child})
-			list(APPEND _dirlist ${_child})
-		endif()
-	endforeach()
-	#SET(${result} ${dirlist})
-	foreach(_subdir ${_dirlist})
-		add_subdirectory(${_subdir})
-	endforeach()
-endmacro(ADD_ALL_SUBDIR)
-#---------------------------------------
-macro(GET_DIR_NAME DIRNAME)
-	string(REGEX MATCH "([^/]*)$" TMP ${CMAKE_CURRENT_SOURCE_DIR})
-	set(${DIRNAME} ${TMP})
-endmacro(GET_DIR_NAME DIRNAME)
-#---------------------------------------
+
 
 #设置头文件目录
 include_directories(
@@ -80,13 +38,44 @@ include_directories(
 	${CMAKE_BINARY_DIR}/config
 )
 
-add_compile_options(/O2 /fp:fast /arch:AVX2)
+# 收集所有头文件源文件，存入 ALL_FILES 变量中
+file(GLOB_RECURSE ALL_FILES "src/*.h*" "src/*.c*")
+
+# 定义按目录结构归类的方法
+function(assign_source_group)
+    foreach (_source IN ITEMS ${ARGN})
+        if (IS_ABSOLUTE "${_source}")
+			# 获取相对路径
+            file(RELATIVE_PATH _source_rel "${CMAKE_CURRENT_SOURCE_DIR}" "${_source}")
+        else ()
+            set(_source_rel "${_source}")
+        endif ()
+		#取得文件目录。如src/core
+        get_filename_component(_source_path "${_source_rel}" PATH)
+		# 替换\\为/，并将结果保存在_source_path_msvc
+        string(REPLACE "/" "\\" _source_path_msvc "${_source_path}")
+		message("Group ${_source} into ${_source_path_msvc}")
+        source_group("${_source_path_msvc}" FILES "${_source}")
+    endforeach ()
+endfunction(assign_source_group)
+
+foreach (_source IN ITEMS ${ALL_FILES})
+    assign_source_group(${_source})
+endforeach ()
+
+set(EXTRA_LIBS ${EXTRA_LIBS} glm::glm assimp::assimp TBB::tbb glog::glog)
+
+if(MSVC)
+	add_compile_options(/O2 /fp:fast /arch:AVX2)
+endif()
 
 configure_file(config/ROOT_PATH.h.in config/ROOT_PATH.h)
 
-add_subdirectory (src)
-add_subdirectory (tests)
+add_executable(${PROJECT_NAME} ${ALL_FILES})
+
+target_link_libraries(${PROJECT_NAME} PRIVATE ${EXTRA_LIBS})
 
 set(CPACK_PROJECT_NAME ${PROJECT_NAME})
 set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})
 include(CPack)
+
