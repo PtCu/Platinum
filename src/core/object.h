@@ -1,14 +1,79 @@
 #ifndef CORE_OBJECT_H_
 #define CORE_OBJECT_H_
 
+#include <boost/property_tree/json_parser.hpp>
 #include <boost/property_tree/ptree.hpp>
-
+#include <optional>
 #include <map>
+#include <core/utilities.h>
 
 namespace platinum
 {
 
     using PropertyNode = boost::property_tree::ptree;
+
+    class PropertyTree
+    {
+    public:
+        PropertyTree() = default;
+
+        PropertyTree(const boost::property_tree::ptree &node) : _root(node) {}
+
+        template <typename T>
+        T Get(const std::string &name) const
+        {
+            return _root.get<T>(name);
+        }
+
+        template <typename T>
+        T Get(const std::string &name, const T &defaultValue) const
+        {
+            return _root.get<T>(name, defaultValue);
+        }
+
+        template <>
+        Vector2f Get<Vector2f>(const std::string &name) const
+        {
+            Vector2f ans;
+            auto iter = _root.get_child(name).begin();
+            ans.x = (iter++)->second.get_value<float>();
+            ans.y = iter->second.get_value<float>();
+            return ans;
+        }
+
+        template <>
+        Vector3f Get<Vector3f>(const std::string &name) const
+        {
+            Vector3f ans;
+            auto iter = _root.get_child(name).begin();
+            ans.x = (iter++)->second.get_value<float>();
+            ans.y = (iter++)->second.get_value<float>();
+            ans.z = iter->second.get_value<float>();
+            return ans;
+        }
+
+        PropertyTree GetChild(const std::string &name) const
+        {
+            auto child = _root.get_child(name);
+            return PropertyTree(child);
+        }
+
+        std::optional<PropertyTree> GetChildOPtional(const std::string &name) const
+        {
+            auto child = _root.get_child_optional(name);
+            if (!child)
+                return std::nullopt;
+            return PropertyTree(child.get());
+        }
+
+        void ReadJson(const std::string &path)
+        {
+            boost::property_tree::read_json(path, _root);
+        }
+
+    private:
+        boost::property_tree::ptree _root;
+    };
 
     //从配置文件中创建对象所需的基类
     class Object
@@ -103,7 +168,6 @@ namespace platinum
 
     private:
         static std::map<std::string, Constructor> &GetMap();
-        
     };
 
     //  Macro for registering an object constructor with the \ref AObjectFactory

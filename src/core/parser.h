@@ -1,7 +1,7 @@
 #ifndef CORE_PARSER_H_
 #define CORE_PARSER_H_
 
-#include <boost/property_tree/json_parser.hpp>
+
 #include <optional>
 #include <core/object.h>
 #include <core/utilities.h>

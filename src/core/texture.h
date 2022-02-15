@@ -23,7 +23,7 @@
 #ifndef CORE_TEXTURE_H_
 #define CORE_TEXTURE_H_
 
-#include <core/ray.h>
+#include <math/ray.h>
 #include <core/interaction.h>
 #include <core/utilities.h>
 

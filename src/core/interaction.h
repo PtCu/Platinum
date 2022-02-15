@@ -24,7 +24,7 @@
 #define CORE_INTERSECTION_H_
 
 #include <core/utilities.h>
-#include <core/ray.h>
+#include <math/ray.h>
 
 namespace platinum
 {
@@ -102,6 +102,5 @@ namespace platinum
         Vector3f _dpdu, _dpdv;
     };
 
-   
 }
 #endif

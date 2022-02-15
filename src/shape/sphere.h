@@ -24,7 +24,7 @@
 #define GEOMETRY_SPHERE_H_
 
 #include <core/primitive.h>
-#include <core/ray.h>
+#include <math/ray.h>
 #include <core/interaction.h>
 #include <math/bounds.h>
 #include <math/rand.h>
@@ -68,7 +68,7 @@ namespace platinum
         virtual Bounds3f ObjectBound() const override;
 
         virtual bool Hit(const Ray &ray) const override;
-        
+
         virtual bool Hit(const Ray &ray, float &t_hit, SurfaceInteraction &inter) const override;
 
         virtual float SolidAngle(const Vector3f &p, int nSamples = 512) const override;

@@ -17,11 +17,13 @@ namespace platinum
 
         _scene = scene;
 
-        PropertyNode root;
+        PropertyTree root;
+
         try
         {
-            boost::property_tree::read_json(path, root);
 
+            boost::property_tree::read_json(path, root);
+            
             LOG(INFO) << "Parse the scene file from " << path;
 
             _assets_path = root.get<std::string>("AssetsPath", "");
@@ -32,9 +34,6 @@ namespace platinum
                 LOG(ERROR) << "No integrator contained!";
                 return;
             }
-
-            auto a = integrator_node->get<std::string>("Type", "Path");
-            auto b = integrator_node.get();
 
             integrator = Ptr<Integrator>(static_cast<Integrator *>(ObjectFactory::CreateInstance(integrator_node->get<std::string>("Type", "Path"),
                                                                                                  integrator_node.get())));
