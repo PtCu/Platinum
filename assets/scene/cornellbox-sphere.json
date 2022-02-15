@@ -1,0 +1,223 @@
+{
+    "AssetsPath": "D:/Homework/graphics/rendering/Platinum/assets/",
+    "Integrator": {
+        "Type": "Whitted",
+        "Depth": 15,
+        "Sampler": {
+            "Type": "Random",
+            "SPP": 64
+        },
+        "Camera": {
+            "Type": "Perspective",
+            "Fov": 39,
+            "Eye": [
+                278,
+                273,
+                -800
+            ],
+            "Focus": [
+                278,
+                273,
+                -799
+            ],
+            "WorldUp": [
+                0,
+                1,
+                0
+            ],
+            "Film": {
+                "Resolution": [
+                    666,
+                    500
+                ],
+                "CropMin": [
+                    0,
+                    0
+                ],
+                "CropMax": [
+                    1,
+                    1
+                ],
+                "Filename": "cornellBox.png",
+                "Filter": {
+                    "Type": "Box",
+                    "Radius": [
+                        0.5,
+                        0.5
+                    ]
+                }
+            }
+        }
+    },
+    "Aggregate": {
+        "Type": "Linear"
+    },
+    "Light": [],
+    "Material": [
+        {
+            "Name": "red",
+            "Type": "Matte",
+            "R": [
+                0.65,
+                0.05,
+                0.05
+            ]
+        },
+        {
+            "Name": "green",
+            "Type": "Matte",
+            "R": [
+                0.12,
+                0.45,
+                0.15
+            ]
+        },
+        {
+            "Name": "gray",
+            "Type": "Matte",
+            "R": [
+                0.73,
+                0.73,
+                0.73
+            ]
+        },
+        {
+            "Name": "yellow",
+            "Type": "Matte",
+            "R": [
+                0.65,
+                0.45,
+                0.0
+            ]
+        },
+        {
+            "Name": "mirror",
+            "Type": "Mirror",
+            "R": [
+                0.75,
+                0.75,
+                0.75
+            ]
+        }
+    ],
+    "Object": [
+        {
+            "Shape": {
+                "Type": "Mesh",
+                "Filename": "models/cornellbox/cbox_luminaire.obj"
+            },
+            "Transform": [
+                {
+                    "type": "translate",
+                    "value": [
+                        0,
+                        -0.5,
+                        0
+                    ]
+                }
+            ],
+            "Material": "gray",
+            "Emission": {
+                "Radiance": [
+                    5.0,
+                    4.0,
+                    0.0
+                ],
+                "LightSamples": 8,
+                "TwoSided": false
+            }
+        },
+        {
+            "Shape": {
+                "Type": "Mesh",
+                "Filename": "models/cornellbox//cbox_floor.obj"
+            },
+            "Material": "gray"
+        },
+        {
+            "Shape": {
+                "Type": "Mesh",
+                "Filename": "models/cornellbox//cbox_ceiling.obj"
+            },
+            "Material": "gray"
+        },
+        {
+            "Shape": {
+                "Type": "Mesh",
+                "Filename": "models/cornellbox//cbox_back.obj"
+            },
+            "Material": "gray"
+        },
+        {
+            "Shape": {
+                "Type": "Mesh",
+                "Filename": "models/cornellbox//cbox_greenwall.obj"
+            },
+            "Material": "green"
+        },
+        {
+            "Shape": {
+                "Type": "Mesh",
+                "Filename": "models/cornellbox//cbox_redwall.obj"
+            },
+            "Material": "red"
+        },
+        {
+            "Shape": {
+                "Type": "Mesh",
+                "Filename": "models/cornellbox//cbox_smallbox.obj"
+            },
+            "Material": "gray"
+        },
+        {
+            "Shape": {
+                "Type": "Mesh",
+                "Filename": "models/cornellbox//cbox_largebox.obj"
+            },
+            "Material": "gray"
+        },
+        {
+            "Shape": {
+                "Type": "Sphere",
+                "Radius": 35.0
+            },
+            "Transform": [
+                {
+                    "type": "translate",
+                    "value": [
+                        350,
+                        35,
+                        50
+                    ]
+                },
+                {
+                    "type": "scale",
+                    "value": [
+                        1,
+                        1.2,
+                        0.3
+                    ]
+                },
+                {
+                    "type": "rotate",
+                    "value": [
+                        1,
+                        1,
+                        1.2,
+                        0.3
+                    ]
+                }
+            ],
+            "Material": "yellow",
+            "Emission": {
+                "Radiance": [
+                    2.0,
+                    2.0,
+                    2.0
+                ],
+                "LightSamples": 8,
+                "TwoSided": false
+            }
+        }
+    ]
+}

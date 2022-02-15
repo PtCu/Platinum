@@ -54,8 +54,21 @@ include_directories(
 
 configure_file(config/ROOT_PATH.h.in config/ROOT_PATH.h)
 
-# 收集所有头文件源文件，存入 ALL_FILES 变量中
-file(GLOB_RECURSE ALL_FILES "src/*.h*" "src/*.c*")
+# 收集所有头文件源文件，存入 ALL_SOURCE 变量中
+file ( GLOB ALL_SOURCE
+  src/core/*
+  src/accelerator/*
+  src/camera/*
+  src/filter/*
+  src/integrator/*
+  src/light/*
+  src/material/*
+  src/material/bxdf/*
+  src/math/*
+  src/sampler/*
+  src/shape/*
+  src/texture/*
+)
 
 # 定义按目录结构归类的方法
 function(assign_source_group)
@@ -75,7 +88,7 @@ function(assign_source_group)
     endforeach ()
 endfunction(assign_source_group)
 
-foreach (_source IN ITEMS ${ALL_FILES})
+foreach (_source IN ITEMS ${ALL_SOURCE})
     assign_source_group(${_source})
 endforeach ()
 
@@ -99,19 +112,20 @@ endforeach ()
 #     )
 # endif()
 
-add_library(${PROJECT_NAME} STATIC ${ALL_FILES})
+add_library(${PROJECT_NAME} STATIC ${ALL_SOURCE})
 
 set(EXTRA_LIBS ${EXTRA_LIBS} glm::glm assimp::assimp TBB::tbb glog::glog GTest::gmock GTest::gtest GTest::gmock_main GTest::gtest_main)
 
 set(ALL_LIBS ${PROJECT_NAME} ${EXTRA_LIBS})
 
-add_executable(${PROJECT_NAME}_exe src/main.cpp)
+add_executable(${PROJECT_NAME}_exe src/main/main.cpp)
 set_target_properties(${PROJECT_NAME}_exe PROPERTIES OUTPUT_NAME ${PROJECT_NAME})
+set_target_properties(${PROJECT_NAME}_exe PROPERTIES LINK_FLAGS /WHOLEARCHIVE:${PROJECT_NAME})
 target_link_libraries(${PROJECT_NAME}_exe ${ALL_LIBS})
 
 
 # 单元测试
-file(GLOB TEST_SOURCE tests/*.cpp)
+file(GLOB TEST_SOURCE src/tests/*.cpp)
 add_executable(${PROJECT_NAME}_test ${TEST_SOURCE})
 target_link_libraries(${PROJECT_NAME}_test ${ALL_LIBS})
 
