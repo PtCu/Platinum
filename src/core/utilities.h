@@ -330,7 +330,7 @@ namespace platinum
     }
 
     template <typename... Args>
-    inline std::string stringPrintf(const char *fmt, Args... args)
+    inline std::string StringPrintf(const char *fmt, Args... args)
     {
         std::string ret;
         stringPrintfRecursive(&ret, fmt, args...);

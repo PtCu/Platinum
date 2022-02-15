@@ -202,21 +202,21 @@ namespace platinum
 
         if (v.hasNaNs())
         {
-            LOG(ERROR) << stringPrintf("Ignoring splatted spectrum with NaN values "
+            LOG(ERROR) << StringPrintf("Ignoring splatted spectrum with NaN values "
                                        "at (%f, %f)",
                                        p.x, p.y);
             return;
         }
         else if (v.y() < 0.)
         {
-            LOG(ERROR) << stringPrintf("Ignoring splatted spectrum with negative "
+            LOG(ERROR) << StringPrintf("Ignoring splatted spectrum with negative "
                                        "luminance %f at (%f, %f)",
                                        v.y(), p.x, p.y);
             return;
         }
         else if (glm::isinf(v.y()))
         {
-            LOG(ERROR) << stringPrintf("Ignoring splatted spectrum with infinite "
+            LOG(ERROR) << StringPrintf("Ignoring splatted spectrum with infinite "
                                        "luminance at (%f, %f)",
                                        p.x, p.y);
             return;

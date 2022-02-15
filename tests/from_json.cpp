@@ -1,9 +1,11 @@
 #include <core/parser.h>
 #include <material/mirror.h>
-
+#include <gtest/gtest.h>
 using namespace platinum;
 using namespace std;
-int main(int argc, char **argv)
+
+
+void RenderFromJson()
 {
     auto& parser = Parser::GetInstance();
     Ptr<Integrator> integrator = nullptr;
@@ -12,8 +14,4 @@ int main(int argc, char **argv)
     parser.Parse(filename, scene, integrator);
     integrator->Render(*scene);
 
-#ifdef _MSC_VER
-        system("pause");
-#endif
-    return 0;
 }

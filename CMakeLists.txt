@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.0.0)
 
-set(PROJECT_NAME "Platinum")
+set(PROJECT_NAME "platinum")
 project (${PROJECT_NAME} VERSION 0.1.0)
 
 set(CMAKE_CXX_STANDARD 17)
@@ -8,11 +8,24 @@ set(CMAKE_CXX_STANDARD 17)
 # 开启工程虚拟目录
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
+if(DEFINED ENV{VCPKG_ROOT} AND NOT DEFINED CMAKE_TOOLCHAIN_FILE)
+    set(CMAKE_TOOLCHAIN_FILE "$ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake" CACHE STRING "settle from environ VCPKG_ROOT")
+endif()
+
+if (CMAKE_COMPILER_IS_GNUCC)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -w")
+endif()
+if (MSVC)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /w")
+endif()
+
 find_package(glm CONFIG REQUIRED)
 
 find_package(assimp CONFIG REQUIRED)
 
 find_package(TBB CONFIG REQUIRED)
+
+find_package(GTest CONFIG REQUIRED)
 
 # glog configuration
 find_package(glog CONFIG REQUIRED)
@@ -37,6 +50,9 @@ include_directories(
 	${PROJECT_SOURCE_DIR}/include
 	${CMAKE_BINARY_DIR}/config
 )
+
+
+configure_file(config/ROOT_PATH.h.in config/ROOT_PATH.h)
 
 # 收集所有头文件源文件，存入 ALL_FILES 变量中
 file(GLOB_RECURSE ALL_FILES "src/*.h*" "src/*.c*")
@@ -63,17 +79,41 @@ foreach (_source IN ITEMS ${ALL_FILES})
     assign_source_group(${_source})
 endforeach ()
 
-set(EXTRA_LIBS ${EXTRA_LIBS} glm::glm assimp::assimp TBB::tbb glog::glog)
 
 # if(MSVC)
 # 	add_compile_options(/O2 /fp:fast /arch:AVX2)
 # endif()
 
-configure_file(config/ROOT_PATH.h.in config/ROOT_PATH.h)
+# if(CMAKE_BUILD_TYPE AND (CMAKE_BUILD_TYPE STREQUAL "Debug"))
+#     set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -Wall -O0")
+#     message("Debug mode:${CMAKE_C_FLAGS_DEBUG}")
+# elseif(CMAKE_BUILD_TYPE AND (CMAKE_BUILD_TYPE STREQUAL "Release"))
+#     if(MSVC)
+#         set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} /O2 /fp:fast /arch:AVX2")
+#     endif()    
+#     message("Release mode:${CMAKE_C_FLAGS_RELEASE}")
+# else()
+#     set (CMAKE_BUILD_TYPE "RelWithDebInfo")
+#     message (
+#         STATUS "No CMAKE_BUILD_TYPE selected, defaulting to ${CMAKE_BUILD_TYPE}"
+#     )
+# endif()
 
-add_executable(${PROJECT_NAME} ${ALL_FILES})
+add_library(${PROJECT_NAME} STATIC ${ALL_FILES})
 
-target_link_libraries(${PROJECT_NAME} PRIVATE ${EXTRA_LIBS})
+set(EXTRA_LIBS ${EXTRA_LIBS} glm::glm assimp::assimp TBB::tbb glog::glog GTest::gmock GTest::gtest GTest::gmock_main GTest::gtest_main)
+
+set(ALL_LIBS ${PROJECT_NAME} ${EXTRA_LIBS})
+
+add_executable(${PROJECT_NAME}_exe src/main.cpp)
+set_target_properties(${PROJECT_NAME}_exe PROPERTIES OUTPUT_NAME ${PROJECT_NAME})
+target_link_libraries(${PROJECT_NAME}_exe ${ALL_LIBS})
+
+
+# 单元测试
+file(GLOB TEST_SOURCE tests/*.cpp)
+add_executable(${PROJECT_NAME}_test ${TEST_SOURCE})
+target_link_libraries(${PROJECT_NAME}_test ${ALL_LIBS})
 
 set(CPACK_PROJECT_NAME ${PROJECT_NAME})
 set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})

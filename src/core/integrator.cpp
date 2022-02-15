@@ -72,7 +72,7 @@ namespace platinum
                                                // Issue warning if unexpected radiance value returned
                                                if (L.hasNaNs())
                                                {
-                                                   LOG(ERROR) << stringPrintf(
+                                                   LOG(ERROR) << StringPrintf(
                                                        "Not-a-number radiance value returned "
                                                        "for pixel (%d, %d), sample %d. Setting to black.",
                                                        pixel.x, pixel.y,
@@ -81,7 +81,7 @@ namespace platinum
                                                }
                                                else if (L.y() < -1e-5)
                                                {
-                                                   LOG(ERROR) << stringPrintf(
+                                                   LOG(ERROR) << StringPrintf(
                                                        "Negative luminance value, %f, returned "
                                                        "for pixel (%d, %d), sample %d. Setting to black.",
                                                        L.y(), pixel.x, pixel.y,
@@ -90,7 +90,7 @@ namespace platinum
                                                }
                                                else if (std::isinf(L.y()))
                                                {
-                                                   LOG(ERROR) << stringPrintf(
+                                                   LOG(ERROR) << StringPrintf(
                                                        "Infinite luminance value returned "
                                                        "for pixel (%d, %d), sample %d. Setting to black.",
                                                        pixel.x, pixel.y,

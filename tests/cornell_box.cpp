@@ -25,6 +25,7 @@
 #include <light/diffuse_light.h>
 #include <material/matte.h>
 #include <shape/triangle.h>
+#include <shape/sphere.h>
 
 using namespace platinum;
 using namespace glm;
@@ -33,6 +34,7 @@ using namespace std;
 const static string root_path(ROOT_PATH);
 const static string assets_path = root_path + "/assets/models/cornellbox/";
 static const string file_name = "cornell_box.png";
+
 
 void AddMesh(vector<Ptr<Primitive>> &primitives, vector<shared_ptr<Light>> &lights, Transform *obj2world, Transform *world2obj, Material *material, TriangleMesh *mesh, bool isLight = false)
 {
@@ -54,7 +56,7 @@ void AddMesh(vector<Ptr<Primitive>> &primitives, vector<shared_ptr<Light>> &ligh
         primitives.push_back(std::make_shared<GeometricPrimitive>(triangle, material, static_pointer_cast<AreaLight>(area_light)));
     }
 }
-int main()
+void RenderCBox()
 {
     vector<shared_ptr<Primitive>> primitives;
     vector<shared_ptr<Light>> lights;

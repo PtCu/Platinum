@@ -13,7 +13,7 @@ namespace platinum
     {
         auto &_ctors = GetMap();
         _ctors.insert({type, construtor});
-        LOG(INFO)
+        DLOG(INFO)
             << "Register " << type << "\n";
     }
 
