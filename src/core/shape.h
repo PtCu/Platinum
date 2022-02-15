@@ -23,7 +23,7 @@ namespace platinum
     class Shape : public Object
     {
     public:
-        Shape(const PropertyNode &node) {}
+        Shape(const PropertyTree &node) {}
 
         Shape(Transform *object2world, Transform *world2object)
             : _object2world(object2world), _world2object(world2object) {}

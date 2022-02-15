@@ -28,7 +28,7 @@ namespace platinum
         
         Matte(const Spectrum &r);
 
-        Matte(const PropertyNode &node);
+        Matte(const PropertyTree &node);
 
         virtual void ComputeScatteringFunctions(SurfaceInteraction &si) const override;
 

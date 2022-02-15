@@ -39,7 +39,7 @@ namespace platinum
     class Light: public Object
     {
     public:
-        Light(const PropertyNode &node);
+        Light(const PropertyTree &node);
 
         Light(int flags, const Transform &light2world, int n_samples = 1)
             : _flags(flags), _num_samples(glm::max(1, n_samples)), _light2World(light2world), _world2Light(Inverse(light2world)){}
@@ -118,7 +118,7 @@ namespace platinum
     class AreaLight : public Light
     {
     public:
-        AreaLight(const PropertyNode &node);
+        AreaLight(const PropertyTree &node);
         
         AreaLight(const Transform &light2world, int n_samples)
             : Light(static_cast<int>(LightFlags::LightArea), light2world, n_samples) {}

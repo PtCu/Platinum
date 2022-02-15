@@ -12,7 +12,7 @@ namespace platinum
     class Mirror final : public Material
     {
     public:
-        Mirror(const PropertyNode &root);
+        Mirror(const PropertyTree &root);
 
         Mirror(const Spectrum &r);
 

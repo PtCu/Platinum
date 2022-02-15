@@ -23,7 +23,7 @@ namespace platinum
     class DiffuseAreaLight final: public AreaLight
     {
     public:
-        DiffuseAreaLight(const PropertyNode &node);
+        DiffuseAreaLight(const PropertyTree &node);
         
         //The surface it emits from is defined by a Shape
         DiffuseAreaLight(const Transform &light2world, const Spectrum &Lemit, int n_samples, Shape *shape, bool two_sided = false)

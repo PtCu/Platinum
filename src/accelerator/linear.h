@@ -21,7 +21,7 @@ namespace platinum
     class LinearAggregate final : public Aggregate
     {
     public:
-        LinearAggregate(const PropertyNode&node);
+        LinearAggregate(const PropertyTree &node);
         
         LinearAggregate()=default;
 

@@ -22,7 +22,7 @@ namespace platinum
     class RandomSampler final : public Sampler
     {
     public:
-        RandomSampler(const PropertyNode &);
+        RandomSampler(const PropertyTree &);
 
         RandomSampler(int ns);
 

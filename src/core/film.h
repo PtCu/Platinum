@@ -30,7 +30,7 @@ namespace platinum
     class Film : public Object
     {
     public:
-        Film(const PropertyNode &node);
+        Film(const PropertyTree &node);
 
         Film(const Vector2i &resolution, const Bounds2f &cropWindow,
              std::unique_ptr<Filter> filter, const std::string &filename, float diagonal = 35.f,

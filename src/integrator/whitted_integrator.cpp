@@ -19,12 +19,12 @@ namespace platinum
 
     REGISTER_CLASS(WhittedIntegrator, "Whitted");
 
-    WhittedIntegrator::WhittedIntegrator(const PropertyNode &root)
-        : SamplerIntegrator(nullptr, nullptr), _max_depth(root.get<int>("Depth"))
+    WhittedIntegrator::WhittedIntegrator(const PropertyTree &root)
+        : SamplerIntegrator(nullptr, nullptr), _max_depth(root.Get<int>("Depth"))
     {
-        _sampler = UPtr<Sampler>(static_cast<Sampler *>(ObjectFactory::CreateInstance(root.get<std::string>("Sampler.Type"), root.get_child("Sampler"))));
+        _sampler = UPtr<Sampler>(static_cast<Sampler *>(ObjectFactory::CreateInstance(root.Get<std::string>("Sampler.Type"), root.GetChild("Sampler"))));
 
-        _camera = UPtr<Camera>(static_cast<Camera *>(ObjectFactory::CreateInstance(root.get<std::string>("Camera.Type"), root.get_child("Camera"))));
+        _camera = UPtr<Camera>(static_cast<Camera *>(ObjectFactory::CreateInstance(root.Get<std::string>("Camera.Type"), root.GetChild("Camera"))));
     }
 
     //https://pbr-book.org/3ed-2018/Introduction/pbrt_System_Overview#WhittedIntegrator

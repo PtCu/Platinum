@@ -18,7 +18,7 @@ namespace platinum
 {
     REGISTER_CLASS(LinearAggregate, "Linear");
 
-    LinearAggregate::LinearAggregate(const PropertyNode &node)
+    LinearAggregate::LinearAggregate(const PropertyTree &node)
         : Aggregate(node)
     {
     }

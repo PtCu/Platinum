@@ -19,14 +19,15 @@ namespace platinum
 
     REGISTER_CLASS(Matte, "Matte");
 
-    Matte::Matte(const PropertyNode &node)
+    Matte::Matte(const PropertyTree &node)
     {
-        std::array<float, 3> spectrum;
-        auto iter = node.get_child("R").begin();
-        for (size_t i = 0; i < 3; ++i,++iter)
-        {
-            spectrum[i] = iter->second.get_value<float>();
-        }
+        // std::array<float, 3> spectrum;
+        // auto iter = node.get_child("R").begin();
+        // for (size_t i = 0; i < 3; ++i,++iter)
+        // {
+        //     spectrum[i] = iter->second.get_value<float>();
+        // }
+        Vector3f spectrum = node.Get<Vector3f>("Radiance");
         _Kr = Spectrum::fromRGB(spectrum);
         _ref = std::make_shared<LambertianReflection>(_Kr);
     }

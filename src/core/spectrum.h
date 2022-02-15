@@ -303,6 +303,16 @@ namespace platinum
             return s;
         }
 
+        static RGBSpectrum fromRGB(const Vector3f &rgb)
+        {
+            RGBSpectrum s;
+            s.c[0] = rgb[0];
+            s.c[1] = rgb[1];
+            s.c[2] = rgb[2];
+            DCHECK(!s.hasNaNs());
+            return s;
+        }
+
         void toRGB(float* rgb) const
         {
             rgb[0] = c[0];

@@ -21,21 +21,20 @@ namespace platinum
 
         try
         {
+            root.ReadJson(path);
 
-            boost::property_tree::read_json(path, root);
-            
             LOG(INFO) << "Parse the scene file from " << path;
 
-            _assets_path = root.get<std::string>("AssetsPath", "");
+            _assets_path = root.Get<std::string>("AssetsPath");
 
-            auto integrator_node = root.get_child_optional("Integrator");
+            auto integrator_node = root.GetChildOptional("Integrator");
             if (!integrator_node)
             {
                 LOG(ERROR) << "No integrator contained!";
                 return;
             }
 
-            integrator = Ptr<Integrator>(static_cast<Integrator *>(ObjectFactory::CreateInstance(integrator_node->get<std::string>("Type", "Path"),
+            integrator = Ptr<Integrator>(static_cast<Integrator *>(ObjectFactory::CreateInstance(integrator_node->Get<std::string>("Type", "Path"),
                                                                                                  integrator_node.get())));
 
             ParseMaterial(root);
@@ -60,34 +59,33 @@ namespace platinum
         }
 
         scene->Initialize();
-        
     }
 
-    void Parser::ParseAggregate(const PropertyNode &root)
+    void Parser::ParseAggregate(const PropertyTree &root)
     {
-        auto aggre_node = root.get_child_optional("Aggregate");
+        auto aggre_node = root.GetChildOptional("Aggregate");
         if (!aggre_node)
         {
             _scene->_aggres = UPtr<Aggregate>(new LinearAggregate);
         }
-        _scene->_aggres = UPtr<Aggregate>(static_cast<Aggregate *>(ObjectFactory::CreateInstance(aggre_node->get<std::string>("Type"), aggre_node.get())));
+        _scene->_aggres = UPtr<Aggregate>(static_cast<Aggregate *>(ObjectFactory::CreateInstance(aggre_node->Get<std::string>("Type"), aggre_node.get())));
         _scene->_aggres->SetPrimitives(_primitives);
     }
 
-    void Parser::ParseLight(const PropertyNode &root)
+    void Parser::ParseLight(const PropertyTree &root)
     {
-        if (!root.get_child_optional("Light"))
+        if (!root.GetChildOptional("Light"))
             return;
-        for (const auto &p : root.get_child("Light"))
+        for (const auto &p : root.GetChild("Light").GetNode())
         {
             auto _light = Ptr<Light>(static_cast<Light *>(ObjectFactory::CreateInstance(p.second.get<std::string>("Type"), p.second)));
             _scene->_lights.emplace_back(_light);
         }
     }
 
-    void Parser::ParseMaterial(const PropertyNode &root)
+    void Parser::ParseMaterial(const PropertyTree &root)
     {
-        if (!root.get_child_optional("Material"))
+        if (!root.GetChildOptional("Material"))
         {
             LOG(WARNING) << "No material contained! Use default material instead!";
             //默认材质
@@ -95,7 +93,7 @@ namespace platinum
             return;
         }
 
-        for (const auto &p : root.get_child("Material"))
+        for (const auto &p : root.GetChild("Material").GetNode())
         {
             auto _name = p.second.get<std::string>("Name");
             auto _material = Ptr<Material>(static_cast<Material *>(ObjectFactory::CreateInstance(p.second.get<std::string>("Type"), p.second)));
@@ -103,12 +101,12 @@ namespace platinum
         }
     }
 
-    void Parser::ParseTriMesh(const PropertyNode &root, Transform *obj2world,
+    void Parser::ParseTriMesh(const PropertyTree &root, Transform *obj2world,
                               Transform *world2obj)
     {
-        auto mesh_path = root.get<std::string>("Shape.Filename");
-        auto mesh = std::make_unique<TriangleMesh>(obj2world, _assets_path+mesh_path);
-        const auto mat_string = root.get_optional<std::string>("Material");
+        auto mesh_path = root.Get<std::string>("Shape.Filename");
+        auto mesh = std::make_unique<TriangleMesh>(obj2world, _assets_path + mesh_path);
+        const auto mat_string = root.GetOptional<std::string>("Material");
         Ptr<Material> material = nullptr;
         if (!mat_string || _materials.find(mat_string.get()) == _materials.end())
         {
@@ -116,7 +114,7 @@ namespace platinum
         }
         material = _materials[mat_string.get()];
 
-        auto is_emit = root.get_child_optional("Emission");
+        auto is_emit = root.GetChildOptional("Emission");
 
         auto &meshIndices = mesh->GetIndices();
 
@@ -138,9 +136,9 @@ namespace platinum
         _scene->_meshes.emplace_back(std::move(mesh));
     }
 
-    void Parser::ParseSimpleShape(const PropertyNode &root, Transform *obj2world, Transform *world2obj)
+    void Parser::ParseSimpleShape(const PropertyTree &root, Transform *obj2world, Transform *world2obj)
     {
-        const auto mat_string = root.get_optional<std::string>("Material");
+        const auto mat_string = root.GetOptional<std::string>("Material");
         Ptr<Material> material = nullptr;
         if (!mat_string || _materials.find(mat_string.get()) == _materials.end())
         {
@@ -148,11 +146,11 @@ namespace platinum
         }
         material = _materials[mat_string.get()];
 
-        auto shape = Ptr<Shape>(static_cast<Shape *>(ObjectFactory::CreateInstance(root.get<std::string>("Shape.Type"), root.get_child("Shape"))));
+        auto shape = Ptr<Shape>(static_cast<Shape *>(ObjectFactory::CreateInstance(root.Get<std::string>("Shape.Type"), root.GetChild("Shape"))));
 
         shape->SetTransform(obj2world, world2obj);
 
-        auto is_emit = root.get_child_optional("Emission");
+        auto is_emit = root.GetChildOptional("Emission");
 
         Ptr<AreaLight> area_light = nullptr;
         if (is_emit)
@@ -163,10 +161,10 @@ namespace platinum
         _primitives.emplace_back(std::make_shared<GeometricPrimitive>(shape, material.get(), area_light));
     }
 
-    void Parser::ParseTransform(const PropertyNode &transform_node, Transform *obj2world)
+    void Parser::ParseTransform(const PropertyTree &transform_node, Transform *obj2world)
     {
         std::vector<Transform> transforms;
-        for (const auto &trans : transform_node)
+        for (const auto &trans : transform_node.GetNode())
         {
             auto type = trans.second.get<std::string>("type");
             if ("translate" == type)
@@ -216,10 +214,10 @@ namespace platinum
         }
     }
 
-    void Parser::ParseObject(const PropertyNode &root)
+    void Parser::ParseObject(const PropertyTree &root)
     {
 
-        for (const auto &p : root.get_child("Object"))
+        for (const auto &p : root.GetChild("Object").GetNode())
         {
 
             //解析transform

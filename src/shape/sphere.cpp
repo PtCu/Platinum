@@ -32,8 +32,8 @@ namespace platinum
 
     REGISTER_CLASS(Sphere, "Sphere");
 
-    Sphere::Sphere(const PropertyNode &node)
-    :Shape(node),_radius(node.get<float>("Radius",1.f))
+    Sphere::Sphere(const PropertyTree &node)
+    :Shape(node),_radius(node.Get<float>("Radius",1.f))
     {
     }
     

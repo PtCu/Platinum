@@ -21,10 +21,10 @@ namespace platinum
         return !scene.Hit(_p0.SpawnRayTo(_p1));
     }
 
-    Light::Light(const PropertyNode &node)
+    Light::Light(const PropertyTree &node)
     {
-        _num_samples = node.get<int>("LightSamples", 1);
+        _num_samples = node.Get<int>("LightSamples", 1);
     }
-    AreaLight::AreaLight(const PropertyNode &node)
+    AreaLight::AreaLight(const PropertyTree &node)
         : Light(node) { _flags = (int)LightFlags::LightArea; }
 }

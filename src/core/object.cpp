@@ -17,7 +17,7 @@ namespace platinum
             << "Register " << type << "\n";
     }
 
-    Object *ObjectFactory::CreateInstance(const std::string &type, const PropertyNode &node)
+    Object *ObjectFactory::CreateInstance(const std::string &type, const PropertyTree &node)
     {
         auto &_ctors = GetMap();
         if (_ctors.find(type) == _ctors.end())

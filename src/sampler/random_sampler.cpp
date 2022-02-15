@@ -18,7 +18,7 @@ namespace platinum
 {
     REGISTER_CLASS(RandomSampler, "Random");
 
-    RandomSampler::RandomSampler(const PropertyNode &root) : Sampler(root)
+    RandomSampler::RandomSampler(const PropertyTree &root) : Sampler(root)
     {
     }
     

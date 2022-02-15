@@ -50,7 +50,7 @@ namespace platinum
     class Sphere : public Shape
     {
     public:
-        Sphere(const PropertyNode &node);
+        Sphere(const PropertyTree &node);
 
         Sphere(Transform *object2world, Transform *world2object, const float radius)
             : Shape(object2world, world2object), _radius(radius) {}

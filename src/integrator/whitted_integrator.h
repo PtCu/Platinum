@@ -23,7 +23,7 @@ namespace platinum
     class WhittedIntegrator final: public SamplerIntegrator
     {
     public:
-        WhittedIntegrator(const PropertyNode &node);
+        WhittedIntegrator(const PropertyTree &node);
         WhittedIntegrator(UPtr<Camera> camera, UPtr<Sampler> sampler, int max_depth)
             : SamplerIntegrator(std::move(camera), std::move(sampler)), _max_depth(max_depth) {}
         std::string ToString() const { return "WhittedIntegrator"; }

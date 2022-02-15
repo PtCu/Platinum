@@ -33,19 +33,19 @@ namespace platinum
     private:
         Parser() = default;
 
-        void ParseLight(const PropertyNode &root);
+        void ParseLight(const PropertyTree &root);
 
-        void ParseMaterial(const PropertyNode &root);
+        void ParseMaterial(const PropertyTree &root);
 
-        void ParseObject(const PropertyNode &root);
+        void ParseObject(const PropertyTree &root);
 
-        void ParseAggregate(const PropertyNode &root);
+        void ParseAggregate(const PropertyTree &root);
 
-        void ParseTransform(const PropertyNode &root, Transform *transform);
+        void ParseTransform(const PropertyTree &root, Transform *transform);
 
-        void ParseTriMesh(const PropertyNode &root, Transform *obj2world, Transform *world2obj);
+        void ParseTriMesh(const PropertyTree &root, Transform *obj2world, Transform *world2obj);
 
-        void ParseSimpleShape(const PropertyNode &root, Transform *obj2world, Transform *world2obj);
+        void ParseSimpleShape(const PropertyTree &root, Transform *obj2world, Transform *world2obj);
 
     private:
         std::string _assets_path;

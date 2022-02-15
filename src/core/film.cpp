@@ -20,18 +20,22 @@ namespace platinum
 {
     REGISTER_CLASS(Film, "Film");
 
-    Film::Film(const PropertyNode &root)
+    Film::Film(const PropertyTree &root)
     {
-        auto iter = root.get_child("Resolution").begin();
-        _resolution[0] = (iter++)->second.get_value<float>();
-        _resolution[1] = iter->second.get_value<float>();
-        iter = root.get_child("CropMin").begin();
+        _resolution = root.Get<Vector2f>("Resolution");
         Bounds2f cropWindow;
-        cropWindow._p_min[0] = (iter++)->second.get_value<float>();
-        cropWindow._p_min[1] = iter->second.get_value<float>();
-        iter = root.get_child("CropMax").begin();
-        cropWindow._p_max[0] = (iter++)->second.get_value<float>();
-        cropWindow._p_max[1] = (iter++)->second.get_value<float>();
+        cropWindow._p_min = root.Get<Vector2f>("CropMin");
+        cropWindow._p_max = root.Get<Vector2f>("CropMax");
+        // auto iter = root.get_child("Resolution").begin();
+        // _resolution[0] = (iter++)->second.get_value<float>();
+        // _resolution[1] = iter->second.get_value<float>();
+        // iter = root.get_child("CropMin").begin();
+        // Bounds2f cropWindow;
+        // cropWindow._p_min[0] = (iter++)->second.get_value<float>();
+        // cropWindow._p_min[1] = iter->second.get_value<float>();
+        // iter = root.get_child("CropMax").begin();
+        // cropWindow._p_max[0] = (iter++)->second.get_value<float>();
+        // cropWindow._p_max[1] = (iter++)->second.get_value<float>();
 
         _cropped_pixel_bounds =
             Bounds2i(
@@ -41,13 +45,13 @@ namespace platinum
                          glm::ceil(_resolution.y * cropWindow._p_max.y)));
         LOG(INFO) << "Created film with full resolution " << _resolution << ". Crop window of " << cropWindow << " -> croppedPixelBounds " << _cropped_pixel_bounds;
 
-        _filename = root.get<std::string>("Filename");
+        _filename = root.Get<std::string>("Filename");
 
-        _filter = UPtr<Filter>(static_cast<Filter *>(ObjectFactory::CreateInstance(root.get<std::string>("Filter.Type"), root.get_child("Filter"))));
+        _filter = UPtr<Filter>(static_cast<Filter *>(ObjectFactory::CreateInstance(root.Get<std::string>("Filter.Type"), root.GetChild("Filter"))));
 
-        _diagonal = root.get<float>("Diagonal", 35.f);
-        _scale = root.get<float>("Scale", 1.f);
-        _max_sample_luminance = root.get<float>("MaxLum", Infinity);
+        _diagonal = root.Get<float>("Diagonal", 35.f);
+        _scale = root.Get<float>("Scale", 1.f);
+        _max_sample_luminance = root.Get<float>("MaxLum", Infinity);
 
         Initialize();
     }

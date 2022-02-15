@@ -86,7 +86,7 @@ namespace platinum
     class Aggregate : public Primitive
     {
     public:
-        Aggregate(const PropertyNode &node) {}
+        Aggregate(const PropertyTree &node) {}
 
         Aggregate() = default;
 

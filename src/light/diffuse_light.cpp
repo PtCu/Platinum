@@ -19,18 +19,20 @@ namespace platinum
 {
     REGISTER_CLASS(DiffuseAreaLight, "DiffuseAreaLight");
 
-    DiffuseAreaLight::DiffuseAreaLight(const PropertyNode &node)
+    DiffuseAreaLight::DiffuseAreaLight(const PropertyTree &node)
         : AreaLight(node), _shape(nullptr)
     {
-        auto spectrum_node = node.get_child("Radiance");
-        auto iter = spectrum_node.begin();
-        std::array<float, 3> spectrum;
-        for (size_t i = 0; i < 3; ++i, ++iter)
-        {
-            spectrum[i] = iter->second.get_value<float>();
-        }
+        // auto spectrum_node = node.get_child("Radiance");
+        // auto iter = spectrum_node.begin();
+        // std::array<float, 3> spectrum;
+        // for (size_t i = 0; i < 3; ++i, ++iter)
+        // {
+        //     spectrum[i] = iter->second.get_value<float>();
+        // }
+
+        Vector3f spectrum = node.Get<Vector3f>("Radiance");
         _Lemit = Spectrum::fromRGB(spectrum);
-        _two_sided = node.get<bool>("TwoSided");
+        _two_sided = node.Get<bool>("TwoSided");
     }
     void DiffuseAreaLight::SetParent(Object *parent)
     {

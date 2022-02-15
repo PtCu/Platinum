@@ -26,6 +26,12 @@ namespace platinum
         }
 
         template <typename T>
+        boost::optional<T> GetOptional(const std::string &name) const
+        {
+            return _root.get_optional<T>(name);
+        }
+
+        template <typename T>
         T Get(const std::string &name, const T &defaultValue) const
         {
             return _root.get<T>(name, defaultValue);
@@ -58,11 +64,11 @@ namespace platinum
             return PropertyTree(child);
         }
 
-        std::optional<PropertyTree> GetChildOPtional(const std::string &name) const
+        boost::optional<PropertyTree> GetChildOptional(const std::string &name) const
         {
             auto child = _root.get_child_optional(name);
             if (!child)
-                return std::nullopt;
+                return boost::none;
             return PropertyTree(child.get());
         }
 
@@ -71,9 +77,25 @@ namespace platinum
             boost::property_tree::read_json(path, _root);
         }
 
-    private:
+        boost::property_tree::ptree GetNode() const
+        {
+            return _root;
+        }
+
         boost::property_tree::ptree _root;
     };
+
+    // class PropertyIterator
+    // {
+    // public:
+    //     PropertyIterator operator++()
+    //     {
+    //         _tree->_root;
+    //     }
+
+    // private:
+    //     const PropertyTree *_tree;
+    // };
 
     //从配置文件中创建对象所需的基类
     class Object
@@ -160,11 +182,11 @@ namespace platinum
     class ObjectFactory
     {
     public:
-        using Constructor = std::function<Object *(const PropertyNode &)>;
+        using Constructor = std::function<Object *(const PropertyTree &)>;
 
         static void RegisterClass(const std::string &type, const Constructor &construtor);
 
-        static Object *CreateInstance(const std::string &type, const PropertyNode &node);
+        static Object *CreateInstance(const std::string &type, const PropertyTree &node);
 
     private:
         static std::map<std::string, Constructor> &GetMap();
@@ -177,7 +199,7 @@ namespace platinum
     //  运行时注册。
 
 #define REGISTER_CLASS(cls, name)                             \
-    inline cls *cls##_create(const PropertyNode &node)        \
+    inline cls *cls##_create(const PropertyTree &node)        \
     {                                                         \
         return new cls(node);                                 \
     }                                                         \

@@ -28,15 +28,14 @@
 
 namespace platinum
 {
-    class Material:public Object
+    class Material : public Object
     {
     public:
         Material() = default;
-        
+
         virtual ~Material() = default;
 
-        virtual void ComputeScatteringFunctions(SurfaceInteraction& si)const = 0;
-
+        virtual void ComputeScatteringFunctions(SurfaceInteraction &si) const = 0;
     };
 
 } // namespace platinum
