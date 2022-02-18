@@ -36,7 +36,7 @@ if(WIN32)
 endif()
 
 add_definitions( -D HAVE_SNPRINTF)
-
+add_definitions(-D NOMINMAX)
 # Boost header only
 find_package(Boost 1.77.0)
 if(Boost_FOUND)

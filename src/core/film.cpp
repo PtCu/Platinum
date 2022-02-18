@@ -94,8 +94,6 @@ namespace platinum
         }
     }
 
-    
-
     Bounds2i Film::GetSampleBounds() const
     {
         Bounds2f floatBounds(

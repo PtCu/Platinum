@@ -14,6 +14,8 @@
 #include <core/integrator.h>
 #include <core/bsdf.h>
 #include <core/camera.h>
+#include <tbb/tbb.h>
+
 namespace platinum
 {
     void SamplerIntegrator::Render(const Scene &scene)
@@ -29,87 +31,89 @@ namespace platinum
         Vector2i nTiles((sampleExtent.x + tileSize - 1) / tileSize, (sampleExtent.y + tileSize - 1) / tileSize);
 
         // AReporter reporter(nTiles.x * nTiles.y, "Rendering");
-        ParallelUtils::parallelFor((size_t)0, (size_t)(nTiles.x * nTiles.y), [&](const size_t &t)
-                                   {
-                                       Vector2i tile(t % nTiles.x, t / nTiles.x);
+        tbb::parallel_for(tbb::blocked_range<size_t>(0, nTiles.x * nTiles.y),
+                          [&](tbb::blocked_range<size_t> r)
+                          {
+                              for (size_t t = r.begin(); t != r.end(); ++t)
+                              {
+                                  Vector2i tile(t % nTiles.x, t / nTiles.x);
 
-                                       // Get sampler instance for tile
-                                       int seed = t;
-                                       std::unique_ptr<Sampler> tileSampler = sampler->Clone(seed);
+                                  // Get sampler instance for tile
+                                  int seed = t;
+                                  std::unique_ptr<Sampler> tileSampler = sampler->Clone(seed);
 
-                                       // Compute sample bounds for tile
-                                       int x0 = sampleBounds._p_min.x + tile.x * tileSize;
-                                       int x1 = glm::min(x0 + tileSize, sampleBounds._p_max.x);
-                                       int y0 = sampleBounds._p_min.y + tile.y * tileSize;
-                                       int y1 = glm::min(y0 + tileSize, sampleBounds._p_max.y);
-                                       Bounds2i tileBounds(Vector2i(x0, y0), Vector2i(x1, y1));
-                                       LOG(INFO) << "Starting image tile " << tileBounds;
+                                  // Compute sample bounds for tile
+                                  int x0 = sampleBounds._p_min.x + tile.x * tileSize;
+                                  int x1 = glm::min(x0 + tileSize, sampleBounds._p_max.x);
+                                  int y0 = sampleBounds._p_min.y + tile.y * tileSize;
+                                  int y1 = glm::min(y0 + tileSize, sampleBounds._p_max.y);
+                                  Bounds2i tileBounds(Vector2i(x0, y0), Vector2i(x1, y1));
+                                  LOG(INFO) << "Starting image tile " << tileBounds;
 
-                                       // Get _FilmTile_ for tile
-                                       std::unique_ptr<FilmTile> filmTile = _camera->_film->GetFilmTile(tileBounds);
+                                  // Get _FilmTile_ for tile
+                                  std::unique_ptr<FilmTile> filmTile = _camera->_film->GetFilmTile(tileBounds);
 
-                                       // Loop over pixels in tile to render them
-                                       for (Vector2i pixel : tileBounds)
-                                       {
-                                           tileSampler->StartPixel(pixel);
+                                  // Loop over pixels in tile to render them
+                                  for (Vector2i pixel : tileBounds)
+                                  {
+                                      tileSampler->StartPixel(pixel);
 
-                                           do
-                                           {
-                                               // Initialize _CameraSample_ for current sample
-                                               CameraSample cameraSample = tileSampler->GetCameraSample(pixel);
+                                      do
+                                      {
+                                          // Initialize _CameraSample_ for current sample
+                                          CameraSample cameraSample = tileSampler->GetCameraSample(pixel);
 
-                                               // Generate camera ray for current sample
-                                               Ray ray;
-                                               float rayWeight = _camera->CastingRay(cameraSample, ray);
+                                          // Generate camera ray for current sample
+                                          Ray ray;
+                                          float rayWeight = _camera->CastingRay(cameraSample, ray);
 
-                                               // Evaluate radiance along camera ray
-                                               Spectrum L(0.f);
-                                               if (rayWeight > 0)
-                                               {
-                                                   L = Li(scene, ray, *tileSampler);
-                                               }
+                                          // Evaluate radiance along camera ray
+                                          Spectrum L(0.f);
+                                          if (rayWeight > 0)
+                                          {
+                                              L = Li(scene, ray, *tileSampler);
+                                          }
 
-                                               // Issue warning if unexpected radiance value returned
-                                               if (L.hasNaNs())
-                                               {
-                                                   LOG(ERROR) << StringPrintf(
-                                                       "Not-a-number radiance value returned "
-                                                       "for pixel (%d, %d), sample %d. Setting to black.",
-                                                       pixel.x, pixel.y,
-                                                       (int)tileSampler->CurrentSampleIndex());
-                                                   L = Spectrum(0.f);
-                                               }
-                                               else if (L.y() < -1e-5)
-                                               {
-                                                   LOG(ERROR) << StringPrintf(
-                                                       "Negative luminance value, %f, returned "
-                                                       "for pixel (%d, %d), sample %d. Setting to black.",
-                                                       L.y(), pixel.x, pixel.y,
-                                                       (int)tileSampler->CurrentSampleIndex());
-                                                   L = Spectrum(0.f);
-                                               }
-                                               else if (std::isinf(L.y()))
-                                               {
-                                                   LOG(ERROR) << StringPrintf(
-                                                       "Infinite luminance value returned "
-                                                       "for pixel (%d, %d), sample %d. Setting to black.",
-                                                       pixel.x, pixel.y,
-                                                       (int)tileSampler->CurrentSampleIndex());
-                                                   L = Spectrum(0.f);
-                                               }
-                                               VLOG(1) << "Camera sample: " << cameraSample << " -> ray: " << ray << " -> L = " << L;
+                                          // Issue warning if unexpected radiance value returned
+                                          if (L.hasNaNs())
+                                          {
+                                              LOG(ERROR) << StringPrintf(
+                                                  "Not-a-number radiance value returned "
+                                                  "for pixel (%d, %d), sample %d. Setting to black.",
+                                                  pixel.x, pixel.y,
+                                                  (int)tileSampler->CurrentSampleIndex());
+                                              L = Spectrum(0.f);
+                                          }
+                                          else if (L.y() < -1e-5)
+                                          {
+                                              LOG(ERROR) << StringPrintf(
+                                                  "Negative luminance value, %f, returned "
+                                                  "for pixel (%d, %d), sample %d. Setting to black.",
+                                                  L.y(), pixel.x, pixel.y,
+                                                  (int)tileSampler->CurrentSampleIndex());
+                                              L = Spectrum(0.f);
+                                          }
+                                          else if (std::isinf(L.y()))
+                                          {
+                                              LOG(ERROR) << StringPrintf(
+                                                  "Infinite luminance value returned "
+                                                  "for pixel (%d, %d), sample %d. Setting to black.",
+                                                  pixel.x, pixel.y,
+                                                  (int)tileSampler->CurrentSampleIndex());
+                                              L = Spectrum(0.f);
+                                          }
+                                          VLOG(1) << "Camera sample: " << cameraSample << " -> ray: " << ray << " -> L = " << L;
 
-                                               // Add camera ray's contribution to image
-                                               filmTile->AddSample(cameraSample.p_film, L, rayWeight);
+                                          // Add camera ray's contribution to image
+                                          filmTile->AddSample(cameraSample.p_film, L, rayWeight);
 
-                                           } while (tileSampler->StartNextSample());
-                                       }
-                                       LOG(INFO) << "Finished image tile " << tileBounds;
+                                      } while (tileSampler->StartNextSample());
+                                  }
+                                  LOG(INFO) << "Finished image tile " << tileBounds;
 
-                                       _camera->_film->MergeFilmTile(std::move(filmTile));
-                                       //    reporter.update();
-                                   },
-                                   ExecutionPolicy::PARALLEL);
+                                  _camera->_film->MergeFilmTile(std::move(filmTile));
+                              }
+                          });
 
         // reporter.done();
 
@@ -166,5 +170,4 @@ namespace platinum
         return L;
     }
 
-    
 }

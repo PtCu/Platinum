@@ -18,14 +18,44 @@
 #include <core/utilities.h>
 #include <core/object.h>
 
-#include <core/parallel.h>
 #include <core/spectrum.h>
 #include <math/bounds.h>
 #include <core/filter.h>
-
+#include <atomic>
 
 namespace platinum
 {
+
+    class AtomicFloat
+    {
+    public:
+        explicit AtomicFloat(float v = 0)
+        {
+            bits = floatToBits(v);
+        }
+
+        operator float() const { return bitsToFloat(bits); }
+
+        float operator=(float v)
+        {
+            bits = floatToBits(v);
+            return v;
+        }
+
+        void add(float v)
+        {
+
+            uint32_t oldBits = bits, newBits;
+
+            do
+            {
+                newBits = floatToBits(bitsToFloat(oldBits) + v);
+            } while (!bits.compare_exchange_weak(oldBits, newBits));
+        }
+
+    private:
+        std::atomic<uint32_t> bits;
+    };
 
     class Film : public Object
     {
@@ -56,8 +86,6 @@ namespace platinum
         void Initialize();
 
         std::string ToString() const { return "Film"; }
-
-      
 
     private:
         //Note: XYZ is a display independent representation of color,

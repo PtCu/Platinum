@@ -5,7 +5,7 @@
         "Depth": 15,
         "Sampler": {
             "Type": "Random",
-            "SPP": 64
+            "SPP": 4
         },
         "Camera": {
             "Type": "Perspective",
@@ -164,17 +164,20 @@
         },
         {
             "Shape": {
-                "Type": "Mesh",
-                "Filename": "models/cornellbox//cbox_smallbox.obj"
+                "Type": "Sphere",
+                "Radius": 65.0
             },
-            "Material": "gray"
-        },
-        {
-            "Shape": {
-                "Type": "Mesh",
-                "Filename": "models/cornellbox//cbox_largebox.obj"
-            },
-            "Material": "gray"
+            "Transform": [
+                {
+                    "type": "translate",
+                    "value": [
+                        200,
+                        232,
+                        150
+                    ]
+                }
+            ],
+            "Material": "mirror"
         },
         {
             "Shape": {
@@ -189,35 +192,10 @@
                         35,
                         50
                     ]
-                },
-                {
-                    "type": "scale",
-                    "value": [
-                        1,
-                        1.2,
-                        0.3
-                    ]
-                },
-                {
-                    "type": "rotate",
-                    "value": [
-                        1,
-                        1,
-                        1.2,
-                        0.3
-                    ]
                 }
             ],
-            "Material": "yellow",
-            "Emission": {
-                "Radiance": [
-                    2.0,
-                    2.0,
-                    2.0
-                ],
-                "LightSamples": 8,
-                "TwoSided": false
-            }
+            "Material": "yellow"
+           
         }
     ]
 }
