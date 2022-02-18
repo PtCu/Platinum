@@ -13,7 +13,7 @@ namespace platinum
         // {
         //     spectrum[i] = iter->second.get_value<float>();
         // }
-        Vector3f spectrum = root.Get<Vector3f>("Radiance");
+        Vector3f spectrum = root.Get<Vector3f>("R");
         _Kr = Spectrum::fromRGB(spectrum);
         _ref = std::make_shared<SpecularReflection>(_Kr, nullptr);
     }
