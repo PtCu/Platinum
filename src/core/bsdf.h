@@ -20,10 +20,11 @@
 #include <core/bxdf.h>
 namespace platinum
 {
-
     class BSDF
     {
     public:
+        REGISTER_ARENA
+        
         BSDF(const SurfaceInteraction &s, float eta = 1)
             : _eta(eta), _ns(s.n), _ss(glm::normalize(s._dpdu)), _ts(glm::cross(_ns, _ss)) {}
 
@@ -38,7 +39,7 @@ namespace platinum
 
         void Add(BxDF *b)
         {
-            CHECK_LT(_BxDF_num, _max_BxDF_num);
+            CHECK_LT(_BxDF_num, _max_BxDF_num);          
             _BxDFs[_BxDF_num++] = b;
         }
         int NumComponents(BxDFType flags = BxDFType::BSDF_ALL) const;

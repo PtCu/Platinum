@@ -27,4 +27,25 @@ namespace platinum
     }
     AreaLight::AreaLight(const PropertyTree &node)
         : Light(node) { _flags = (int)LightFlags::LightArea; }
+
+    std::unique_ptr<LightDistribution> createLightSampleDistribution(
+        const std::string &name, const Scene &scene)
+    {
+
+        return std::unique_ptr<LightDistribution>{
+            new UniformLightDistribution(scene)};
+
+            //TODO:: other distribution type
+    }
+
+    UniformLightDistribution::UniformLightDistribution(const Scene &scene)
+    {
+        std::vector<float> prob(scene._lights.size(), float(1));
+        distrib.reset(new Distribution1D(&prob[0], int(prob.size())));
+    }
+
+    const Distribution1D *UniformLightDistribution::lookup(const Vector3f &p) const
+    {
+        return distrib.get();
+    }
 }

@@ -90,7 +90,7 @@ namespace platinum
         void ComputeScatteringFunctions(const Ray &ray);
 
     public:
-        Ptr<BSDF> _bsdf{nullptr};
+        BSDF* _bsdf{nullptr};
         const Shape *_shape{nullptr};
         const Primitive *_hitable{nullptr};
 

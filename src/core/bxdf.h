@@ -18,6 +18,7 @@
 #include <core/utilities.h>
 #include <core/interaction.h>
 #include <core/spectrum.h>
+#include <core/memory.h>
 namespace platinum
 {
     enum class BxDFType
@@ -43,7 +44,10 @@ namespace platinum
          * @return true         _type包含在type中
          * @return false        _type没有包含在type中
          */
-        bool MatchTypes(BxDFType type) const { return (static_cast<int>(_type) & static_cast<int>(type)) == static_cast<int>(_type); }
+        bool MatchTypes(BxDFType type) const
+        {
+            return ((int)(_type) & (int)(type)) == (int)(_type);
+        }
 
         /**
          * @brief    指定光的入射方向wi，求从wi散射到wo方向的光分布量
@@ -108,6 +112,8 @@ namespace platinum
     class FresnelSchlick : public Fresnel
     {
     public:
+        REGISTER_ARENA
+
         FresnelSchlick(const Spectrum F0) : _F0(F0) {}
 
         FresnelSchlick(float etaI, float etaT)
@@ -132,6 +138,7 @@ namespace platinum
     class FresnelDielectric : public Fresnel
     {
     public:
+        REGISTER_ARENA
         FresnelDielectric(float etaI, float etaT) : _etaI(etaI), _etaT(etaT) {}
 
         virtual Spectrum Evaluate(float cosThetaI) const override;
@@ -143,6 +150,7 @@ namespace platinum
     class FresnelConductor : public Fresnel
     {
     public:
+        REGISTER_ARENA
         FresnelConductor(const Spectrum &etaI, const Spectrum &etaT, const Spectrum &kt)
             : _etaI(etaI), _etaT(etaT), _kt(kt) {}
 
@@ -155,10 +163,11 @@ namespace platinum
     class FresnelNoOp : public Fresnel
     {
     public:
+        REGISTER_ARENA
         virtual Spectrum Evaluate(float) const override { return Spectrum(1.); }
+
+        
     };
 }
-
-
 
 #endif

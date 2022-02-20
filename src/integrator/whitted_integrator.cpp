@@ -13,7 +13,7 @@
 // limitations under the License.
 
 #include "whitted_integrator.h"
-
+#include <shape/sphere.h>
 namespace platinum
 {
 
@@ -75,12 +75,12 @@ namespace platinum
                 L += f * sampled_li * glm::abs(glm::dot(wi, n)) / pdf;
             }
         }
-        if (depth + 1 < _max_depth)
-        {
-            // Trace rays for specular reflection and refraction
-            L += SpecularReflect(ray, inter, scene, sampler, depth);
-            L += SpecularTransmit(ray, inter, scene, sampler, depth);
-        }
+        // if (depth + 1 < _max_depth)
+        // {
+        //     // Trace rays for specular reflection and refraction
+        //     L += SpecularReflect(ray, inter, scene, sampler, depth);
+        //     L += SpecularTransmit(ray, inter, scene, sampler, depth);
+        // }
         return L;
     }
 

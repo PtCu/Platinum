@@ -22,7 +22,7 @@ namespace platinum
 
     private:
         Spectrum _Kr;
-        Ptr<SpecularReflection> _ref;
+
     };
 }
 

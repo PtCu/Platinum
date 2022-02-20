@@ -23,13 +23,19 @@ namespace platinum
     class PathIntegrator : public SamplerIntegrator
     {
     public:
+        PathIntegrator(const PropertyTree &root);
+
         PathIntegrator(UPtr<Camera> camera, UPtr<Sampler> sampler, int max_depth, float rr_threshold = 0.8)
-         : SamplerIntegrator(std::move(camera), std::move(sampler)),_max_depth(max_depth), _rr_threshold(rr_threshold) {}
+            : SamplerIntegrator(std::move(camera), std::move(sampler)), _max_depth(max_depth), _rr_threshold(rr_threshold) {}
+
+        std::string ToString() const { return "PathIntegrator"; }
 
     protected:
         virtual Spectrum Li(const Scene &scene, const Ray &ray, Sampler &sampler, int depth) const override;
-        float _rr_threshold;
         const int _max_depth;
+        float _rr_threshold;
+        std::string m_lightSampleStrategy;
+        std::unique_ptr<LightDistribution> m_lightDistribution;
     };
 }
 #endif

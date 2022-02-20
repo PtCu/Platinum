@@ -28,7 +28,6 @@ namespace platinum
     {
     public:
         virtual void Render(const Scene &scene) = 0;
-
     };
 
     class SamplerIntegrator : public Integrator
@@ -67,6 +66,19 @@ namespace platinum
         UPtr<Sampler> _sampler;
     };
 
+    Spectrum UniformSampleAllLights(const Interaction &it, const Scene &scene,
+                                    Sampler &sampler,
+                                    const std::vector<int> &nLightSamples,
+                                    bool handleMedia = false);
+    Spectrum UniformSampleOneLight(const Interaction &it, const Scene &scene,
+                                   Sampler &sampler,
+                                   bool handleMedia = false,
+                                   const Distribution1D *lightDistrib = nullptr);
+    Spectrum EstimateDirect(const Interaction &it, const Vector2f &uShading,
+                            const Light &light, const Vector2f &uLight,
+                            const Scene &scene, Sampler &sampler,
+                            bool handleMedia = false,
+                            bool specular = false);
 }
 
 #endif

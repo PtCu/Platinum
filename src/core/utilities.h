@@ -94,6 +94,7 @@ namespace platinum
     class FilmTile;
     class RGBSpectrum;
     class Object;
+    class MemoryArena;
 
     using Spectrum = RGBSpectrum;
 
@@ -197,6 +198,27 @@ namespace platinum
                                        const Vector3f &x, const Vector3f &y, const Vector3f &z)
     {
         return sinTheta * glm::cos(phi) * x + sinTheta * glm::sin(phi) * y + cosTheta * z;
+    }
+
+    template <typename Predicate>
+    int findInterval(int size, const Predicate &pred)
+    {
+        int first = 0, len = size;
+        while (len > 0)
+        {
+            int half = len >> 1, middle = first + half;
+            // Bisect range based on value of _pred_ at _middle_
+            if (pred(middle))
+            {
+                first = middle + 1;
+                len -= half + 1;
+            }
+            else
+            {
+                len = half;
+            }
+        }
+        return clamp(first - 1, 0, size - 2);
     }
 
     inline uint32_t floatToBits(float f)

@@ -36,7 +36,7 @@ namespace platinum
 
     private:
         Spectrum _Kr;
-        Ptr<LambertianReflection> _ref;
+
     };
 }
 

@@ -16,8 +16,24 @@
 
 namespace platinum {
 
-    Spectrum PathIntegrator::Li(const Scene &scene, const Ray &ray, Sampler &sampler, int depth) const
+    REGISTER_CLASS(PathIntegrator, "Path");
+
+    PathIntegrator::PathIntegrator(const PropertyTree &root)
+        : SamplerIntegrator(nullptr, nullptr), _max_depth(root.Get<int>("Depth")),m_lightSampleStrategy("spatial")
     {
+        _sampler = UPtr<Sampler>(static_cast<Sampler *>(ObjectFactory::CreateInstance(root.Get<std::string>("Sampler.Type"), root.GetChild("Sampler"))));
+
+        _camera = UPtr<Camera>(static_cast<Camera *>(ObjectFactory::CreateInstance(root.Get<std::string>("Camera.Type"), root.GetChild("Camera"))));
+    }
+    Spectrum PathIntegrator::Li(const Scene &scene, const Ray &r, Sampler &sampler, int depth) const
+    {
+        Spectrum L(0.f), beta(1.f);
+        Ray ray(r);
+
+        bool specular_bounce = false;
+        int bounces;
+        float eta_scale = 1.f;
+      
         return Spectrum(0.f);
     }
 }

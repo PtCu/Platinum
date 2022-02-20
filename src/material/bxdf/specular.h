@@ -21,14 +21,14 @@ namespace platinum
 {
     /**
     * @brief
-    *  理想镜面反射
+    *  理想镜面反射    
+    * 
     */
-
     class SpecularReflection : public BxDF
     {
     public:
         SpecularReflection(const Spectrum &R, Fresnel *fresnel)
-            : BxDF(BxDFType(static_cast<int>(BxDFType::BSDF_REFLECTION) | static_cast<int>(BxDFType::BSDF_DIFFUSE))),
+            : BxDF(BxDFType(static_cast<int>(BxDFType::BSDF_REFLECTION) | static_cast<int>(BxDFType::BSDF_SPECULAR))),
               _R(R),
               _fresnel(fresnel) {}
 
