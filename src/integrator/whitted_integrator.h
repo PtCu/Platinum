@@ -29,7 +29,7 @@ namespace platinum
         std::string ToString() const { return "WhittedIntegrator"; }
 
     protected:
-        virtual Spectrum Li(const Scene &scene, const Ray &ray, Sampler &sampler, int depth) const override;
+        virtual Spectrum Li(const Scene &scene, const Ray &ray, Sampler &sampler, MemoryArena &arena,  int depth) const override;
 
     private:
         const int _max_depth;

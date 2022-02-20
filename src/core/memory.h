@@ -4,17 +4,17 @@
 #include <list>
 #include <algorithm>
 #include <cstddef>
+#include <core/utilities.h>
 
 namespace platinum
 {
 
-#define REGISTER_ARENA                            \
-    static void *operator new(size_t size)        \
-    {                                             \
-        auto &arena = MemoryArena::GetInstance(); \
-        return arena.Alloc(size);                 \
-    }                                             \
-    static void operator delete(void *p, size_t size) {}
+// #define REGISTER_ARENA                                        \
+//     static void *operator new(size_t size, MemoryArena arena) \
+//     {                                                         \
+//         return arena.Alloc(size);                             \
+//     }                                                         \
+//     static void operator delete(void *p, size_t size) {}
     //无需operator delete，每次循环由arean统一清空所分配的内存
 
 #define ARENA_ALLOC(arena, Type) new ((arena).Alloc(sizeof(Type))) Type
@@ -33,12 +33,7 @@ namespace platinum
     {
 
     public:
-        static MemoryArena &GetInstance(size_t blockSize = 262144)
-        {
-            static MemoryArena arena(blockSize);
-            return arena;
-        }
-
+        MemoryArena(size_t blockSize = 262144) : blockSize(blockSize) {}
         virtual ~MemoryArena()
         {
             FreeAligned(currentBlock);
@@ -50,11 +45,15 @@ namespace platinum
 
         void *Alloc(size_t nBytes)
         {
+            // LOG(INFO) << "nBytes: " << nBytes;
             const int align = 16;
             //Round up nBytes to minimum machine alignment
             nBytes = (nBytes + align - 1) & ~(align - 1);
+
+            //Current memory is not enough. Require new memory.
             if (currentBlockPos + nBytes > currentAllocSize)
             {
+                // LOG(INFO) << "Require new memory";
                 // Add current block to _usedBlocks_ list
                 if (currentBlock)
                 {
@@ -64,7 +63,8 @@ namespace platinum
                 }
                 // Get new block of memory for _MemoryArena_
                 // Try to get memory block from _availableBlocks_
-                // The allocation routine first checks to see if there are any already allocated free blocks in availableBlocks.
+                // The allocation routine first checks to see
+                // if there are any already allocated free blocks in availableBlocks.
                 for (auto iter = availableBlocks.begin();
                      iter != availableBlocks.end(); ++iter)
                 {
@@ -83,6 +83,8 @@ namespace platinum
                 }
                 currentBlockPos = 0;
             }
+            // LOG(INFO) << "CurrentBlock: " << (void *)currentBlock << ", CurrentBlockPos: " << currentBlockPos;
+            //Slice a chunk for the requester.
             void *ret = currentBlock + currentBlockPos;
             currentBlockPos += nBytes;
             return ret;
@@ -111,7 +113,6 @@ namespace platinum
         }
 
     private:
-        MemoryArena(size_t blockSize = 262144) : blockSize(blockSize) {}
         MemoryArena(const MemoryArena &) = delete;
         MemoryArena &operator=(const MemoryArena &) = delete;
         const size_t blockSize;

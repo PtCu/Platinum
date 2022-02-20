@@ -16,7 +16,7 @@ namespace platinum
 
         Mirror(const Spectrum &r);
 
-        virtual void ComputeScatteringFunctions(SurfaceInteraction &si) const override;
+        virtual void ComputeScatteringFunctions(SurfaceInteraction &si, MemoryArena &arena) const override;
 
         virtual std::string ToString() const override { return "Mirror"; }
 

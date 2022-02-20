@@ -27,7 +27,7 @@ namespace platinum
     class SpecularReflection : public BxDF
     {
     public:
-        SpecularReflection(const Spectrum &R, Fresnel *fresnel)
+                SpecularReflection(const Spectrum &R, Fresnel *fresnel)
             : BxDF(BxDFType(static_cast<int>(BxDFType::BSDF_REFLECTION) | static_cast<int>(BxDFType::BSDF_SPECULAR))),
               _R(R),
               _fresnel(fresnel) {}

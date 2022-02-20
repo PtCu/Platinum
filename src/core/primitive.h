@@ -49,7 +49,7 @@ namespace platinum
 
         virtual const Material *GetMaterial() const = 0;
 
-        virtual void ComputeScatteringFunctions(SurfaceInteraction &isect) const = 0;
+        virtual void ComputeScatteringFunctions(SurfaceInteraction &isect,MemoryArena &arena) const = 0;
     };
 
     class GeometricPrimitive : public Primitive
@@ -72,7 +72,7 @@ namespace platinum
 
         virtual const Material *GetMaterial() const override { return _material; }
 
-        virtual void ComputeScatteringFunctions(SurfaceInteraction &isect) const override;
+        virtual void ComputeScatteringFunctions(SurfaceInteraction &isect, MemoryArena &arena) const override;
 
         virtual std::string ToString() const override { return "GeometricPrimitive"; }
 
@@ -105,7 +105,7 @@ namespace platinum
 
         virtual const Material *GetMaterial() const override { return nullptr; }
 
-        virtual void ComputeScatteringFunctions(SurfaceInteraction &isect) const override {}
+        virtual void ComputeScatteringFunctions(SurfaceInteraction &isect, MemoryArena &arena) const override {}
 
     protected:
         std::vector<Ptr<Primitive>> _primitives;

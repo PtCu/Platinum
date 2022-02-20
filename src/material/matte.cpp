@@ -33,13 +33,14 @@ namespace platinum
     {
     }
 
-    void Matte::ComputeScatteringFunctions(SurfaceInteraction &si) const
+    void Matte::ComputeScatteringFunctions(SurfaceInteraction &si, MemoryArena &arena) const
     {
         //每一个Interaction的BSDF都可能不一样，故生命周期由由该Interaction掌管
-        si._bsdf = new BSDF{si};
+        si._bsdf = ARENA_ALLOC(arena, BSDF)(si);
+
         if (!_Kr.isBlack())
         {
-            si._bsdf->Add(new LambertianReflection{_Kr});
+            si._bsdf->Add(ARENA_ALLOC(arena, LambertianReflection)(_Kr));
         }
     }
 }

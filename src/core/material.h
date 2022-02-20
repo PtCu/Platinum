@@ -35,7 +35,7 @@ namespace platinum
 
         virtual ~Material() = default;
 
-        virtual void ComputeScatteringFunctions(SurfaceInteraction &si) const = 0;
+        virtual void ComputeScatteringFunctions(SurfaceInteraction &si, MemoryArena &arena) const = 0;
     };
 
 } // namespace platinum

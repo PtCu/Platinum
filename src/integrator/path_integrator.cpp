@@ -25,7 +25,7 @@ namespace platinum {
 
         _camera = UPtr<Camera>(static_cast<Camera *>(ObjectFactory::CreateInstance(root.Get<std::string>("Camera.Type"), root.GetChild("Camera"))));
     }
-    Spectrum PathIntegrator::Li(const Scene &scene, const Ray &r, Sampler &sampler, int depth) const
+    Spectrum PathIntegrator::Li(const Scene &scene, const Ray &r, Sampler &sampler, MemoryArena &arena, int depth) const
     {
         Spectrum L(0.f), beta(1.f);
         Ray ray(r);

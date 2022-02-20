@@ -17,12 +17,13 @@ namespace platinum
         auto fre = std::make_shared<FresnelNoOp>();
     }
 
-    void Mirror::ComputeScatteringFunctions(SurfaceInteraction &si) const
+    void Mirror::ComputeScatteringFunctions(SurfaceInteraction &si, MemoryArena &arena) const
     {
-        si._bsdf = new BSDF{si};
+        si._bsdf = ARENA_ALLOC(arena, BSDF)(si);
         if (!_Kr.isBlack())
         {
-            si._bsdf->Add(new SpecularReflection{_Kr, new FresnelNoOp{}});
+            si._bsdf->Add(ARENA_ALLOC(arena, SpecularReflection)(
+                _Kr, ARENA_ALLOC(arena, FresnelNoOp)()));
         }
     }
 }

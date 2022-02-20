@@ -31,7 +31,7 @@ namespace platinum
         std::string ToString() const { return "PathIntegrator"; }
 
     protected:
-        virtual Spectrum Li(const Scene &scene, const Ray &ray, Sampler &sampler, int depth) const override;
+        virtual Spectrum Li(const Scene &scene, const Ray &ray, Sampler &sampler, MemoryArena &arena, int depth) const override;
         const int _max_depth;
         float _rr_threshold;
         std::string m_lightSampleStrategy;

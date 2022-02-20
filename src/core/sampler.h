@@ -86,7 +86,7 @@ namespace platinum
          * @param  n
          * @return   数组首地址
          */
-        const Vector2i *Get2DArray(int n);
+        const Vector2f *Get2DArray(int n);
 
         /**
          * @brief   由于Sampler的实现类存储一些状态信息，
@@ -133,7 +133,7 @@ namespace platinum
         std::vector<std::vector<float>> _sampleArray1D;
 
         // 用于存储二维样本的列表
-        std::vector<std::vector<Vector2i>> _sampleArray2D;
+        std::vector<std::vector<Vector2f>> _sampleArray2D;
 
     private:
         size_t _array1DOffset;

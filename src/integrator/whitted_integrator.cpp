@@ -28,7 +28,7 @@ namespace platinum
     }
 
     //https://pbr-book.org/3ed-2018/Introduction/pbrt_System_Overview#WhittedIntegrator
-    Spectrum WhittedIntegrator::Li(const Scene &scene, const Ray &ray, Sampler &sampler, int depth) const
+    Spectrum WhittedIntegrator::Li(const Scene &scene, const Ray &ray, Sampler &sampler, MemoryArena &arena, int depth) const
     {
 
         Spectrum L{0.f};
@@ -46,11 +46,11 @@ namespace platinum
         const Vector3f &n = inter.n;
         Vector3f wo = inter.wo;
 
-        inter.ComputeScatteringFunctions(ray);
+        inter.ComputeScatteringFunctions(ray,arena);
         // 没有bsdf
         if (!inter._bsdf)
         {
-            return Li(scene, inter.SpawnRay(ray.GetDirection()), sampler, depth);
+            return Li(scene, inter.SpawnRay(ray.GetDirection()), sampler,arena, depth);
         }
 
         // 如果光线打到光源，计算其发光值 -> Le (emission term)

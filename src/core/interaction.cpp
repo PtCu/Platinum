@@ -33,8 +33,8 @@ namespace platinum
             return Spectrum(0.f);
     }
 
-    void SurfaceInteraction::ComputeScatteringFunctions(const Ray &ray)
+    void SurfaceInteraction::ComputeScatteringFunctions(const Ray &ray,MemoryArena &arena)
     {
-        _hitable->ComputeScatteringFunctions(*this);
+        _hitable->ComputeScatteringFunctions(*this,arena);
     }
 }

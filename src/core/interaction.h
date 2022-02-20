@@ -87,7 +87,7 @@ namespace platinum
          */
         Spectrum Le(const Vector3f &w) const;
 
-        void ComputeScatteringFunctions(const Ray &ray);
+        void ComputeScatteringFunctions(const Ray &ray, MemoryArena &arena);
 
     public:
         BSDF* _bsdf{nullptr};

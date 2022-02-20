@@ -53,31 +53,28 @@ namespace platinum
          * @param depth 
          * @return Spectrum 
          */
-        virtual Spectrum Li(const Scene &scene, const Ray &ray, Sampler &sampler, int depth = 0) const = 0;
+        virtual Spectrum Li(const Scene &scene, const Ray &ray, Sampler &sampler, MemoryArena &arena, int depth = 0) const = 0;
 
         // 高光反射
-        Spectrum SpecularReflect(const Ray &ray, const SurfaceInteraction &inter, const Scene &scene, Sampler &sampler, int depth) const;
+        Spectrum SpecularReflect(const Ray &ray, const SurfaceInteraction &inter, const Scene &scene, Sampler &sampler, MemoryArena &arena, int depth) const;
 
         // 高光透射
-        Spectrum SpecularTransmit(const Ray &ray, const SurfaceInteraction &inter, const Scene &scene, Sampler &sampler, int depth) const;
+        Spectrum SpecularTransmit(const Ray &ray, const SurfaceInteraction &inter, const Scene &scene, Sampler &sampler, MemoryArena &arena, int depth) const;
 
     protected:
         UPtr<Camera> _camera;
         UPtr<Sampler> _sampler;
     };
 
-    Spectrum UniformSampleAllLights(const Interaction &it, const Scene &scene,
-                                    Sampler &sampler,
-                                    const std::vector<int> &nLightSamples,
-                                    bool handleMedia = false);
-    Spectrum UniformSampleOneLight(const Interaction &it, const Scene &scene,
+    Spectrum UniformSampleAllLights(const Interaction &it, const Scene &scene, MemoryArena &arena, Sampler &sampler,
+                                    const std::vector<int> &nLightSamples);
+    Spectrum UniformSampleOneLight(const Interaction &it, const Scene &scene, MemoryArena &arena,
                                    Sampler &sampler,
-                                   bool handleMedia = false,
                                    const Distribution1D *lightDistrib = nullptr);
     Spectrum EstimateDirect(const Interaction &it, const Vector2f &uShading,
                             const Light &light, const Vector2f &uLight,
                             const Scene &scene, Sampler &sampler,
-                            bool handleMedia = false,
+                            MemoryArena &arena,
                             bool specular = false);
 }
 

@@ -30,7 +30,7 @@ namespace platinum
 
         Matte(const PropertyTree &node);
 
-        virtual void ComputeScatteringFunctions(SurfaceInteraction &si) const override;
+        virtual void ComputeScatteringFunctions(SurfaceInteraction &si,MemoryArena &arena) const override;
 
         std::string ToString() const { return "Matte"; }
 

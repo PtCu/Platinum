@@ -37,11 +37,11 @@ namespace platinum
         return true;
     }
 
-    void GeometricPrimitive::ComputeScatteringFunctions(SurfaceInteraction &inter) const
+    void GeometricPrimitive::ComputeScatteringFunctions(SurfaceInteraction &inter, MemoryArena &arena) const
     {
         if (_material)
         {
-            _material->ComputeScatteringFunctions(inter);
+            _material->ComputeScatteringFunctions(inter, arena);
         }
     }
 }

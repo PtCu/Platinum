@@ -28,7 +28,7 @@ namespace platinum
     class LambertianReflection : public BxDF
     {
     public:
-        LambertianReflection(const Spectrum &R)
+                LambertianReflection(const Spectrum &R)
             : BxDF(BxDFType(static_cast<int>(BxDFType::BSDF_REFLECTION) | static_cast<int>(BxDFType::BSDF_DIFFUSE))),
               _R(R) {}
 

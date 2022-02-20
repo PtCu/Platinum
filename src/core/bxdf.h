@@ -112,8 +112,6 @@ namespace platinum
     class FresnelSchlick : public Fresnel
     {
     public:
-        REGISTER_ARENA
-
         FresnelSchlick(const Spectrum F0) : _F0(F0) {}
 
         FresnelSchlick(float etaI, float etaT)
@@ -138,7 +136,6 @@ namespace platinum
     class FresnelDielectric : public Fresnel
     {
     public:
-        REGISTER_ARENA
         FresnelDielectric(float etaI, float etaT) : _etaI(etaI), _etaT(etaT) {}
 
         virtual Spectrum Evaluate(float cosThetaI) const override;
@@ -150,7 +147,6 @@ namespace platinum
     class FresnelConductor : public Fresnel
     {
     public:
-        REGISTER_ARENA
         FresnelConductor(const Spectrum &etaI, const Spectrum &etaT, const Spectrum &kt)
             : _etaI(etaI), _etaT(etaT), _kt(kt) {}
 
@@ -163,10 +159,7 @@ namespace platinum
     class FresnelNoOp : public Fresnel
     {
     public:
-        REGISTER_ARENA
-        virtual Spectrum Evaluate(float) const override { return Spectrum(1.); }
-
-        
+                virtual Spectrum Evaluate(float) const override { return Spectrum(1.); }
     };
 }
 

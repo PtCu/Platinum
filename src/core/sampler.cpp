@@ -61,7 +61,7 @@ namespace platinum
     {
         CHECK_EQ(RoundCount(n), n);
         _samples2DArraySizes.push_back(n);
-        _sampleArray2D.push_back(std::vector<Vector2i>(n * _samplesPerPixel));
+        _sampleArray2D.push_back(std::vector<Vector2f>(n * _samplesPerPixel));
     }
 
     const float *Sampler::Get1DArray(int n)
@@ -73,7 +73,7 @@ namespace platinum
         return &_sampleArray1D[_array1DOffset++][_currentPixelSampleIndex * n];
     }
 
-    const Vector2i *Sampler::Get2DArray(int n)
+    const Vector2f *Sampler::Get2DArray(int n)
     {
         if (_array2DOffset == _sampleArray2D.size())
             return nullptr;
