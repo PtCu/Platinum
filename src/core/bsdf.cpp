@@ -39,11 +39,12 @@ namespace platinum
         //reflect表示入射光和出射光是否在一个半球内
         bool reflect = glm::dot(wiW, _ns) * glm::dot(woW, _ns) > 0;
         Spectrum f(0.f);
+
         for (size_t i = 0; i < _BxDF_num; ++i)
         {
             if (_BxDFs[i]->MatchTypes(flags) &&
-                ((reflect && (static_cast<int>(_BxDFs[i]->_type) & static_cast<int>(BxDFType::BSDF_REFLECTION))) ||
-                 (!reflect && (static_cast<int>(_BxDFs[i]->_type) & static_cast<int>(BxDFType::BSDF_TRANSMISSION)))))
+                ((reflect && ((int)_BxDFs[i]->_type & (int)BxDFType::BSDF_REFLECTION) ||
+                  (!reflect && ((int)_BxDFs[i]->_type & (int)BxDFType::BSDF_TRANSMISSION)))))
             {
                 f += _BxDFs[i]->F(wo, wi);
             }
@@ -173,7 +174,6 @@ namespace platinum
             }
         }
 
-      
         float v = matchingComps > 0 ? pdf / matchingComps : 0.f;
         return v;
     }

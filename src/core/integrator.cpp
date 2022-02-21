@@ -22,6 +22,7 @@ namespace platinum
 {
     void SamplerIntegrator::Render(const Scene &scene)
     {
+        Preprocess(scene, *_sampler);
         Vector2i resolution = _camera->_film->GetResolution();
 
         auto &sampler = _sampler;

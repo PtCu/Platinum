@@ -27,6 +27,7 @@ namespace platinum
         WhittedIntegrator(UPtr<Camera> camera, UPtr<Sampler> sampler, int max_depth)
             : SamplerIntegrator(std::move(camera), std::move(sampler)), _max_depth(max_depth) {}
         std::string ToString() const { return "WhittedIntegrator"; }
+      virtual void Preprocess(const Scene &scene, Sampler &sampler) override {}
 
     protected:
         virtual Spectrum Li(const Scene &scene, const Ray &ray, Sampler &sampler, MemoryArena &arena,  int depth) const override;

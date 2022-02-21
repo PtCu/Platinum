@@ -46,7 +46,7 @@ namespace platinum
          */
         bool MatchTypes(BxDFType type) const
         {
-            return ((int)(_type) & (int)(type)) == (int)(_type);
+            return ((int)_type & (int)type) == (int)_type;
         }
 
         /**

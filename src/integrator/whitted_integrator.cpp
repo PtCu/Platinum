@@ -75,12 +75,12 @@ namespace platinum
                 L += f * sampled_li * glm::abs(glm::dot(wi, n)) / pdf;
             }
         }
-        // if (depth + 1 < _max_depth)
-        // {
-        //     // Trace rays for specular reflection and refraction
-        //     L += SpecularReflect(ray, inter, scene, sampler, depth);
-        //     L += SpecularTransmit(ray, inter, scene, sampler, depth);
-        // }
+        if (depth + 1 < _max_depth)
+        {
+            // Trace rays for specular reflection and refraction
+            L += SpecularReflect(ray, inter, scene, sampler,arena,depth);
+            L += SpecularTransmit(ray, inter, scene, sampler,arena, depth);
+        }
         return L;
     }
 

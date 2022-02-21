@@ -1,7 +1,6 @@
 #ifndef CORE_PARSER_H_
 #define CORE_PARSER_H_
 
-
 #include <optional>
 #include <core/object.h>
 #include <core/utilities.h>
@@ -50,7 +49,7 @@ namespace platinum
     private:
         std::string _assets_path;
         std::unordered_map<std::string, Ptr<Material>> _materials;
-         std::vector<Ptr<Primitive>> _primitives;
+        std::vector<Ptr<Primitive>> _primitives;
 
         //对scene修改
         Ptr<Scene> _scene;

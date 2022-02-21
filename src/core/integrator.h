@@ -24,6 +24,7 @@
 
 namespace platinum
 {
+
     class Integrator : public Object
     {
     public:
@@ -38,7 +39,12 @@ namespace platinum
 
         virtual void Render(const Scene &scene);
 
-        void SetSampler(UPtr<Sampler> sampler) { _sampler = std::move(sampler); }
+        virtual void Preprocess(const Scene &scene, Sampler &sampler) = 0;
+
+        void SetSampler(UPtr<Sampler> sampler)
+        {
+            _sampler = std::move(sampler);
+        }
 
         void SetCamera(UPtr<Camera> camera) { _camera = std::move(camera); }
 

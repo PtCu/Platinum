@@ -30,12 +30,14 @@ namespace platinum
 
         std::string ToString() const { return "PathIntegrator"; }
 
+        virtual void Preprocess(const Scene &scene, Sampler &sampler) override;
+
     protected:
         virtual Spectrum Li(const Scene &scene, const Ray &ray, Sampler &sampler, MemoryArena &arena, int depth) const override;
         const int _max_depth;
         float _rr_threshold;
-        std::string m_lightSampleStrategy;
-        std::unique_ptr<LightDistribution> m_lightDistribution;
+        std::string _light_sample_strategy;
+        std::unique_ptr<LightDistribution> _light_distribution;
     };
 }
 #endif
