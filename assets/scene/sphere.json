@@ -1,7 +1,7 @@
 {
     "AssetsPath": "D:/Homework/graphics/rendering/Platinum/assets/",
     "Integrator": {
-        "Type": "Whitted",
+        "Type": "Path",
         "Depth": 15,
         "Sampler": {
             "Type": "Random",
@@ -113,6 +113,23 @@
                         200,
                         232,
                         150
+                    ]
+                }
+            ],
+            "Material": "mirror"
+        },
+        {
+            "Shape": {
+                "Type": "Sphere",
+                "Radius": 65.0
+            },
+            "Transform": [
+                {
+                    "type": "translate",
+                    "value": [
+                        0,
+                        400,
+                        200
                     ]
                 }
             ],

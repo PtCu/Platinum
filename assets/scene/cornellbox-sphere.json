@@ -1,11 +1,11 @@
 {
     "AssetsPath": "D:/Homework/graphics/rendering/Platinum/assets/",
     "Integrator": {
-        "Type": "Whitted",
+        "Type": "Path",
         "Depth": 15,
         "Sampler": {
             "Type": "Random",
-            "SPP": 16
+            "SPP": 64
         },
         "Camera": {
             "Type": "Perspective",
@@ -85,7 +85,7 @@
             "Name": "yellow",
             "Type": "Matte",
             "R": [
-                0.65,
+                0.45,
                 0.65,
                 0.05
             ]
@@ -177,12 +177,12 @@
                     ]
                 }
             ],
-            "Material": "mirror"
+            "Material": "red"
         },
         {
             "Shape": {
                 "Type": "Sphere",
-                "Radius": 16.0
+                "Radius": 40.0
             },
             "Transform": [
                 {
@@ -195,6 +195,24 @@
                 }
             ],
             "Material": "yellow"
+        },
+
+        {
+            "Shape": {
+                "Type": "Sphere",
+                "Radius": 25.0
+            },
+            "Transform": [
+                {
+                    "type": "translate",
+                    "value": [
+                        50,
+                        40,
+                        200
+                    ]
+                }
+            ],
+            "Material": "mirror"
         }
     ]
 }

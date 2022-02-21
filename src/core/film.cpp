@@ -26,16 +26,6 @@ namespace platinum
         Bounds2f cropWindow;
         cropWindow._p_min = root.Get<Vector2f>("CropMin");
         cropWindow._p_max = root.Get<Vector2f>("CropMax");
-        // auto iter = root.get_child("Resolution").begin();
-        // _resolution[0] = (iter++)->second.get_value<float>();
-        // _resolution[1] = iter->second.get_value<float>();
-        // iter = root.get_child("CropMin").begin();
-        // Bounds2f cropWindow;
-        // cropWindow._p_min[0] = (iter++)->second.get_value<float>();
-        // cropWindow._p_min[1] = iter->second.get_value<float>();
-        // iter = root.get_child("CropMax").begin();
-        // cropWindow._p_max[0] = (iter++)->second.get_value<float>();
-        // cropWindow._p_max[1] = (iter++)->second.get_value<float>();
 
         _cropped_pixel_bounds =
             Bounds2i(

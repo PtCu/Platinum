@@ -12,12 +12,12 @@ if(DEFINED ENV{VCPKG_ROOT} AND NOT DEFINED CMAKE_TOOLCHAIN_FILE)
     set(CMAKE_TOOLCHAIN_FILE "$ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake" CACHE STRING "settle from environ VCPKG_ROOT")
 endif()
 
-if (CMAKE_COMPILER_IS_GNUCC)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -w")
-endif()
-if (MSVC)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /w")
-endif()
+# if (CMAKE_COMPILER_IS_GNUCC)
+#     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -w")
+# endif()
+# if (MSVC)
+#     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /w")
+# endif()
 
 find_package(glm CONFIG REQUIRED)
 
@@ -112,12 +112,14 @@ endforeach ()
 #     )
 # endif()
 
+# 设置platinum为静态库
 add_library(${PROJECT_NAME} STATIC ${ALL_SOURCE})
 
 set(EXTRA_LIBS ${EXTRA_LIBS} glm::glm assimp::assimp TBB::tbb glog::glog GTest::gmock GTest::gtest GTest::gmock_main GTest::gtest_main)
 
 set(ALL_LIBS ${PROJECT_NAME} ${EXTRA_LIBS})
 
+# 设置exe入口程序
 add_executable(${PROJECT_NAME}_exe src/main/main.cpp)
 set_target_properties(${PROJECT_NAME}_exe PROPERTIES OUTPUT_NAME ${PROJECT_NAME})
 set_target_properties(${PROJECT_NAME}_exe PROPERTIES LINK_FLAGS /WHOLEARCHIVE:${PROJECT_NAME})
@@ -125,9 +127,10 @@ target_link_libraries(${PROJECT_NAME}_exe ${ALL_LIBS})
 
 
 # 单元测试
-file(GLOB TEST_SOURCE src/tests/*.cpp)
-add_executable(${PROJECT_NAME}_test ${TEST_SOURCE})
-target_link_libraries(${PROJECT_NAME}_test ${ALL_LIBS})
+add_subdirectory(src/tests)
+# file(GLOB TEST_SOURCE src/tests/*.cpp)
+# add_executable(${PROJECT_NAME}_test ${TEST_SOURCE})
+# target_link_libraries(${PROJECT_NAME}_test ${ALL_LIBS})
 
 set(CPACK_PROJECT_NAME ${PROJECT_NAME})
 set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})
