@@ -1,16 +1,4 @@
-// Copyright 2022 ptcup
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//     http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+
 
 #ifndef LIGHT_AREA_LIGHT_H_
 #define LIGHT_AREA_LIGHT_H_
@@ -20,11 +8,11 @@
 
 namespace platinum
 {
-    class DiffuseAreaLight final: public AreaLight
+    class DiffuseAreaLight final : public AreaLight
     {
     public:
         DiffuseAreaLight(const PropertyTree &node);
-        
+
         //The surface it emits from is defined by a Shape
         DiffuseAreaLight(const Transform &light2world, const Spectrum &Lemit, int n_samples, Shape *shape, bool two_sided = false)
             : AreaLight(light2world, n_samples), _Lemit(Lemit), _shape(shape),
@@ -51,9 +39,9 @@ namespace platinum
 
         virtual float PdfLi(const Interaction &inter, const Vector3f &wi) const;
 
-        std::string ToString() const { return "DiffuseAreaLight"; }
+        virtual std::string ToString() const { return "DiffuseAreaLight"; }
 
-       virtual void DiffuseAreaLight::SetParent(Object *parent) override;
+        virtual void DiffuseAreaLight::SetParent(Object *parent) override;
 
     private:
         Spectrum _Lemit;

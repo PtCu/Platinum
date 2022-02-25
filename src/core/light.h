@@ -1,16 +1,4 @@
-// Copyright 2022 ptcup
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//     http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+
 
 #ifndef CORE_LIGHT_H_
 #define CORE_LIGHT_H_
@@ -175,12 +163,12 @@ namespace platinum
             }
         }
 
-        int count() const
+        int Count() const
         {
             return (int)func.size();
         }
 
-        float sampleContinuous(float u, float *pdf, int *off = nullptr) const
+        float SampleContinuous(float u, float *pdf, int *off = nullptr) const
         {
             // Find surrounding CDF segments and _offset_
             int offset = findInterval((int)cdf.size(), [&](int index)
@@ -203,17 +191,17 @@ namespace platinum
                 *pdf = (funcInt > 0) ? func[offset] / funcInt : 0;
 
             // Return $x\in{}[0,1)$ corresponding to sample
-            return (offset + du) / count();
+            return (offset + du) / Count();
         }
 
-        int sampleDiscrete(float u, float *pdf = nullptr, float *uRemapped = nullptr) const
+        int SampleDiscrete(float u, float *pdf = nullptr, float *uRemapped = nullptr) const
         {
             // Find surrounding CDF segments and _offset_
             int offset = findInterval((int)cdf.size(), [&](int index)
                                       { return cdf[index] <= u; });
 
             if (pdf)
-                *pdf = (funcInt > 0) ? func[offset] / (funcInt * count()) : 0;
+                *pdf = (funcInt > 0) ? func[offset] / (funcInt * Count()) : 0;
             if (uRemapped)
                 *uRemapped = (u - cdf[offset]) / (cdf[offset + 1] - cdf[offset]);
             if (uRemapped)
@@ -221,14 +209,43 @@ namespace platinum
             return offset;
         }
 
-        float discretePDF(int index) const
+        float DiscretePDF(int index) const
         {
-            CHECK(index >= 0 && index < count());
-            return func[index] / (funcInt * count());
+            CHECK(index >= 0 && index < Count());
+            return func[index] / (funcInt * Count());
         }
 
         std::vector<float> func, cdf;
         float funcInt;
+    };
+
+    class Distribution2D
+    {
+    public:
+        // Distribution2D Public Methods
+        Distribution2D(const float *data, int nu, int nv);
+        Vector2f SampleContinuous(const Vector2f &u, float *pdf) const
+        {
+            float pdfs[2];
+            int v;
+            float d1 = pMarginal->SampleContinuous(u[1], &pdfs[1], &v);
+            float d0 = pConditionalV[v]->SampleContinuous(u[0], &pdfs[0]);
+            *pdf = pdfs[0] * pdfs[1];
+            return Vector2f(d0, d1);
+        }
+        float Pdf(const Vector2f &p) const
+        {
+            int iu = glm::clamp(int(p[0] * pConditionalV[0]->Count()), 0,
+                                pConditionalV[0]->Count() - 1);
+            int iv =
+                glm::clamp(int(p[1] * pMarginal->Count()), 0, pMarginal->Count() - 1);
+            return pConditionalV[iv]->func[iu] / pMarginal->funcInt;
+        }
+
+    private:
+        // Distribution2D Private Data
+        std::vector<std::unique_ptr<Distribution1D>> pConditionalV;
+        std::unique_ptr<Distribution1D> pMarginal;
     };
 
     // LightDistribution defines a general interface for classes that provide
@@ -241,7 +258,7 @@ namespace platinum
 
         // Given a point |p| in space, this method returns a (hopefully
         // effective) sampling distribution for light sources at that point.
-        virtual const Distribution1D *lookup(const Vector3f &p) const = 0;
+        virtual const Distribution1D *Lookup(const Vector3f &p) const = 0;
     };
 
     // The simplest possible implementation of LightDistribution: this returns
@@ -256,13 +273,13 @@ namespace platinum
     public:
         UniformLightDistribution(const Scene &scene);
 
-        virtual const Distribution1D *lookup(const Vector3f &p) const override;
+        virtual const Distribution1D *Lookup(const Vector3f &p) const override;
 
     private:
         std::unique_ptr<Distribution1D> distrib;
     };
 
-    std::unique_ptr<LightDistribution> createLightSampleDistribution(
+    std::unique_ptr<LightDistribution> CreateLightSampleDistribution(
         const std::string &name, const Scene &scene);
 }
 

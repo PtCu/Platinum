@@ -1,16 +1,4 @@
-// Copyright 2021 ptcup
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//     http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+
 
 #include "path_integrator.h"
 #include <core/bsdf.h>
@@ -27,11 +15,11 @@ namespace platinum
 
         _camera = UPtr<Camera>(static_cast<Camera *>(ObjectFactory::CreateInstance(root.Get<std::string>("Camera.Type"), root.GetChild("Camera"))));
 
-        _light_sample_strategy = root.Get<std::string>("Strategy","spatial");
+        _light_sample_strategy = root.Get<std::string>("Strategy", "spatial");
     }
     void PathIntegrator::Preprocess(const Scene &scene, Sampler &sampler)
     {
-        _light_distribution = createLightSampleDistribution(_light_sample_strategy, scene);
+        _light_distribution = CreateLightSampleDistribution(_light_sample_strategy, scene);
     }
 
     Spectrum PathIntegrator::Li(const Scene &scene, const Ray &r, Sampler &sampler, MemoryArena &arena, int depth) const
@@ -70,7 +58,7 @@ namespace platinum
                 --bounces;
                 continue;
             }
-            const Distribution1D *distrib = _light_distribution->lookup(isect.p);
+            const Distribution1D *distrib = _light_distribution->Lookup(isect.p);
 
             if (isect._bsdf->NumComponents(BxDFType((int)BxDFType::BSDF_ALL & ~(int)BxDFType::BSDF_SPECULAR)) > 0)
             {

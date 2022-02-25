@@ -1,27 +1,16 @@
-// Copyright 2021 ptcup
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//     http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+
 #include <core/integrator.h>
 #include <core/bsdf.h>
 #include <core/camera.h>
 #include <tbb/tbb.h>
 #include <core/memory.h>
 #include <core/parallel.h>
-
+#include <core/timer.h>
 namespace platinum
 {
     void SamplerIntegrator::Render(const Scene &scene)
     {
+        Timer timer("Integrator");
         Preprocess(scene, *_sampler);
         Vector2i resolution = _camera->_film->GetResolution();
 
@@ -32,15 +21,20 @@ namespace platinum
         Vector2i sampleExtent = sampleBounds.Diagonal();
         constexpr int tileSize = 16;
         Vector2i nTiles((sampleExtent.x + tileSize - 1) / tileSize, (sampleExtent.y + tileSize - 1) / tileSize);
-
+#define DEBUG
+#ifndef DEBUG
         tbb::parallel_for(tbb::blocked_range<size_t>(0, nTiles.x * nTiles.y),
                           [&](tbb::blocked_range<size_t> r)
                           {
                               MemoryArena arena;
                               for (size_t t = r.begin(); t != r.end(); ++t)
                               {
+#else
+        MemoryArena arena;
+        for (size_t t = 0; t < nTiles.x * nTiles.y; ++t)
+        {
+#endif
                                   Vector2i tile(t % nTiles.x, t / nTiles.x);
-
                                   // Get sampler instance for tile
                                   int seed = t;
                                   std::unique_ptr<Sampler> tileSampler = sampler->Clone(seed);
@@ -117,13 +111,9 @@ namespace platinum
 
                                   _camera->_film->MergeFilmTile(std::move(filmTile));
                               }
+#ifndef DEBUG
                           });
-
-        // reporter.done();
-
-        LOG(INFO) << "Rendering finished";
-
-        _camera->_film->WriteImageToFile();
+#endif
     }
 
     Spectrum SamplerIntegrator::SpecularReflect(const Ray &ray, const SurfaceInteraction &inter,
@@ -221,7 +211,7 @@ namespace platinum
 
         if (lightDistrib != nullptr)
         {
-            lightSampledIndex = lightDistrib->sampleDiscrete(sampler.Get1D(), &lightPdf);
+            lightSampledIndex = lightDistrib->SampleDiscrete(sampler.Get1D(), &lightPdf);
             if (lightPdf == 0)
                 return Spectrum(0.f);
         }

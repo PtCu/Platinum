@@ -13,3 +13,5 @@ _deps
 /build
 /.vscode
 /logs/*
+/out
+/.vs

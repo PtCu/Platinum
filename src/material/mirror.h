@@ -18,11 +18,10 @@ namespace platinum
 
         virtual void ComputeScatteringFunctions(SurfaceInteraction &si, MemoryArena &arena) const override;
 
-        virtual std::string ToString() const override { return "Mirror"; }
+        virtual virtual std::string ToString() const override { return "Mirror"; }
 
     private:
         Spectrum _Kr;
-
     };
 }
 

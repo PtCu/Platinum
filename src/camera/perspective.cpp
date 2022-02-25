@@ -1,16 +1,4 @@
-// Copyright 2022 ptcup
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//     http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+
 
 #include <camera/perspective.h>
 
@@ -26,7 +14,7 @@ namespace platinum
         _eye = root.Get<Vector3f>("Eye");
         _focus = root.Get<Vector3f>("Focus");
         _up = root.Get<Vector3f>("WorldUp");
-       
+
         _camera2world = Inverse(LookAt(_eye, _focus, _up));
         _camera2screen = Perspective(_fov, 1e-2f, 1000.f);
 
@@ -42,7 +30,7 @@ namespace platinum
     {
         Initialize();
     }
-    
+
     void PerspectiveCamera::Initialize()
     {
         auto res = _film->GetResolution();

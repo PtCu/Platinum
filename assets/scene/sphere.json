@@ -52,7 +52,11 @@
     "Aggregate": {
         "Type": "Linear"
     },
-    "Light": [],
+    "Light": [
+        {
+            "Type":"Infinite"
+        }
+    ],
     "Material": [
         {
             "Name": "red",

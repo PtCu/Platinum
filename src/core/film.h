@@ -1,16 +1,4 @@
-// Copyright 2021 ptcup
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//     http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+
 
 #ifndef CORE_FILM_H_
 #define CORE_FILM_H_
@@ -85,7 +73,7 @@ namespace platinum
 
         void Initialize();
 
-        std::string ToString() const { return "Film"; }
+        virtual std::string ToString() const { return "Film"; }
 
     private:
         //Note: XYZ is a display independent representation of color,
@@ -164,14 +152,14 @@ namespace platinum
             // Loop over filter support and add sample to pixel arrays
 
             // Precompute $x$ and $y$ filter table offsets
-            int *ifx = new int[p1.x - p0.x];
+            int *ifx = ALLOCA(int, p1.x - p0.x);
             for (int x = p0.x; x < p1.x; ++x)
             {
                 float fx = glm::abs((x - pFilmDiscrete.x) * m_invFilterRadius.x * m_filterTableSize);
                 ifx[x - p0.x] = glm::min((int)glm::floor(fx), m_filterTableSize - 1);
             }
 
-            int *ify = new int[p1.y - p0.y];
+            int *ify = ALLOCA(int, p1.y - p0.y);
             for (int y = p0.y; y < p1.y; ++y)
             {
                 float fy = std::abs((y - pFilmDiscrete.y) * m_invFilterRadius.y * m_filterTableSize);
@@ -192,10 +180,6 @@ namespace platinum
                     pixel.m_filterWeightSum += filterWeight;
                 }
             }
-            delete[] ifx;
-            delete[] ify;
-            ifx = nullptr;
-            ify = nullptr;
         }
 
         FilmTilePixel &getPixel(const Vector2i &p)

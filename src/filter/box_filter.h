@@ -12,7 +12,7 @@ namespace platinum
 
         BoxFilter(const Vector2f &radius) : Filter(radius) {}
 
-        std::string ToString() const { return "BoxFilter"; }
+        virtual std::string ToString() const { return "BoxFilter"; }
 
         virtual float Evaluate(const Vector2f &p) const override
         {
