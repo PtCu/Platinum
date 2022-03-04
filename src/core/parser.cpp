@@ -70,6 +70,7 @@ namespace platinum
         }
         _scene->_aggres = UPtr<Aggregate>(static_cast<Aggregate *>(ObjectFactory::CreateInstance(aggre_node->Get<std::string>("Type"), aggre_node.get())));
         _scene->_aggres->SetPrimitives(_primitives);
+        _scene->_aggres->Initialize();
     }
 
     void Parser::ParseLight(const PropertyTree &root)
@@ -217,33 +218,33 @@ namespace platinum
     void Parser::ParseObject(const PropertyTree &root)
     {
 
-        for (const auto &p : root.GetChild("Object").GetNode())
-        {
-
-            //解析transform
-            auto obj2world = std::make_unique<Transform>();
-            auto world2obj = std::make_unique<Transform>();
-
-            //对于列表中的元素value，p为(,value)。用p.second来访问
-            auto _transform_node = p.second.get_child_optional("Transform");
-            if (_transform_node)
+            for (const auto &p : root.GetChild("Object").GetNode())
             {
-                ParseTransform(_transform_node.get(), obj2world.get());
-            }
-            (*world2obj) = Inverse(*obj2world);
 
-            //解析Shape
-            if ("Mesh" == p.second.get<std::string>("Shape.Type"))
-            {
-                ParseTriMesh(p.second, obj2world.get(), world2obj.get());
-            }
-            else
-            {
-                ParseSimpleShape(p.second, obj2world.get(), world2obj.get());
-            }
+                //解析transform
+                auto obj2world = std::make_unique<Transform>();
+                auto world2obj = std::make_unique<Transform>();
 
-            _scene->_transforms.emplace_back(std::move(obj2world));
-            _scene->_transforms.emplace_back(std::move(world2obj));
-        }
+                //对于列表中的元素value，p为(,value)。用p.second来访问
+                auto _transform_node = p.second.get_child_optional("Transform");
+                if (_transform_node)
+                {
+                    ParseTransform(_transform_node.get(), obj2world.get());
+                }
+                (*world2obj) = Inverse(*obj2world);
+
+                //解析Shape
+                if ("Mesh" == p.second.get<std::string>("Shape.Type"))
+                {
+                    ParseTriMesh(p.second, obj2world.get(), world2obj.get());
+                }
+                else
+                {
+                    ParseSimpleShape(p.second, obj2world.get(), world2obj.get());
+                }
+
+                _scene->_transforms.emplace_back(std::move(obj2world));
+                _scene->_transforms.emplace_back(std::move(world2obj));
+            }
     }
 }

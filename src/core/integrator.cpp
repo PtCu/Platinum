@@ -10,6 +10,7 @@ namespace platinum
 {
     void SamplerIntegrator::Render(const Scene &scene)
     {
+        LOG(INFO) << "Start rendering...";
         Timer timer("Integrator");
         Preprocess(scene, *_sampler);
         Vector2i resolution = _camera->_film->GetResolution();
@@ -21,7 +22,7 @@ namespace platinum
         Vector2i sampleExtent = sampleBounds.Diagonal();
         constexpr int tileSize = 16;
         Vector2i nTiles((sampleExtent.x + tileSize - 1) / tileSize, (sampleExtent.y + tileSize - 1) / tileSize);
-#define DEBUG
+//  #define DEBUG
 #ifndef DEBUG
         tbb::parallel_for(tbb::blocked_range<size_t>(0, nTiles.x * nTiles.y),
                           [&](tbb::blocked_range<size_t> r)
@@ -114,6 +115,8 @@ namespace platinum
 #ifndef DEBUG
                           });
 #endif
+        LOG(INFO) << "Rendering finished";
+        _camera->_film->WriteImageToFile();
     }
 
     Spectrum SamplerIntegrator::SpecularReflect(const Ray &ray, const SurfaceInteraction &inter,

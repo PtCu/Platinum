@@ -126,11 +126,8 @@ set_target_properties(${PROJECT_NAME}_exe PROPERTIES LINK_FLAGS /WHOLEARCHIVE:${
 target_link_libraries(${PROJECT_NAME}_exe ${ALL_LIBS})
 
 
-# 单元测试
+# 测试程序
 add_subdirectory(src/tests)
-# file(GLOB TEST_SOURCE src/tests/*.cpp)
-# add_executable(${PROJECT_NAME}_test ${TEST_SOURCE})
-# target_link_libraries(${PROJECT_NAME}_test ${ALL_LIBS})
 
 set(CPACK_PROJECT_NAME ${PROJECT_NAME})
 set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})

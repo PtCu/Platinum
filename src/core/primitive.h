@@ -15,8 +15,6 @@ namespace platinum
     class Primitive : public Object
     {
     public:
-        typedef Ptr<Primitive> ptr;
-
         virtual ~Primitive() = default;
 
         virtual bool Hit(const Ray &ray) const = 0;
@@ -76,8 +74,8 @@ namespace platinum
             : _primitives(primitives) {}
         /**
          * @brief Set the Primitives object in a move constructor way.
-         * 
-         * @param primitives 
+         *
+         * @param primitives
          */
         void SetPrimitives(const std::vector<Ptr<Primitive>> &primitives) { _primitives = std::move(primitives); }
 

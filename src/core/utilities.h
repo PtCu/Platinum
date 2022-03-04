@@ -23,9 +23,12 @@
 #include <mutex>
 #include <initializer_list>
 
+// #define GLM_FORCE_AVX
+// #define GLM_FORCE_ALIGNED
+#define GLM_FORCE_INTRINSICS
 #include <glm/glm.hpp>
 #include <glog/logging.h>
-namespace platinum
+    namespace platinum
 {
     // Platform-specific definitions
 #if defined(_WIN32) || defined(_WIN64)

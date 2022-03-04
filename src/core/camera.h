@@ -9,7 +9,7 @@
 #include <core/object.h>
 namespace platinum
 {
-    struct CameraSample
+    struct alignas(4) CameraSample
     {
         Vector2f p_film;
     };

@@ -1,7 +1,7 @@
 {
     "AssetsPath": "D:/Homework/graphics/rendering/Platinum/assets/",
     "Integrator": {
-        "Type": "Path",
+        "Type": "Whitted",
         "Depth": 15,
         "Sampler": {
             "Type": "Random",
@@ -38,7 +38,7 @@
                     1,
                     1
                 ],
-                "Filename": "cornellBox.png",
+                "Filename": "cornellBox-sphere.png",
                 "Filter": {
                     "Type": "Box",
                     "Radius": [
@@ -202,17 +202,8 @@
                 "Type": "Sphere",
                 "Radius": 25.0
             },
-            "Transform": [
-                {
-                    "type": "translate",
-                    "value": [
-                        50,
-                        40,
-                        200
-                    ]
-                }
-            ],
-            "Material": "mirror"
+            "Material": "green"
+            
         }
     ]
 }

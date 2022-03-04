@@ -48,6 +48,7 @@ namespace platinum
         //转化为相机坐标
         Vector3f p_camera = _raster2camera.ExecOn(p_film, 1.f);
         ray = Ray(Vector3f(0.f), glm::normalize(p_camera));
+        //转化为世界坐标
         ray = _camera2world.ExecOn(ray);
         return 1.f;
     }

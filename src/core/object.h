@@ -14,6 +14,7 @@ namespace platinum
 
     class PropertyTree
     {
+
     public:
         PropertyTree() = default;
 
@@ -82,19 +83,37 @@ namespace platinum
             return _root;
         }
 
+        boost::property_tree::ptree::iterator begin()
+        {
+            return _root.begin();
+        }
+
+        boost::property_tree::ptree::iterator end()
+        {
+            return _root.end();
+        }
+
         boost::property_tree::ptree _root;
     };
 
     // class PropertyIterator
     // {
     // public:
+    //     explicit PropertyIterator(const PropertyTree &p) : _tree(&p) {}
+
     //     PropertyIterator operator++()
     //     {
     //         _tree->_root;
     //     }
 
+    //     bool operator!=(const PropertyIterator &other) const
+    //     {
+    //         return other._tree->_root != this->_tree->_root;
+    //     }
+
     // private:
     //     const PropertyTree *_tree;
+       
     // };
 
     //从配置文件中创建对象所需的基类

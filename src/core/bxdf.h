@@ -28,6 +28,7 @@ namespace platinum
 
         /**
          * @brief  type的组合可能多于_type，所以要看_type是否被包含在type中
+         *          eg: diffuse|reflect 不会包含在specular|reflect, specular|reflect会包含在specular|reflect
          * @param  type            测试的type
          * @return true         _type包含在type中
          * @return false        _type没有包含在type中

@@ -1,0 +1,121 @@
+{
+    "AssetsPath": "D:/Homework/graphics/rendering/Platinum/assets/",
+    "Integrator": {
+        "Type": "Whitted",
+        "Depth": 5,
+        "Sampler": {
+            "Type": "Random",
+            "SPP": 4
+        },
+        "Camera": {
+            "Type": "Perspective",
+            "Fov": 39,
+            "Eye": [
+                278,
+                273,
+                -800
+            ],
+            "Focus": [
+                278,
+                273,
+                -799
+            ],
+            "WorldUp": [
+                0,
+                1,
+                0
+            ],
+            "Film": {
+                "Resolution": [
+                    666,
+                    500
+                ],
+                "CropMin": [
+                    0,
+                    0
+                ],
+                "CropMax": [
+                    1,
+                    1
+                ],
+                "Filename": "bunny.png",
+                "Filter": {
+                    "Type": "Box",
+                    "Radius": [
+                        0.5,
+                        0.5
+                    ]
+                }
+            }
+        }
+    },
+    "Aggregate": {
+        "Type": "Linear"
+    },
+    "Light": [],
+    "Material": [
+        {
+            "Name": "red",
+            "Type": "Matte",
+            "R": [
+                0.65,
+                0.05,
+                0.05
+            ]
+        },
+        {
+            "Name": "green",
+            "Type": "Matte",
+            "R": [
+                0.12,
+                0.45,
+                0.15
+            ]
+        },
+        {
+            "Name": "gray",
+            "Type": "Matte",
+            "R": [
+                0.73,
+                0.73,
+                0.73
+            ]
+        },
+        {
+            "Name": "yellow",
+            "Type": "Matte",
+            "R": [
+                0.65,
+                0.65,
+                0.05
+            ]
+        },
+        {
+            "Name": "mirror",
+            "Type": "Mirror",
+            "R": [
+                0.75,
+                0.75,
+                0.75
+            ]
+        }
+    ],
+    "Object": [
+        {
+            "Shape": {
+                "Type": "Mesh",
+                "Filename": "models/bunny.obj"
+            },
+            "Material": "gray",
+            "Emission": {
+                "Radiance": [
+                    5.0,
+                    4.0,
+                    6.0
+                ],
+                "LightSamples": 8,
+                "TwoSided": false
+            }
+        }
+    ]
+}

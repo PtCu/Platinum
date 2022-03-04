@@ -27,6 +27,8 @@ namespace platinum
 
         _filter = UPtr<Filter>(static_cast<Filter *>(ObjectFactory::CreateInstance(root.Get<std::string>("Filter.Type"), root.GetChild("Filter"))));
 
+        LOG(INFO) << "Created film with full resolution " << _resolution << ". Crop window of " << cropWindow << " -> croppedPixelBounds " << _cropped_pixel_bounds;
+
         _diagonal = root.Get<float>("Diagonal", 35.f);
         _scale = root.Get<float>("Scale", 1.f);
         _max_sample_luminance = root.Get<float>("MaxLum", Infinity);

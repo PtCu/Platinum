@@ -24,27 +24,27 @@ namespace platinum
 
         /**
          * @brief 将包围盒转化为世界坐标
-         * @return AABB 
+         * @return AABB
          */
         virtual Bounds3f WorldBound() const;
 
         /**
          * @brief 判断是否相交并计算SurfaceInteration
-         * 
-         * @param ray 
+         *
+         * @param ray
          * @param tHit 相交时光线的时间t
          * @param inter 返回的SurfaceInteration
-         * @return true 
-         * @return false 
+         * @return true
+         * @return false
          */
         virtual bool Hit(const Ray &ray, float &tHit, SurfaceInteraction &inter) const = 0;
 
         /**
          * @brief 不计算SurfaceInteraction，仅用来判断是否相交
-         * 
-         * @param ray 
-         * @return true 
-         * @return false 
+         *
+         * @param ray
+         * @return true
+         * @return false
          */
         virtual bool Hit(const Ray &ray) const;
 
@@ -69,6 +69,7 @@ namespace platinum
         // used in this case.
         virtual float SolidAngle(const Vector3f &p, int nSamples = 512) const;
 
+    public:
         Transform *_object2world = nullptr, *_world2object = nullptr;
     };
 }

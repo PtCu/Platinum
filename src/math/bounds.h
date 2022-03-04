@@ -359,13 +359,13 @@ namespace platinum
     template <typename T>
     inline bool Bounds3<T>::Hit(const Ray &ray, float &hitt0, float &hitt1) const
     {
-        float t0 = 0, t1 = ray.m_tMax;
+        float t0 = 0, t1 = ray._t_max;
         for (int i = 0; i < 3; ++i)
         {
             // Update interval for _i_th bounding box slab
             float invRayDir = 1 / ray.m_dir[i];
-            float tNear = (_p_min[i] - ray.m_origin[i]) * invRayDir;
-            float tFar = (_p_max[i] - ray.m_origin[i]) * invRayDir;
+            float tNear = (_p_min[i] - ray._origin[i]) * invRayDir;
+            float tFar = (_p_max[i] - ray._origin[i]) * invRayDir;
 
             // Update parametric interval from slab intersection $t$ values
             if (tNear > tFar)
@@ -390,12 +390,12 @@ namespace platinum
     template <typename T>
     inline bool Bounds3<T>::Hit(const Ray &ray, const Vector3f &invDir, const int dirIsNeg[3]) const
     {
-        const ABounds3f &bounds = *this;
+        const Bounds3f &bounds = *this;
         // Check for ray intersection against $x$ and $y$ slabs
-        float tMin = (bounds[dirIsNeg[0]].x - ray.m_origin.x) * invDir.x;
-        float tMax = (bounds[1 - dirIsNeg[0]].x - ray.m_origin.x) * invDir.x;
-        float tyMin = (bounds[dirIsNeg[1]].y - ray.m_origin.y) * invDir.y;
-        float tyMax = (bounds[1 - dirIsNeg[1]].y - ray.m_origin.y) * invDir.y;
+        float tMin = (bounds[dirIsNeg[0]].x - ray._origin.x) * invDir.x;
+        float tMax = (bounds[1 - dirIsNeg[0]].x - ray._origin.x) * invDir.x;
+        float tyMin = (bounds[dirIsNeg[1]].y - ray._origin.y) * invDir.y;
+        float tyMax = (bounds[1 - dirIsNeg[1]].y - ray._origin.y) * invDir.y;
 
         // Update _tMax_ and _tyMax_ to ensure robust bounds intersection
         tMax *= 1 + 2 * gamma(3);
@@ -408,8 +408,8 @@ namespace platinum
             tMax = tyMax;
 
         // Check for ray intersection against $z$ slab
-        float tzMin = (bounds[dirIsNeg[2]].z - ray.m_origin.z) * invDir.z;
-        float tzMax = (bounds[1 - dirIsNeg[2]].z - ray.om_origin.z) * invDir.z;
+        float tzMin = (bounds[dirIsNeg[2]].z - ray._origin.z) * invDir.z;
+        float tzMax = (bounds[1 - dirIsNeg[2]].z - ray._origin.z) * invDir.z;
 
         // Update _tzMax_ to ensure robust bounds intersection
         tzMax *= 1 + 2 * gamma(3);
@@ -419,7 +419,7 @@ namespace platinum
             tMin = tzMin;
         if (tzMax < tMax)
             tMax = tzMax;
-        return (tMin < ray.m_tMax) && (tMax > 0);
+        return (tMin < ray._t_max) && (tMax > 0);
     }
 
 }
