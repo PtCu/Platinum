@@ -32,7 +32,9 @@ namespace platinum
         float eta_scale = 1.f;
 
         for (bounces = 0;; ++bounces)
-        {
+        {   
+            // 如果当前ray是直接从相机发射，
+            // 判断光线是否与场景几何图元相交
             SurfaceInteraction isect;
             bool hit = scene.Hit(ray, isect);
 

@@ -62,8 +62,7 @@ namespace platinum
          *          这在完美镜面反射和粗糙镜面反射中非常有用，因为此时它们的反射波瓣很窄，
          *          只占整个半球方向很小一部分，我们不想盲目暴力地遍历所有的入射方向，
          *          而是直接根据向量的反射特性获取入射方向（对于完美镜面反射，除了此方向其他方向上的贡献均为
-         *          0，这时的BRDF是一个狄拉克函数），
-         *          省去了很大部分的计算。
+         *          0，这时的BRDF是一个狄拉克函数），省去了很大部分的计算。
          *          It is crucial that any BxDF implementation that overrides the BxDF::Sample_f() method also override the BxDF::Pdf() method so that the two return consistent results.
         * @param  wo          出射方向
         * @param  wi          需要返回的入射方向

@@ -50,7 +50,9 @@
         }
     },
     "Aggregate": {
-        "Type": "Linear"
+        "Type": "BVH",
+        "MaxPrimsInNode": 1,
+        "SplitMethod": "SAH"
     },
     "Light": [
        
