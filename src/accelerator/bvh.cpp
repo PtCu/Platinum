@@ -1,6 +1,7 @@
 
 #include <accelerator/bvh.h>
 #include <core/memory.h>
+#include <core/timer.h>
 
 namespace platinum
 {
@@ -56,6 +57,8 @@ namespace platinum
 
     void BVHAccel::Initialize()
     {
+        LOG(INFO) << "Construct BVH accelerator..";
+        Timer timer("BVH initialize");
         std::vector<BVHPrimitiveInfo> _primitiveInfo(_primitives.size());
 
         // 储存每个aabb的中心以及索引

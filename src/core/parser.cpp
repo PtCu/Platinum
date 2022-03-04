@@ -70,7 +70,6 @@ namespace platinum
         }
         _scene->_aggres = UPtr<Aggregate>(static_cast<Aggregate *>(ObjectFactory::CreateInstance(aggre_node->Get<std::string>("Type"), aggre_node.get())));
         _scene->_aggres->SetPrimitives(_primitives);
-        _scene->_aggres->Initialize();
     }
 
     void Parser::ParseLight(const PropertyTree &root)
