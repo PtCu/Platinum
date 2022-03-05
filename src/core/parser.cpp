@@ -13,6 +13,7 @@ namespace platinum
 
     void Parser::Parse(const std::string &path, Ptr<Scene> &scene, Ptr<Integrator> &integrator)
     {
+        LOG(INFO) << "Start parsing scene...";
         scene = std::make_shared<Scene>();
 
         _scene = scene;

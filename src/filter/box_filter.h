@@ -8,7 +8,9 @@ namespace platinum
     class BoxFilter final : public Filter
     {
     public:
-        BoxFilter(const PropertyTree &node) : Filter(node) {}
+        BoxFilter(const PropertyTree &node) : Filter(node) {
+            LOG(INFO) << "Filter: BoxFilter";
+        }
 
         BoxFilter(const Vector2f &radius) : Filter(radius) {}
 

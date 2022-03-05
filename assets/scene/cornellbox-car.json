@@ -1,11 +1,11 @@
 {
     "AssetsPath": "D:/Homework/graphics/rendering/Platinum/assets/",
     "Integrator": {
-        "Type": "Whitted",
-        "Depth": 5,
+        "Type": "Path",
+        "Depth": 15,
         "Sampler": {
             "Type": "Random",
-            "SPP": 4
+            "SPP": 1024
         },
         "Camera": {
             "Type": "Perspective",
@@ -38,7 +38,8 @@
                     1,
                     1
                 ],
-                "Filename": "bunny.png",
+                "Filepath": "D:/Homework/graphics/rendering/Platinum/assets/output/",
+                "Filename": "cornellBox-car.png",
                 "Filter": {
                     "Type": "Box",
                     "Radius": [
@@ -66,6 +67,15 @@
             ]
         },
         {
+            "Name": "blue",
+            "Type": "Matte",
+            "R": [
+                0.05,
+                0.05,
+                0.55
+            ]
+        },
+        {
             "Name": "green",
             "Type": "Matte",
             "R": [
@@ -87,7 +97,7 @@
             "Name": "yellow",
             "Type": "Matte",
             "R": [
-                0.65,
+                0.45,
                 0.65,
                 0.05
             ]
@@ -106,28 +116,99 @@
         {
             "Shape": {
                 "Type": "Mesh",
-                "Filename": "models/bunny.obj"
+                "Filename": "models/cornellbox/cbox_luminaire.obj"
             },
+            "Transform": [
+                {
+                    "type": "translate",
+                    "value": [
+                        0,
+                        -0.5,
+                        0
+                    ]
+                }
+            ],
             "Material": "gray",
             "Emission": {
                 "Radiance": [
                     5.0,
                     4.0,
-                    6.0
+                    4.0
                 ],
                 "LightSamples": 8,
                 "TwoSided": false
+            }
+        },
+        {
+            "Shape": {
+                "Type": "Mesh",
+                "Filename": "models/cornellbox//cbox_floor.obj"
             },
+            "Material": "gray"
+        },
+        {
+            "Shape": {
+                "Type": "Mesh",
+                "Filename": "models/cornellbox//cbox_ceiling.obj"
+            },
+            "Material": "gray"
+        },
+        {
+            "Shape": {
+                "Type": "Mesh",
+                "Filename": "models/cornellbox//cbox_back.obj"
+            },
+            "Material": "gray"
+        },
+        {
+            "Shape": {
+                "Type": "Mesh",
+                "Filename": "models/cornellbox//cbox_greenwall.obj"
+            },
+            "Material": "green"
+        },
+        {
+            "Shape": {
+                "Type": "Mesh",
+                "Filename": "models/cornellbox//cbox_redwall.obj"
+            },
+            "Material": "red"
+        },
+
+        {
+            "Shape": {
+                "Type": "Mesh",
+                "Filename": "models/sportsCar.obj"
+            },
+            "Material": "blue",
             "Transform": [
+                {
+                    "type": "rotate",
+                    "value": [
+                        -50,
+                        0,
+                        1,
+                        0
+                    ]
+                },
                 {
                     "type": "scale",
                     "value": [
+                        120,
+                        120,
+                        120
+                    ]
+                },
+                {
+                    "type": "translate",
+                    "value": [
                         200,
-                        200,
+                        100,
                         200
                     ]
                 }
             ]
         }
+        
     ]
 }

@@ -45,7 +45,6 @@ namespace platinum
 
         void *Alloc(size_t nBytes)
         {
-            // LOG(INFO) << "nBytes: " << nBytes;
             const int align = 16;
             //Round up nBytes to minimum machine alignment
             nBytes = (nBytes + align - 1) & ~(align - 1);
@@ -53,7 +52,6 @@ namespace platinum
             //Current memory is not enough. Require new memory.
             if (currentBlockPos + nBytes > currentAllocSize)
             {
-                // LOG(INFO) << "Require new memory";
                 // Add current block to _usedBlocks_ list
                 if (currentBlock)
                 {
@@ -83,7 +81,6 @@ namespace platinum
                 }
                 currentBlockPos = 0;
             }
-            // LOG(INFO) << "CurrentBlock: " << (void *)currentBlock << ", CurrentBlockPos: " << currentBlockPos;
             //Slice a chunk for the requester.
             void *ret = currentBlock + currentBlockPos;
             currentBlockPos += nBytes;
@@ -117,7 +114,10 @@ namespace platinum
         MemoryArena &operator=(const MemoryArena &) = delete;
         const size_t blockSize;
         size_t currentBlockPos = 0, currentAllocSize = 0;
+        //currentBlock是当前内存块的头指针。
         uint8_t *currentBlock = nullptr;
+        //usedBlocks是已经分配过的内存块集合，availableBlocks是由usedBlocks回收来的内存块集合，当作战备池
+        //每一次Reset()操作都会使得usedBlocks中分配的内存回收进availableBlocks中进行备用
         std::list<std::pair<size_t, uint8_t *>> usedBlocks, availableBlocks;
     };
 }

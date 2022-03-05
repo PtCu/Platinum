@@ -5,7 +5,7 @@
         "Depth": 15,
         "Sampler": {
             "Type": "Random",
-            "SPP": 4
+            "SPP": 1024
         },
         "Camera": {
             "Type": "Perspective",
@@ -38,7 +38,8 @@
                     1,
                     1
                 ],
-                "Filename": "cornellBox-bunny.png",
+                "Filepath":"D:/Homework/graphics/rendering/Platinum/assets/output/",
+                "Filename": "bunny-spp=1024.png",
                 "Filter": {
                     "Type": "Box",
                     "Radius": [
@@ -87,7 +88,7 @@
             "Name": "yellow",
             "Type": "Matte",
             "R": [
-                0.45,
+                0.65,
                 0.65,
                 0.05
             ]
@@ -123,7 +124,7 @@
                 "Radiance": [
                     5.0,
                     4.0,
-                    4.0
+                    3.0
                 ],
                 "LightSamples": 8,
                 "TwoSided": false
@@ -132,53 +133,36 @@
         {
             "Shape": {
                 "Type": "Mesh",
-                "Filename": "models/cornellbox/cbox_floor.obj"
+                "Filename": "models/cornellbox//cbox_floor.obj"
             },
             "Material": "gray"
         },
         {
             "Shape": {
                 "Type": "Mesh",
-                "Filename": "models/cornellbox/cbox_ceiling.obj"
+                "Filename": "models/cornellbox//cbox_ceiling.obj"
             },
             "Material": "gray"
         },
         {
             "Shape": {
                 "Type": "Mesh",
-                "Filename": "models/cornellbox/cbox_back.obj"
+                "Filename": "models/cornellbox//cbox_back.obj"
             },
             "Material": "gray"
         },
         {
             "Shape": {
                 "Type": "Mesh",
-                "Filename": "models/cornellbox/cbox_greenwall.obj"
+                "Filename": "models/cornellbox//cbox_greenwall.obj"
             },
             "Material": "green"
         },
         {
             "Shape": {
                 "Type": "Mesh",
-                "Filename": "models/cornellbox/cbox_redwall.obj"
+                "Filename": "models/cornellbox//cbox_redwall.obj"
             },
-            "Material": "red"
-        },
-        {
-            "Shape": {
-                "Type": "Sphere",
-                "Radius": 65.0
-            },
-            "Transform": [
-                {
-                    "type": "translate",
-                    "value": [
-                        200,
-                        232,
-                        150
-                    ]
-                }
-            ],
             "Material": "red"
         },
         {
@@ -186,8 +170,34 @@
                 "Type": "Mesh",
                 "Filename": "models/bunny.obj"
             },
-            "Material": "gray"
+            "Material": "gray",
+            "Transform": [
+                {
+                    "type": "rotate",
+                    "value": [
+                        -50,
+                        0,
+                        1,
+                        0
+                    ]
+                },
+                {
+                    "type": "scale",
+                    "value": [
+                        180,
+                        180,
+                        180
+                    ]
+                },
+                {
+                    "type": "translate",
+                    "value": [
+                        350,
+                        50,
+                        50
+                    ]
+                }
+            ]
         }
-        
     ]
 }

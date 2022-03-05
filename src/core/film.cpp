@@ -21,13 +21,15 @@ namespace platinum
                          glm::ceil(_resolution.y * cropWindow._p_min.y)),
                 Vector2i(glm::ceil(_resolution.x * cropWindow._p_max.x),
                          glm::ceil(_resolution.y * cropWindow._p_max.y)));
+        
         LOG(INFO) << "Created film with full resolution " << _resolution << ". Crop window of " << cropWindow << " -> croppedPixelBounds " << _cropped_pixel_bounds;
 
-        _filename = root.Get<std::string>("Filename");
+        auto filepath = root.Get<std::string>("Filepath","");
+        _filename = filepath + root.Get<std::string>("Filename");
+
+        LOG(INFO) << "File name: " << _filename;
 
         _filter = UPtr<Filter>(static_cast<Filter *>(ObjectFactory::CreateInstance(root.Get<std::string>("Filter.Type"), root.GetChild("Filter"))));
-
-        LOG(INFO) << "Created film with full resolution " << _resolution << ". Crop window of " << cropWindow << " -> croppedPixelBounds " << _cropped_pixel_bounds;
 
         _diagonal = root.Get<float>("Diagonal", 35.f);
         _scale = root.Get<float>("Scale", 1.f);
@@ -41,8 +43,8 @@ namespace platinum
         : _resolution(resolution), _filter(std::move(filter)), _diagonal(Diagonal),
           _filename(filename), _scale(scale), _max_sample_luminance(maxSampleLuminance)
     {
-        //Compute film image bounds
-        //Note: cropWindow range [0,1]x[0,1]
+        // Compute film image bounds
+        // Note: cropWindow range [0,1]x[0,1]
         _cropped_pixel_bounds =
             Bounds2i(
                 Vector2i(glm::ceil(_resolution.x * cropWindow._p_min.x),
@@ -58,9 +60,9 @@ namespace platinum
     {
         _pixels = std::unique_ptr<Pixel[]>(new Pixel[_cropped_pixel_bounds.Area()]);
 
-        //Precompute filter weight table
-        //Note: we assume that filtering function f(x,y)=f(|x|,|y|)
-        //      hence only store values for the positive quadrant of filter offsets.
+        // Precompute filter weight table
+        // Note: we assume that filtering function f(x,y)=f(|x|,|y|)
+        //       hence only store values for the positive quadrant of filter offsets.
         int offset = 0;
         for (int y = 0; y < filter_table_width; ++y)
         {
@@ -179,8 +181,8 @@ namespace platinum
 
     void Film::AddSplat(const Vector2f &p, Spectrum v)
     {
-        //Note:Rather than computing the final pixel value as a weighted
-        //     average of contributing splats, splats are simply summed.
+        // Note:Rather than computing the final pixel value as a weighted
+        //      average of contributing splats, splats are simply summed.
 
         if (v.hasNaNs())
         {

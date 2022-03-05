@@ -1,6 +1,6 @@
 
 
-#include "bsdf.h"
+#include <core/bsdf.h>
 
 namespace platinum
 {
@@ -102,7 +102,8 @@ namespace platinum
 
         wiWorld = Local2World(wi);
 
-        // Compute overall PDF with all matching _BxDF_s
+        // 如果不包含高光反射，并且匹配的组件数大于1，才会累加pdf
+        // 因为高光反射不能使用常规方法采样
         if (!(static_cast<int>(bxdf->_type) & static_cast<int>(BxDFType::BSDF_SPECULAR)) && matchingComps > 1)
         {
 
@@ -117,7 +118,8 @@ namespace platinum
             pdf /= matchingComps;
         }
 
-        // Compute value of BSDF for sampled direction
+        // 如果不包含高光反射，才会累加brdf值
+        // 因为高光反射不能使用常规方法采样
         if (!(static_cast<int>(bxdf->_type) & static_cast<int>(BxDFType::BSDF_SPECULAR)))
         {
             bool reflect = glm::dot(wiWorld, _ns) * glm::dot(woWorld, _ns) > 0;
@@ -167,3 +169,4 @@ namespace platinum
     }
 
 }
+

@@ -7,6 +7,7 @@
 #include <math/transform.h>
 #include <core/film.h>
 #include <core/object.h>
+
 namespace platinum
 {
     struct alignas(4) CameraSample

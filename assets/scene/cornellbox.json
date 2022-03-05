@@ -5,7 +5,7 @@
         "Depth": 15,
         "Sampler": {
             "Type": "Random",
-            "SPP": 64
+            "SPP": 1024
         },
         "Camera": {
             "Type": "Perspective",
@@ -38,6 +38,7 @@
                     1,
                     1
                 ],
+                "Filepath": "D:/Homework/graphics/rendering/Platinum/assets/output/",
                 "Filename": "cornellBox.png",
                 "Filter": {
                     "Type": "Box",

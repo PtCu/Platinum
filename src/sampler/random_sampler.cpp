@@ -8,6 +8,7 @@ namespace platinum
 
     RandomSampler::RandomSampler(const PropertyTree &root) : Sampler(root)
     {
+        LOG(INFO) << "Sampler: randow sampler";
     }
 
     RandomSampler::RandomSampler(int ns) : Sampler(ns) {}

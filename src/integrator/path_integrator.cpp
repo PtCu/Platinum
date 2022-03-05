@@ -9,7 +9,7 @@ namespace platinum
     REGISTER_CLASS(PathIntegrator, "Path");
 
     PathIntegrator::PathIntegrator(const PropertyTree &root)
-        : SamplerIntegrator(nullptr, nullptr), _max_depth(root.Get<int>("Depth"))
+        : SamplerIntegrator(nullptr, nullptr), _max_depth(root.Get<int>("Depth")), _rr_threshold(root.Get<float>("RR", 0.8f))
     {
         _sampler = UPtr<Sampler>(static_cast<Sampler *>(ObjectFactory::CreateInstance(root.Get<std::string>("Sampler.Type"), root.GetChild("Sampler"))));
 
@@ -32,9 +32,12 @@ namespace platinum
         float eta_scale = 1.f;
 
         for (bounces = 0;; ++bounces)
-        {   
+        {
             // 如果当前ray是直接从相机发射，
             // 判断光线是否与场景几何图元相交
+            // 每次弹射，都计算
+            // 1. 直接光照（向光源进行采样），
+            // 2. 周围物体的光照（随机发出一条光线）
             SurfaceInteraction isect;
             bool hit = scene.Hit(ray, isect);
 

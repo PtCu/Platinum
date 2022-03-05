@@ -1,11 +1,11 @@
 {
     "AssetsPath": "D:/Homework/graphics/rendering/Platinum/assets/",
     "Integrator": {
-        "Type": "Whitted",
+        "Type": "Path",
         "Depth": 15,
         "Sampler": {
             "Type": "Random",
-            "SPP": 4
+            "SPP": 1024
         },
         "Camera": {
             "Type": "Perspective",
@@ -38,6 +38,7 @@
                     1,
                     1
                 ],
+                "Filepath": "D:/Homework/graphics/rendering/Platinum/assets/output/",
                 "Filename": "cornellBox-sphere.png",
                 "Filter": {
                     "Type": "Box",
@@ -196,7 +197,7 @@
                     ]
                 }
             ],
-            "Material": "yellow"
+            "Material": "mirror"
         },
 
         {
