@@ -85,7 +85,7 @@ namespace platinum
         };
         uint16_t nPrimitives; // 图元数量
         uint8_t axis;         // interior node: xyz
-        uint8_t pad[1];       // 确保32个字节为一个对象，提高缓存命中率
+        uint8_t pad[1];       // 确保64个字节为一个对象，提高缓存命中率
     };
 
     /*

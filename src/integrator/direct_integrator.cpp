@@ -35,20 +35,26 @@ namespace platinum
     Spectrum DirectIntegrator::Li(const Scene &scene, const Ray &ray, Sampler &sampler, MemoryArena &arena, int depth) const
     {
         Spectrum L(0.f);
+        // Find closest ray intersection or return background radiance
         SurfaceInteraction isect;
         if (!scene.Hit(ray, isect))
         {
+            //返回lights emission
             for (const auto &light : scene._lights)
                 L += light->Le(ray);
         }
         isect.ComputeScatteringFunctions(ray, arena);
+        // 没有bsdf
         if (!isect._bsdf)
             return Li(scene, isect.SpawnRay(ray._direction), sampler, arena, depth);
         Vector3f wo = isect.wo;
+
+        // 如果光线打到光源，计算其发光值 -> Le (emission term)
         L += isect.Le(wo);
         if (scene._lights.size() > 0)
         {
             if (_strategy == LightStrategy::UniformSampleAll)
+                //累计所有光源的直接光照值
                 L += UniformSampleAllLights(isect, scene, arena, sampler, _n_light_samples);
 
             else
@@ -56,6 +62,7 @@ namespace platinum
         }
         if (depth + 1 < _max_depth)
         {
+            //对反射和透射分别计算
             L += SpecularReflect(ray, isect, scene, sampler, arena, depth);
             L += SpecularTransmit(ray, isect, scene, sampler, arena, depth);
         }

@@ -11,7 +11,7 @@ namespace platinum
         CHECK_LE(x, (1 << 10));
         if (x == (1 << 10))
             --x;
-#ifdef PALADIN_HAVE_BINARY_CONSTANTS
+#ifdef PLATINUM_HAVE_BINARY_CONSTANTS
         x = (x | (x << 16)) & 0b00000011000000000000000011111111;
         // x = ---- --98 ---- ---- ---- ---- 7654 3210
         x = (x | (x << 8)) & 0b00000011000000001111000000001111;

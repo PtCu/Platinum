@@ -4,7 +4,6 @@
 #include <core/camera.h>
 #include <tbb/tbb.h>
 #include <core/memory.h>
-#include <core/parallel.h>
 #include <core/timer.h>
 namespace platinum
 {
