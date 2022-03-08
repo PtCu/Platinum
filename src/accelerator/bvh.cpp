@@ -2,42 +2,16 @@
 #include <accelerator/bvh.h>
 #include <core/memory.h>
 #include <core/timer.h>
-
+#include <tbb/parallel_for.h>
+#include <tbb/spin_mutex.h>;
 namespace platinum
 {
-    // BVHAccel Utility Functions
-    inline uint32_t LeftShift3(uint32_t x)
-    {
-        CHECK_LE(x, (1 << 10));
-        if (x == (1 << 10))
-            --x;
-#ifdef PLATINUM_HAVE_BINARY_CONSTANTS
-        x = (x | (x << 16)) & 0b00000011000000000000000011111111;
-        // x = ---- --98 ---- ---- ---- ---- 7654 3210
-        x = (x | (x << 8)) & 0b00000011000000001111000000001111;
-        // x = ---- --98 ---- ---- 7654 ---- ---- 3210
-        x = (x | (x << 4)) & 0b00000011000011000011000011000011;
-        // x = ---- --98 ---- 76-- --54 ---- 32-- --10
-        x = (x | (x << 2)) & 0b00001001001001001001001001001001;
-        // x = ---- 9--8 --7- -6-- 5--4 --3- -2-- 1--0
-#else
-        x = (x | (x << 16)) & 0x30000ff;
-        // x = ---- --98 ---- ---- ---- ---- 7654 3210
-        x = (x | (x << 8)) & 0x300f00f;
-        // x = ---- --98 ---- ---- 7654 ---- ---- 3210
-        x = (x | (x << 4)) & 0x30c30c3;
-        // x = ---- --98 ---- 76-- --54 ---- 32-- --10
-        x = (x | (x << 2)) & 0x9249249;
-        // x = ---- 9--8 --7- -6-- 5--4 --3- -2-- 1--0
-#endif // PBRT_HAVE_BINARY_CONSTANTS
-        return x;
-    }
 
     REGISTER_CLASS(BVHAccel, "BVH");
 
     BVHAccel::BVHAccel(const PropertyTree &node) : Aggregate(node)
     {
-        int maxPrimsInNode = node.Get<int>("MaxPrimsInNode",1);
+        int maxPrimsInNode = node.Get<int>("MaxPrimsInNode", 1);
 
         BVHAccel::SplitMethod splitMethod;
         std::string sm = node.Get<std::string>("SplitMethod", "SAH");
@@ -61,12 +35,22 @@ namespace platinum
         Timer timer("BVH initialize");
         std::vector<BVHPrimitiveInfo> _primitiveInfo(_primitives.size());
 
-        // 储存每个aabb的中心以及索引
-        for (size_t i = 0; i < _primitives.size(); ++i)
-        {
-            auto aabb = _primitives[i]->WorldBound();
-            _primitiveInfo[i] = {i, aabb};
-        }
+        //并行构建
+        tbb::spin_mutex mtx;
+        tbb::parallel_for(tbb::blocked_range<size_t>(0, _primitives.size()),
+                          [&](tbb::blocked_range<size_t> r)
+                          {
+                              Bounds3f local_bound;
+                              for (size_t i = r.begin(); i < r.end(); ++i)
+                              {
+                                  auto aabb = _primitives[i]->WorldBound();
+                                  local_bound = UnionBounds(local_bound, aabb);
+                                  // 储存每个aabb的中心以及索引
+                                  _primitiveInfo[i] = {i, aabb};
+                              }
+                              std::lock_guard lck(mtx);
+                              _world_bounds = UnionBounds(_world_bounds, local_bound);
+                          });
 
         MemoryArena arena(1024 * 1024);
         int totalNodes = 0;

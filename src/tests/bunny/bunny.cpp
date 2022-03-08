@@ -9,7 +9,7 @@ const static string log_info_path = root_path + "/logs/info";
 const static string log_warning_path = root_path + "/logs/warning";
 const static string log_error_path = root_path + "/logs/error";
 
-int main(int argc, char *argv[])
+ int main(int argc, char *argv[])
 {
     _CrtSetBreakAlloc(7685);
     google::InitGoogleLogging(argv[0]);

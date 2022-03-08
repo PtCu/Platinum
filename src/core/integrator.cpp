@@ -2,7 +2,7 @@
 #include <core/integrator.h>
 #include <core/bsdf.h>
 #include <core/camera.h>
-#include <tbb/tbb.h>
+#include <tbb/parallel_for.h>
 #include <core/memory.h>
 #include <core/timer.h>
 namespace platinum
@@ -19,9 +19,12 @@ namespace platinum
         // Compute number of tiles, _nTiles_, to use for parallel rendering
         Bounds2i sampleBounds = _camera->_film->GetSampleBounds();
         Vector2i sampleExtent = sampleBounds.Diagonal();
+        //每一块大小为16*16
         constexpr int tileSize = 16;
+        //划分为nTiles.x * nTiles.y 块tiles
         Vector2i nTiles((sampleExtent.x + tileSize - 1) / tileSize, (sampleExtent.y + tileSize - 1) / tileSize);
-//  #define DEBUG
+        LOG(INFO) << nTiles;
+//#define DEBUG
 #ifndef DEBUG
         tbb::parallel_for(tbb::blocked_range<size_t>(0, nTiles.x * nTiles.y),
                           [&](tbb::blocked_range<size_t> r)
@@ -33,7 +36,8 @@ namespace platinum
         MemoryArena arena;
         for (size_t t = 0; t < nTiles.x * nTiles.y; ++t)
         {
-#endif
+#endif  
+                                //获取tile的坐标
                                   Vector2i tile(t % nTiles.x, t / nTiles.x);
                                   // Get sampler instance for tile
                                   int seed = t;
@@ -45,7 +49,6 @@ namespace platinum
                                   int y0 = sampleBounds._p_min.y + tile.y * tileSize;
                                   int y1 = glm::min(y0 + tileSize, sampleBounds._p_max.y);
                                   Bounds2i tileBounds(Vector2i(x0, y0), Vector2i(x1, y1));
-                                  //   LOG(INFO) << "Starting image tile " << tileBounds;
 
                                   // Get _FilmTile_ for tile
                                   std::unique_ptr<FilmTile> filmTile = _camera->_film->GetFilmTile(tileBounds);
@@ -112,7 +115,7 @@ namespace platinum
                                   _camera->_film->MergeFilmTile(std::move(filmTile));
                               }
 #ifndef DEBUG
-                          });
+                          },tbb::auto_partitioner());
 #endif
         LOG(INFO) << "Rendering finished";
         _camera->_film->WriteImageToFile();
@@ -324,3 +327,4 @@ namespace platinum
         return Ld;
     }
 }
+

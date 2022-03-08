@@ -227,7 +227,7 @@ namespace platinum
     public:                                                   \
         cls##_()                                              \
         {                                                     \
-            ObjectFactory::RegisterClass(name, cls##_create); \
+            ObjectFactory::RegisterClass ( name, cls##_create); \
         }                                                     \
     };                                                        \
     static cls##_ cls##_instance_;

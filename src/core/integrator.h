@@ -40,12 +40,12 @@ namespace platinum
         /**
          * @brief  Li() 方法计算有多少光照量沿着该 Ray 到达成像平面，
          *          并把光照量（radiance）保存在 Film 内
-         * 
-         * @param scene 
-         * @param ray 
-         * @param sampler 
-         * @param depth 
-         * @return Spectrum 
+         *
+         * @param scene
+         * @param ray
+         * @param sampler
+         * @param depth
+         * @return Spectrum
          */
         virtual Spectrum Li(const Scene &scene, const Ray &ray, Sampler &sampler, MemoryArena &arena, int depth = 0) const = 0;
 
