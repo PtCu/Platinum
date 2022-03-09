@@ -46,7 +46,7 @@
     static constexpr float PiOver4 = 0.78539816339744830961f;
     static constexpr float Sqrt2 = 1.41421356237309504880f;
     static constexpr float EPSILON = 0.0005f;
-    static constexpr float OneMinusEpsilon = 0.99999994;
+    static constexpr float OneMinusEpsilon = 0.99999994f;
     static constexpr float MaxFloat = std::numeric_limits<float>::max();
     static constexpr float Infinity = std::numeric_limits<float>::infinity();
     static constexpr float MachineEpsilon = std::numeric_limits<float>::epsilon() * 0.5f;

@@ -115,6 +115,8 @@ namespace platinum
                                   _camera->_film->MergeFilmTile(std::move(filmTile));
                               }
 #ifndef DEBUG
+                        //simple partitioner按莫顿码遍历，对矩阵的遍历更快。
+                        //但是这里没必要按莫顿码遍历，因为最初没有矩阵，而是在迭代器遍历一个tile时才生成坐标。
                           },tbb::auto_partitioner());
 #endif
         LOG(INFO) << "Rendering finished";

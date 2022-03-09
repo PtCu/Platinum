@@ -33,8 +33,8 @@ namespace platinum
     class GeometricPrimitive : public Primitive
     {
     public:
-        GeometricPrimitive(const Ptr<Shape> &shape, const Material *material,
-                           const Ptr<AreaLight> &area_light);
+        GeometricPrimitive(Ptr<Shape> shape, const Material *material,
+                           Ptr<AreaLight> area_light);
 
         virtual bool Hit(const Ray &ray) const override { return _shape->Hit(ray); }
 
@@ -52,7 +52,7 @@ namespace platinum
 
         virtual void ComputeScatteringFunctions(SurfaceInteraction &isect, MemoryArena &arena) const override;
 
-        virtual virtual std::string ToString() const override { return "GeometricPrimitive"; }
+        virtual std::string ToString() const override { return "GeometricPrimitive"; }
 
     private:
         Ptr<Shape> _shape;
@@ -93,3 +93,4 @@ namespace platinum
 } // namespace platinum
 
 #endif
+

@@ -7,7 +7,8 @@
 #include <accelerator/linear.h>
 #include <material/mirror.h>
 #include <integrator/whitted_integrator.h>
-
+#include <tbb/parallel_for.h>
+#include <core/timer.h>
 namespace platinum
 {
 
@@ -105,6 +106,7 @@ namespace platinum
     void Parser::ParseTriMesh(const PropertyTree &root, Transform *obj2world,
                               Transform *world2obj)
     {
+        Timer timer("Parse TriMesh");
         auto mesh_path = root.Get<std::string>("Shape.Filename");
         auto mesh = std::make_unique<TriangleMesh>(obj2world, _assets_path + mesh_path);
         const auto mat_string = root.GetOptional<std::string>("Material");
@@ -118,20 +120,51 @@ namespace platinum
         auto is_emit = root.GetChildOptional("Emission");
 
         auto &meshIndices = mesh->GetIndices();
+        _primitives.reserve(_primitives.size() + meshIndices.size() / 3 + 1);
 
-        for (size_t i = 0; i < meshIndices.size(); i += 3)
+        if (meshIndices.size() > 20)
         {
-            std::array<int, 3> indices;
-            indices[0] = meshIndices[i + 0];
-            indices[1] = meshIndices[i + 1];
-            indices[2] = meshIndices[i + 2];
-            auto triangle = std::make_shared<Triangle>(obj2world, world2obj, indices, mesh.get());
-            Ptr<AreaLight> area_light = nullptr;
-            if (is_emit)
+            std::mutex mtx;
+            tbb::parallel_for(tbb::blocked_range<size_t>(0, meshIndices.size()),
+                              [&](tbb::blocked_range<size_t> r)
+                              {
+                                  std::vector<Ptr<Primitive>> local_vec;
+                                  local_vec.reserve(r.size()/3+1);
+                                  for (auto i = r.begin(); i < r.end() - 2; ++i)
+                                  {
+                                      std::array<int, 3> indices;
+                                      indices[0] = meshIndices[i + 0];
+                                      indices[1] = meshIndices[i + 1];
+                                      indices[2] = meshIndices[i + 2];
+                                      auto triangle = std::make_shared<Triangle>(obj2world, world2obj, indices, mesh.get());
+                                      Ptr<AreaLight> area_light = nullptr;
+                                      if (is_emit)
+                                      {
+                                          area_light = Ptr<AreaLight>(static_cast<AreaLight *>(ObjectFactory::CreateInstance("DiffuseAreaLight", is_emit.get())));
+                                      }
+                                      local_vec.emplace_back(std::make_shared<GeometricPrimitive>(triangle, material.get(), area_light));
+                                  }
+                                  std::lock_guard lck(mtx);
+                                  std::copy(local_vec.begin(), local_vec.end(), std::back_inserter(_primitives));
+                              });
+        }
+        //串行
+        else
+        {
+            for (size_t i = 0; i < meshIndices.size(); i += 3)
             {
-                area_light = Ptr<AreaLight>(static_cast<AreaLight *>(ObjectFactory::CreateInstance("DiffuseAreaLight", is_emit.get())));
+                std::array<int, 3> indices;
+                indices[0] = meshIndices[i + 0];
+                indices[1] = meshIndices[i + 1];
+                indices[2] = meshIndices[i + 2];
+                auto triangle = std::make_shared<Triangle>(obj2world, world2obj, indices, mesh.get());
+                Ptr<AreaLight> area_light = nullptr;
+                if (is_emit)
+                {
+                    area_light = Ptr<AreaLight>(static_cast<AreaLight *>(ObjectFactory::CreateInstance("DiffuseAreaLight", is_emit.get())));
+                }
+                _primitives.emplace_back(std::make_shared<GeometricPrimitive>(triangle, material.get(), area_light));
             }
-            _primitives.emplace_back(std::make_shared<GeometricPrimitive>(triangle, material.get(), area_light));
         }
 
         _scene->_meshes.emplace_back(std::move(mesh));
@@ -218,33 +251,33 @@ namespace platinum
     void Parser::ParseObject(const PropertyTree &root)
     {
 
-            for (const auto &p : root.GetChild("Object").GetNode())
+        for (const auto &p : root.GetChild("Object").GetNode())
+        {
+
+            //解析transform
+            auto obj2world = std::make_unique<Transform>();
+            auto world2obj = std::make_unique<Transform>();
+
+            //对于列表中的元素value，p为(,value)。用p.second来访问
+            auto _transform_node = p.second.get_child_optional("Transform");
+            if (_transform_node)
             {
-
-                //解析transform
-                auto obj2world = std::make_unique<Transform>();
-                auto world2obj = std::make_unique<Transform>();
-
-                //对于列表中的元素value，p为(,value)。用p.second来访问
-                auto _transform_node = p.second.get_child_optional("Transform");
-                if (_transform_node)
-                {
-                    ParseTransform(_transform_node.get(), obj2world.get());
-                }
-                (*world2obj) = Inverse(*obj2world);
-
-                //解析Shape
-                if ("Mesh" == p.second.get<std::string>("Shape.Type"))
-                {
-                    ParseTriMesh(p.second, obj2world.get(), world2obj.get());
-                }
-                else
-                {
-                    ParseSimpleShape(p.second, obj2world.get(), world2obj.get());
-                }
-
-                _scene->_transforms.emplace_back(std::move(obj2world));
-                _scene->_transforms.emplace_back(std::move(world2obj));
+                ParseTransform(_transform_node.get(), obj2world.get());
             }
+            (*world2obj) = Inverse(*obj2world);
+
+            //解析Shape
+            if ("Mesh" == p.second.get<std::string>("Shape.Type"))
+            {
+                ParseTriMesh(p.second, obj2world.get(), world2obj.get());
+            }
+            else
+            {
+                ParseSimpleShape(p.second, obj2world.get(), world2obj.get());
+            }
+
+            _scene->_transforms.emplace_back(std::move(obj2world));
+            _scene->_transforms.emplace_back(std::move(world2obj));
+        }
     }
 }

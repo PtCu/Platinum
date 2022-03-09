@@ -5,8 +5,8 @@
 namespace platinum
 {
 
-    GeometricPrimitive::GeometricPrimitive(const Ptr<Shape> &shape, const Material *material,
-                                           const Ptr<AreaLight> &area_light)
+    GeometricPrimitive::GeometricPrimitive(Ptr<Shape> shape, const Material *material,
+                                           Ptr<AreaLight> area_light)
         : _shape(shape), _material(material), _area_light(area_light)
     {
         if (_area_light != nullptr)
